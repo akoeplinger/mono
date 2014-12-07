@@ -120,7 +120,7 @@ internal class FileUtil {
             return null;
 
         int length = path.Length;
-        if (length > 3 && path[length - 1] == '\\')
+        if (length > 3 && path[length - 1] == Path.DirectorySeparatorChar)
             path = path.Substring(0, length - 1);
 
         return path;
@@ -151,8 +151,8 @@ internal class FileUtil {
         dir = Path.GetFullPath(dir);
 
         // Append '\' to the directory if necessary.
-        if (!StringUtil.StringEndsWith(dir, @"\"))
-            dir = dir + @"\";
+        if (!StringUtil.StringEndsWith(dir, Path.DirectorySeparatorChar))
+            dir = dir + Path.DirectorySeparatorChar;
 
         return dir;
     }
@@ -356,6 +356,7 @@ internal class FileUtil {
             return;
 
         using (new ApplicationImpersonationContext()) {
+#if !MONO  //TODO: implement
             UnsafeNativeMethods.WIN32_FILE_ATTRIBUTE_DATA data;
             bool ok = UnsafeNativeMethods.GetFileAttributesEx(physicalPath, UnsafeNativeMethods.GetFileExInfoStandard, out data);
             if (ok) {
@@ -375,6 +376,7 @@ internal class FileUtil {
                     }
                 }
             }
+#endif
         }
     }
 
@@ -389,6 +391,7 @@ internal class FileUtil {
             return false;
         }
 
+#if !MONO
         UnsafeNativeMethods.WIN32_FILE_ATTRIBUTE_DATA data;
         bool ok = UnsafeNativeMethods.GetFileAttributesEx(filename, UnsafeNativeMethods.GetFileExInfoStandard, out data);
         if (ok) {
@@ -410,6 +413,9 @@ internal class FileUtil {
                 }
             }
         }
+#else
+        return false;
+#endif
     }
 }
 
@@ -429,6 +435,10 @@ sealed class FindFileData {
 
     // FindFile - given a file name, gets the file attributes and short form (8.3 format) of a file name.
     static internal int FindFile(string path, out FindFileData data) {
+#if MONO
+        data = null;
+        return 1;
+#else
         IntPtr hFindFile;
         UnsafeNativeMethods.WIN32_FIND_DATA wfd;
 
@@ -458,7 +468,8 @@ sealed class FindFileData {
 #endif
 
         data = new FindFileData(ref wfd);
-        return HResults.S_OK;
+        return HResults.S_OK;        
+#endif
     }
 
     // FindFile - takes a full-path and a root-directory-path, and is used to get the
@@ -472,7 +483,10 @@ sealed class FindFileData {
     // This is used by FileChangesMonitor to support the ability to monitor all files and 
     // directories at any depth beneath the application root directory. 
     internal static int FindFile(string fullPath, string rootDirectoryPath, out FindFileData data) {
-
+#if MONO
+        data = null;
+        return 1;
+#else
         int hr = FindFileData.FindFile(fullPath, out data);
         if (hr != HResults.S_OK || String.IsNullOrEmpty(rootDirectoryPath)) {
             return hr;
@@ -535,8 +549,10 @@ sealed class FindFileData {
 #endif
         
         return hr;
+#endif
     }
 
+#if !MONO
     internal FindFileData(ref UnsafeNativeMethods.WIN32_FIND_DATA wfd) {
         _fileAttributesData = new FileAttributesData(ref wfd);
         _fileNameLong = wfd.cFileName;
@@ -546,6 +562,10 @@ sealed class FindFileData {
             _fileNameShort = wfd.cAlternateFileName;
         }
     }
+#else
+    internal FindFileData(string path, string fileName) { // TODO: implement
+    }
+#endif
     
     private void PrependRelativePath(string relativePathLong, string relativePathShort) {
         _fileNameLong = relativePathLong + _fileNameLong;
@@ -582,19 +602,26 @@ sealed class FileAttributesData {
     static internal int GetFileAttributes(string path, out FileAttributesData fad) {
         fad = null;
 
+#if !MONO // TODO: implement
         UnsafeNativeMethods.WIN32_FILE_ATTRIBUTE_DATA  data;
         if (!UnsafeNativeMethods.GetFileAttributesEx(path, UnsafeNativeMethods.GetFileExInfoStandard, out data)) {
             return HttpException.HResultFromLastError(Marshal.GetLastWin32Error());
         }
-
         fad = new FileAttributesData(ref data);
+#endif
         return HResults.S_OK;
     }
 
     FileAttributesData() {
+#if MONO
+        UtcCreationTime = new DateTime (0, DateTimeKind.Utc);
+        UtcLastAccessTime = new DateTime (0, DateTimeKind.Utc);
+        UtcLastWriteTime = new DateTime (0, DateTimeKind.Utc);
         FileSize = -1;
+#endif
     }
 
+#if !MONO
     FileAttributesData(ref UnsafeNativeMethods.WIN32_FILE_ATTRIBUTE_DATA data) {
         FileAttributes    = (FileAttributes) data.fileAttributes;
         UtcCreationTime   = DateTimeUtil.FromFileTimeToUtc(((long)data.ftCreationTimeHigh)   << 32 | (long)data.ftCreationTimeLow);
@@ -610,6 +637,7 @@ sealed class FileAttributesData {
         UtcLastWriteTime  = DateTimeUtil.FromFileTimeToUtc(((long)wfd.ftLastWriteTime_dwHighDateTime)  << 32 | (long)wfd.ftLastWriteTime_dwLowDateTime);
         FileSize          = (long)wfd.nFileSizeHigh << 32 | (long)wfd.nFileSizeLow;
     }
+#endif
 
 #if DBG
     internal string DebugDescription(string indent) {

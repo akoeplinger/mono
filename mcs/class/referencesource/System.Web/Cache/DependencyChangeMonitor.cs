@@ -1,7 +1,7 @@
 // <copyright file="DependencyChangeMonitor.cs" company="Microsoft">
 //   Copyright (c) 2009 Microsoft Corporation.  All rights reserved.
 // </copyright>
-#if USE_MEMORY_CACHE
+#if USE_MEMORY_CACHE || (MONO && CACHE_DEP)
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Caching;

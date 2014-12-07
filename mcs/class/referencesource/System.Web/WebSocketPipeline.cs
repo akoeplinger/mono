@@ -48,7 +48,9 @@ namespace System.Web {
 
             // Once all pending IOs are complete, we can progress the IIS state machine and finish the request.
             // Execute synchronously since it's very short-running (posts to the native ThreadPool).
+#if !MONO
             abortTask.ContinueWith(_ => UnsafeIISMethods.MgdPostCompletion(_root.WorkerRequest.RequestContext, RequestNotificationStatus.Continue), TaskContinuationOptions.ExecuteSynchronously);
+#endif
         }
 
         private ExceptionDispatchInfo DoFlush() {
@@ -84,7 +86,11 @@ namespace System.Web {
                 // Create the AspNetWebSocket. There's a chance that the client disconnected before we
                 // hit this code. If this is the case, we'll pass a null WebSocketPipe to the
                 // AspNetWebSocket ctor, which immediately sets the socket into an aborted state.
+#if !MONO
                 UnmanagedWebSocketContext unmanagedWebSocketContext = _root.WorkerRequest.GetWebSocketContext();
+#else
+                IUnmanagedWebSocketContext unmanagedWebSocketContext = null;
+#endif
                 WebSocketPipe pipe = (unmanagedWebSocketContext != null) ? new WebSocketPipe(unmanagedWebSocketContext, PerfCounters.Instance) : null;
                 webSocket = new AspNetWebSocket(pipe, _subProtocol);
 

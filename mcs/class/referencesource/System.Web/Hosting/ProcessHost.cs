@@ -998,7 +998,7 @@ namespace System.Web.Hosting {
                         catch (Exception e) {
                             ProcessHost.DefaultHost.ReportApplicationPreloadFailureWithAssert(
                                 ac.PreloadContext,
-                                HResults.E_FAIL,
+                                System.Web.Util.HResults.E_FAIL,
                                 Misc.FormatExceptionMessage(
                                     e, new string[] { 
                                         SR.GetString(SR.Failure_Preload_Application_Initialization)}));
@@ -1100,7 +1100,7 @@ namespace System.Web.Hosting {
                 if (appInitEx != null) {
                     ReportApplicationPreloadFailureWithAssert(
                         ac.PreloadContext,
-                        HResults.E_FAIL,
+                        System.Web.Util.HResults.E_FAIL,
                         Misc.FormatExceptionMessage(
                             appInitEx, new string[] { 
                                 SR.GetString(SR.Failure_Preload_Application_Initialization)} ));
@@ -1118,7 +1118,7 @@ namespace System.Web.Hosting {
                     // report errors
                     ReportApplicationPreloadFailureWithAssert(
                         ac.PreloadContext,
-                        HResults.E_FAIL,
+                        System.Web.Util.HResults.E_FAIL,
                         Misc.FormatExceptionMessage(
                             e, new string[] {
                                 SR.GetString(SR.Failure_Calling_Preload_Provider)} ).ToString());
@@ -1188,6 +1188,7 @@ namespace System.Web.Hosting {
         }
 
         IObjectHandle IProcessHostLite.GetCustomLoader(string appId, string appConfigPath, out IProcessHostSupportFunctions supportFunctions, out AppDomain newlyCreatedAppDomain) {
+#if !MONO
             supportFunctions = null;
             newlyCreatedAppDomain = null;
             CustomLoaderHelperFunctions helperFunctions = new CustomLoaderHelperFunctions(_functions, appId);
@@ -1225,6 +1226,11 @@ namespace System.Web.Hosting {
                 SetCustomLoaderFailure(appId, ExceptionDispatchInfo.Capture(ex));
                 return null;
             }
+#else
+            supportFunctions = null;
+            newlyCreatedAppDomain = null;
+            return null;
+#endif
         }
 
         void IProcessHostLite.ReportCustomLoaderError(string appId, int hr, AppDomain newlyCreatedAppDomain) {
@@ -1303,9 +1309,13 @@ namespace System.Web.Hosting {
 
             public string GetTrustLevel(string appConfigMetabasePath) {
                 object retVal;
+#if !MONO
                 int hr = UnsafeIISMethods.MgdGetConfigProperty(appConfigMetabasePath, "system.web/trust", "level", out retVal);
                 Marshal.ThrowExceptionForHR(hr);
                 return (string)retVal;
+#else
+                return "";
+#endif
             }
 
             public string MapPath(string relativePath) {

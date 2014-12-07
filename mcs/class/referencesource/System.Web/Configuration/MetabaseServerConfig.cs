@@ -352,7 +352,11 @@ namespace System.Web.Configuration {
         private bool MBGetSiteNameFromSiteID(string siteID, out string siteName) {
             string appID = GetRootAppIDFromSiteID(siteID);
             StringBuilder sb = new StringBuilder(BUFSIZE);
+#if !MONO
             int r = UnsafeNativeMethods.IsapiAppHostGetSiteName(appID, sb, sb.Capacity);
+#else
+            int r = 0;
+#endif
             if (r == 1) {
                 siteName = sb.ToString();
                 return true;
@@ -365,7 +369,11 @@ namespace System.Web.Configuration {
 
         private bool MBGetSiteIDFromSiteName(string siteName, out string siteID) {
             StringBuilder sb = new StringBuilder(BUFSIZE);
+#if !MONO
             int r = UnsafeNativeMethods.IsapiAppHostGetSiteId(siteName, sb, sb.Capacity);
+#else
+            int r = 0;
+#endif
             if (r == 1) {
                 siteID = sb.ToString();
                 return true;
@@ -385,7 +393,11 @@ namespace System.Web.Configuration {
 
             for (;;) {
                 sb = new StringBuilder(bufSize);
+#if !MONO
                 r = UnsafeNativeMethods.IsapiAppHostMapPath(appID, path, sb, sb.Capacity);
+#else
+                r = 0;
+#endif
                 Debug.Trace("MapPath", "IsapiAppHostMapPath(" + path + ") returns " + r);
 
                 if (r == -2) {
@@ -419,6 +431,7 @@ namespace System.Web.Configuration {
             StringBuilder sb = new StringBuilder(BUFSIZE);
             int index = 0;
             ArrayList list = new ArrayList();
+#if !MONO
             for (;;) {
                 sb.Length = 0;
                 int r = UnsafeNativeMethods.IsapiAppHostGetNextVirtualSubdir(aboPath, inApp, ref index, sb, sb.Capacity);
@@ -428,6 +441,7 @@ namespace System.Web.Configuration {
                 string subdir = sb.ToString();
                 list.Add(subdir);
             }
+#endif
 
             string[] subdirs = new string[list.Count];
             list.CopyTo(subdirs);
@@ -437,7 +451,11 @@ namespace System.Web.Configuration {
         private bool MBGetUncUser(string aboPath, out string username, out string password) {
             StringBuilder usr = new StringBuilder(BUFSIZE);
             StringBuilder pwd = new StringBuilder(BUFSIZE);
+#if !MONO
             int r = UnsafeNativeMethods.IsapiAppHostGetUncUser(aboPath, usr, usr.Capacity, pwd, pwd.Capacity);
+#else
+            int r = 0;
+#endif
             if (r == 1) {
                 username = usr.ToString();
                 password = pwd.ToString();
@@ -451,12 +469,20 @@ namespace System.Web.Configuration {
         }
 
         private int MBGetW3WPMemoryLimitInKB() {
+#if !MONO
             return UnsafeNativeMethods.GetW3WPMemoryLimitInKB();
+#else
+            return 0;
+#endif
         }
 
         private string MBGetAppPath(string aboPath) {
             StringBuilder buf = new StringBuilder(aboPath.Length + 1);
+#if !MONO
             int r = UnsafeNativeMethods.IsapiAppHostGetAppPath(aboPath, buf, buf.Capacity);
+#else
+            int r = 0;
+#endif
             string appAboPath;
             if (r == 1) {
                 appAboPath = buf.ToString();

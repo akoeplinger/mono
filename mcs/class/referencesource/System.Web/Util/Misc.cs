@@ -49,8 +49,12 @@ namespace System.Web.Util {
                 if (appId == null) {
                     appId = appDomain.FriendlyName;
                 }
+#if !MONO
                 string pid = SafeNativeMethods.GetCurrentProcessId().ToString(CultureInfo.InstalledUICulture);
-                string description = SR.Resources.GetString(SR.Unhandled_Exception, CultureInfo.InstalledUICulture);
+#else
+                string pid = "";
+#endif
+                string description = SR.GetString(SR.Unhandled_Exception, CultureInfo.InstalledUICulture);
                 Misc.ReportUnhandledException(exception, new string[5] {description, APPLICATION_ID, appId, PROCESS_ID, pid});
             }
             catch {
@@ -64,7 +68,9 @@ namespace System.Web.Util {
         }
 
         internal static void ReportUnhandledException(Exception e, String[] strings) {
+#if !MONO
             UnsafeNativeMethods.ReportUnhandledException(FormatExceptionMessage(e, strings));
+#endif
         }
 
         internal static String FormatExceptionMessage(Exception e, String[] strings) {

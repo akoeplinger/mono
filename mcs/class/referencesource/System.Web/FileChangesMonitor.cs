@@ -88,6 +88,7 @@ namespace System.Web {
     }
 
 #if !FEATURE_PAL // FEATURE_PAL does not enable access control
+#if !MONO
     sealed class FileSecurity {
         const int DACL_INFORMATION = 
                 UnsafeNativeMethods.DACL_SECURITY_INFORMATION |
@@ -151,6 +152,7 @@ namespace System.Web {
         [SuppressMessage("Microsoft.Interoperability", "CA1404:CallGetLastErrorImmediatelyAfterPInvoke",
                          Justification="Microsoft: Call to GetLastWin32Error() does follow P/Invoke call that is outside the if/else block.")]
         static internal byte[] GetDacl(string filename) {
+#if !MONO
             // DevDiv #322858 - allow skipping DACL step for perf gain
             if (HostingEnvironment.FcnSkipReadAndCacheDacls) {
                 return s_nullDacl;
@@ -161,6 +163,7 @@ namespace System.Web {
             //
             int lengthNeeded = 512;
             byte[] dacl = new byte[lengthNeeded];
+
             int fOK = UnsafeNativeMethods.GetFileSecurity(filename, DACL_INFORMATION, dacl, dacl.Length, ref lengthNeeded);
 
             if (fOK != 0) {
@@ -193,6 +196,9 @@ namespace System.Web {
 
                     return null;
                 }
+#else
+                return null;
+#endif
             }
 
             byte[] interned = (byte[]) s_interned[dacl];
@@ -211,6 +217,7 @@ namespace System.Web {
             return interned;
         }
     }
+#endif
 
     // holds information about a single file and the targets of change notification
     sealed class FileMonitor {
@@ -270,7 +277,9 @@ namespace System.Web {
         internal void UpdateCachedAttributes() {
             string path = Path.Combine(DirectoryMonitor.Directory, FileNameLong);
             FileAttributesData.GetFileAttributes(path, out _fad);
+#if !MONO
             _dacl = FileSecurity.GetDacl(path);
+#endif
         }
 
         // Set new file information when a file comes into existence
@@ -418,7 +427,7 @@ namespace System.Web {
 
         internal DirMonCompletion(DirectoryMonitor dirMon, string dir, bool watchSubtree, uint notifyFilter) {
             Debug.Trace("FileChangesMonitor", "DirMonCompletion::ctor " + dir + " " + watchSubtree.ToString() + " " + notifyFilter.ToString(NumberFormatInfo.InvariantInfo));
-
+#if !MONO
             int                             hr;
             NativeFileChangeNotification    myCallback;
 
@@ -453,6 +462,7 @@ namespace System.Web {
                     Interlocked.Increment(ref _activeDirMonCompletions);
                 }
             }
+#endif
         }
 
         ~DirMonCompletion() {
@@ -486,7 +496,9 @@ namespace System.Web {
                     HandleRef ndirMonCompletionHandle = _ndirMonCompletionHandle;
                     if (ndirMonCompletionHandle.Handle != IntPtr.Zero) {
                         _ndirMonCompletionHandle = new HandleRef(this, IntPtr.Zero);
+#if !MONO
                         UnsafeNativeMethods.DirMonClose(ndirMonCompletionHandle, fNeedToSendFileActionDispose);
+#endif
                     }
                 }
             }
@@ -570,11 +582,17 @@ namespace System.Web {
             set; 
         }
 
+
         // constructor for special dirmon that monitors all files and subdirectories beneath the vroot (enabled via FCNMode registry key)
-        internal DirectoryMonitor(string appPathInternal, int fcnMode): this(appPathInternal, true, UnsafeNativeMethods.RDCW_FILTER_FILE_AND_DIR_CHANGES, fcnMode) {
+        internal DirectoryMonitor(string appPathInternal, int fcnMode)
+#if !MONO
+            : this(appPathInternal, true, UnsafeNativeMethods.RDCW_FILTER_FILE_AND_DIR_CHANGES, fcnMode)
+#endif
+        {
             _isDirMonAppPathInternal = true;
         }
-        
+
+
         internal DirectoryMonitor(string dir, bool watchSubtree, uint notifyFilter, int fcnMode): this(dir, watchSubtree, notifyFilter, false, fcnMode) {
         }
 
@@ -671,7 +689,11 @@ namespace System.Web {
                         throw FileChangesMonitor.CreateFileMonitoringException(HResults.E_INVALIDARG, path);
                     }
 
+#if !MONO
                     byte[] dacl = FileSecurity.GetDacl(path);
+#else
+                    byte[] dacl = null;
+#endif
                     fileMon = new FileMonitor(this, ffd.FileNameLong, ffd.FileNameShort, true, ffd.FileAttributesData, dacl);
                     _fileMons.Add(ffd.FileNameLong, fileMon);
 
@@ -1011,7 +1033,9 @@ namespace System.Web {
                             if (action == FileAction.Overwhelming) {
                                 //increase file notification buffer size, but only once per app instance
                                 if (Interlocked.Increment(ref s_notificationBufferSizeIncreased) == 1) {
+#if !MONO
                                     UnsafeNativeMethods.GrowFileNotificationBuffer( HttpRuntime.AppDomainAppId, _watchSubtree );
+#endif
                                 }
                             }
 
@@ -1082,7 +1106,11 @@ namespace System.Web {
                                                     "StringUtil.EqualsIgnoreCase(fileMon.FileNameLong, ffd.FileNameLong)");
 
                                         string oldFileNameShort = fileMon.FileNameShort;
+#if !MONO
                                         byte[] dacl = FileSecurity.GetDacl(path);
+#else
+                                        byte[] dacl = new byte[0];
+#endif
                                         fileMon.MakeExist(ffd, dacl);
                                         UpdateFileNameShort(fileMon, oldFileNameShort, ffd.FileNameShort);
                                     }
@@ -1474,12 +1502,14 @@ namespace System.Web {
 
 
             if (logEvent) {
+#if !MONO
                 // Need to raise an eventlog too.
                 UnsafeNativeMethods.RaiseFileMonitoringEventlogEvent(
                     SR.GetString(message, HttpRuntime.GetSafePath(path)) + 
                     "\n\r" + 
                     SR.GetString(SR.App_Virtual_Path, HttpRuntime.AppDomainAppVirtualPath),
                     path, HttpRuntime.AppDomainAppVirtualPath, hr);
+#endif
             }
             
             return new HttpException(SR.GetString(message, HttpRuntime.GetSafePath(path)), hr);
@@ -1510,7 +1540,7 @@ namespace System.Web {
             return false;
         }
 
-        private bool IsFCNDisabled { get { return _FCNMode == 1; } }
+		private bool IsFCNDisabled { get { return true; } }//_FCNMode == 1; } }
 
         internal FileChangesMonitor(FcnMode mode) {
             // Possible values for DWORD FCNMode:
@@ -1519,10 +1549,12 @@ namespace System.Web {
             //                    1 == disable File Change Notifications (FCN)
             //                    2 == create 1 DirectoryMonitor for AppPathInternal and watch subtrees
             switch (mode) {
+#if !MONO
                 case FcnMode.NotSet:
                     // If the mode is not set, we use the registry key's value
                     UnsafeNativeMethods.GetDirMonConfiguration(out _FCNMode);
                     break;
+#endif
                 case FcnMode.Disabled:
                     _FCNMode = 1;
                     break;
@@ -1639,8 +1671,10 @@ namespace System.Web {
 
                     if (hr == HResults.S_OK) {
                         // Add a new directory monitor.
+#if !MONO
                         dirMon = new DirectoryMonitor(dir, false, UnsafeNativeMethods.RDCW_FILTER_FILE_AND_DIR_CHANGES, _FCNMode);
                         _dirs.Add(dir, dirMon);
+#endif
                     }
                     else if (throwOnError) {
                         throw FileChangesMonitor.CreateFileMonitoringException(hr, dir);
@@ -1683,7 +1717,7 @@ namespace System.Web {
                 fullPathName = GetFullPath(alias);
                 FindFileData ffd = null;
                 int hr = FindFileData.FindFile(fullPathName, out ffd);
-                if (hr == HResults.S_OK) {
+				if (hr == HResults.S_OK && ffd != null) {
                     return ffd.FileAttributesData.UtcLastWriteTime;
                 }
                 else {
@@ -1922,7 +1956,9 @@ namespace System.Web {
                     // to avoid overwhelming changes when the user writes to a subdirectory
                     // of the app directory.
 
+#if !MONO
                     _dirMonSubdirs = new DirectoryMonitor(dirRoot, true, UnsafeNativeMethods.RDCW_FILTER_DIR_RENAMES, true, _FCNMode);
+#endif
                     try {
                         _dirMonSubdirs.StartMonitoringFileWithAssert(null, new FileChangeEventHandler(this.OnSubdirChange), dirRoot);
                     }
@@ -2007,6 +2043,7 @@ namespace System.Web {
                 dirMonSubDir.StartMonitoringFileWithAssert(dirToListenTo, new FileChangeEventHandler(this.OnCriticaldirChange), dirRootSubDir);
             }
             else if (Directory.Exists(dirRootSubDir)) {
+#if !MONO
                 dirMonSubDir = new DirectoryMonitor(dirRootSubDir, true, UnsafeNativeMethods.RDCW_FILTER_FILE_CHANGES, _FCNMode);
                 try {
                     dirMonSubDir.StartMonitoringFileWithAssert(null, new FileChangeEventHandler(this.OnCriticaldirChange), dirRootSubDir);
@@ -2016,12 +2053,17 @@ namespace System.Web {
                     dirMonSubDir = null;
                     throw;
                 }
+#else
+                dirMonSubDir = null;
+#endif
             }
             else {
                 dirMonSubDir = (DirectoryMonitor)_subDirDirMons[dirRoot];
                 if (dirMonSubDir == null) {
+#if !MONO
                     dirMonSubDir = new DirectoryMonitor(dirRoot, false, UnsafeNativeMethods.RDCW_FILTER_FILE_AND_DIR_CHANGES, _FCNMode);
                     _subDirDirMons[dirRoot] = dirMonSubDir;
+#endif
                 }
 
                 try {
@@ -2033,7 +2075,6 @@ namespace System.Web {
                     throw;
                 }
             }
-
             return dirMonSubDir;
         }
 

@@ -40,12 +40,14 @@ namespace System.Web.Caching {
         private static long     s_totalVirtual;
 
         static CacheMemoryPressure() {
+#if !MONO
             UnsafeNativeMethods.MEMORYSTATUSEX  memoryStatusEx = new UnsafeNativeMethods.MEMORYSTATUSEX();
             memoryStatusEx.Init();
             if (UnsafeNativeMethods.GlobalMemoryStatusEx(ref memoryStatusEx) != 0) {
                 s_totalPhysical = memoryStatusEx.ullTotalPhys;
                 s_totalVirtual = memoryStatusEx.ullTotalVirtual;
             }
+#endif
         }
 
         internal static long TotalPhysical { get { return s_totalPhysical; } }
@@ -235,6 +237,7 @@ namespace System.Web.Caching {
         }
 
         override protected int GetCurrentPressure() {
+#if !MONO
             UnsafeNativeMethods.MEMORYSTATUSEX  memoryStatusEx = new UnsafeNativeMethods.MEMORYSTATUSEX();
             memoryStatusEx.Init();
             if (UnsafeNativeMethods.GlobalMemoryStatusEx(ref memoryStatusEx) == 0)
@@ -248,6 +251,9 @@ namespace System.Web.Caching {
             }
                         
             return memoryLoad;
+#else
+            return 0;
+#endif
         }
 
         internal override int GetPercentToTrim(DateTime lastTrimTime, int lastTrimPercent) {
@@ -385,6 +391,7 @@ namespace System.Web.Caching {
         internal static long WorkerProcessMemoryLimit {
             get {
                 long memoryLimit = s_workerProcessMemoryLimit;
+#if !MONO
                 if (memoryLimit == -1) {
                     // per-process information
                     if (UnsafeNativeMethods.GetModuleHandle(ModName.WP_FULL_NAME) != IntPtr.Zero) {
@@ -396,6 +403,7 @@ namespace System.Web.Caching {
                     }
                     Interlocked.Exchange(ref s_workerProcessMemoryLimit, memoryLimit);
                 }
+#endif
                 return memoryLimit;
             }
         }
@@ -439,8 +447,10 @@ namespace System.Web.Caching {
 
             if (_memoryLimit > 0) {
 
+#if !MONO
                 if (s_pid == 0) // only set this once
                     s_pid = (uint) SafeNativeMethods.GetCurrentProcessId();
+#endif
 
                 _pressureHigh = 100;
                 _pressureMiddle = 90;

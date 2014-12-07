@@ -163,7 +163,7 @@ namespace System.Web.Hosting {
                 }
 
                 // Create new app domain via App Manager
-#if FEATURE_PAL // FEATURE_PAL does not enable IIS-based hosting features
+#if FEATURE_PAL || MONO // FEATURE_PAL does not enable IIS-based hosting features
                 throw new NotImplementedException("ROTORTODO");
 #else // FEATURE_PAL 
 

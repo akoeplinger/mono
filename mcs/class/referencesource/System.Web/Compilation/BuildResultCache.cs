@@ -403,7 +403,7 @@ internal abstract class DiskBuildResultCache: BuildResultCache {
 
         // Find out how many recompilations we allow before restarting the appdomain
         if (s_maxRecompilations < 0)
-            s_maxRecompilations = CompilationUtil.GetRecompilationsBeforeAppRestarts();
+            s_maxRecompilations = int.MaxValue; //CompilationUtil.GetRecompilationsBeforeAppRestarts();
     }
 
     protected void EnsureDiskCacheDirectoryCreated() {
@@ -810,6 +810,9 @@ internal class StandardDiskBuildResultCache: DiskBuildResultCache {
             // Delete the DLL and PDB
             Util.DeleteFileIfExistsNoException(fullAssemblyPath + ".dll");
             Util.DeleteFileIfExistsNoException(fullAssemblyPath + ".pdb");
+#if MONO
+            Util.DeleteFileIfExistsNoException(fullAssemblyPath + ".mdb");
+#endif
         }
     }
 
@@ -821,7 +824,7 @@ internal class StandardDiskBuildResultCache: DiskBuildResultCache {
 
         RemoveCodegenResourceDir();
 
-        string codegen = _cacheDir + "\\";
+        string codegen = _cacheDir + Path.DirectorySeparatorChar;
 
         // Go through all the files in the codegen dir
         foreach (FileData fileData in FileEnumerator.Create(codegen)) {
@@ -940,8 +943,10 @@ internal class StandardDiskBuildResultCache: DiskBuildResultCache {
         // Clean up the fusion shadow copy cache
 
         AppDomainSetup appDomainSetup = Thread.GetDomain().SetupInformation;
+#if !MONO
         UnsafeNativeMethods.DeleteShadowCache(appDomainSetup.CachePath,
             appDomainSetup.ApplicationName);
+#endif
     }
 
     // Deletes all files in the directory, but leaves the directory there

@@ -3,7 +3,7 @@
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 //------------------------------------------------------------------------------
-
+#if !MONO || DIRECTORYSERVICES_DEP
 namespace System.Web.Security
 {
     using  System.Net;
@@ -3921,11 +3921,15 @@ namespace System.Web.Security
                     domainName = GetNetbiosDomainNameIfAvailable(domain.Name);
                     forestName = domain.Forest.Name;
                 }
+#if !MONO
                 catch (ActiveDirectoryObjectNotFoundException)
                 {
                     // the serverName may be the name of the server rather than domain
                     isServer = true;
                 }
+#else
+                catch { }
+#endif
             }
 
             if (isServer)
@@ -3937,11 +3941,15 @@ namespace System.Web.Security
                     domainName = GetNetbiosDomainNameIfAvailable(domain.Name);
                     forestName = domain.Forest.Name;
                 }
+#if !MONO
                 catch (ActiveDirectoryObjectNotFoundException)
                 {
                     // we were unable to contact the domain or server
                     throw new ProviderException(SR.GetString(SR.ADMembership_unable_to_contact_domain));
                 }
+#else
+                catch { }
+#endif
             }
         }
 
@@ -4641,3 +4649,4 @@ namespace System.Web.Security
     }
 
 }
+#endif

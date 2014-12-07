@@ -174,10 +174,10 @@ public class AssemblyBuilder {
             // If we're precompiling the app, never compile in debug mode (VSWhidbey 178377)
             _compilerType.CompilerParameters.IncludeDebugInformation = false;
         }
-        else if (DeploymentSection.RetailInternal) {
+       /* else if (DeploymentSection.RetailInternal) {
             // If we're in retail deployment mode, always turn off debug (DevDiv 36396)
             _compilerType.CompilerParameters.IncludeDebugInformation = false;
-        }
+        }*/
         else if (_compConfig.AssemblyPostProcessorTypeInternal != null) {
             // If an IAssemblyPostProcessor is registered always compile as debug
             _compilerType.CompilerParameters.IncludeDebugInformation = true;
@@ -571,7 +571,7 @@ public class AssemblyBuilder {
             return;
         }
 
-        TrustSection trustSection = RuntimeConfig.GetAppConfig().Trust;
+			TrustSection trustSection = new TrustSection ();//RuntimeConfig.GetAppConfig().Trust;
         CodeAttributeDeclaration declaration;
         Type attrType = typeof(SecurityRulesAttribute);
         Type enumType = typeof(SecurityRuleSet);
@@ -708,6 +708,21 @@ public class AssemblyBuilder {
                 _initialReferencedAssemblies.Add(assembly);
             }
         }
+			#if MONO //TODO: this can probably be removed when the normal separate AppDomain is used
+			Assembly _remove = null;
+			foreach (var x in _initialReferencedAssemblies) {
+				if (((Assembly)x).ManifestModule.Name == "System.dll")
+			_remove =(Assembly) x;
+			}
+			if (_remove != null)
+				_initialReferencedAssemblies.Remove (_remove);
+
+
+
+			// gross hack
+			_initialReferencedAssemblies.Add(Assembly.LoadFile("/home/alexander/dev/mono/mcs/class/lib/net_4_5/System.Web_test_net_4_5.dll"));
+
+			#endif
 
         // Add all the referenced assemblies to the compilParams
         Util.AddAssembliesToStringCollection(_initialReferencedAssemblies, compilParams.ReferencedAssemblies);
@@ -767,6 +782,7 @@ public class AssemblyBuilder {
     // Command line string for My.* support
     private const string MySupport = @"/define:_MYTYPE=\""Web\""";
 
+#if !MONO
     private static void AddVBMyFlags(CompilerParameters compilParams) {
 
         // Prepend it to the compilerOptions
@@ -775,7 +791,7 @@ public class AssemblyBuilder {
         else
             compilParams.CompilerOptions = MySupport + " " + compilParams.CompilerOptions;
     }
-
+#endif
 
     [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands", Justification = "Warnings was about use of CompilerParameters.CoreAssemblyFileName which was not set by user supplied string - so okay.")]
     internal static void FixUpCompilerParameters(CompilationSection compilationSection, Type codeDomProviderType, CompilerParameters compilParams) {
@@ -783,7 +799,9 @@ public class AssemblyBuilder {
         if (BuildManagerHost.InClientBuildManager && !MultiTargetingUtil.IsTargetFramework20 && !MultiTargetingUtil.IsTargetFramework35) {
             string coreAssemblyFile;
             AssemblyResolver.GetPathToReferenceAssembly(typeof(string).Assembly, out coreAssemblyFile);
+#if !MONO
             compilParams.CoreAssemblyFileName = coreAssemblyFile;
+#endif
         }
 
         // DevDiv 404267: If the developer enabled 'warnings as errors', we should disable [Obsolete] warnings. This helps
@@ -814,8 +832,10 @@ public class AssemblyBuilder {
             // namespace imports.
             AddVBGlobalNamespaceImports(compilParams);
 
+#if !MONO
             // Add any command line flags needed to support the My.* feature
             AddVBMyFlags(compilParams);
+#endif
 
             // Ignore vb warning that complains about assemblyKeyName (Dev10 662544)
             // but only for target 3.5 and above (715329)
@@ -987,14 +1007,14 @@ public class AssemblyBuilder {
                         }
                     }
                     else {
-                        fileNames = String.Format(CultureInfo.InstalledUICulture, SR.Resources.GetString(SR.Etw_Batch_Compilation, CultureInfo.InstalledUICulture), new object[1] {_buildProviders.Count});
+                        fileNames = String.Format(CultureInfo.InstalledUICulture, SR.GetString(SR.Etw_Batch_Compilation, CultureInfo.InstalledUICulture), new object[1] {_buildProviders.Count});
                     }
 
                     string status;
                     if (results != null && (results.NativeCompilerReturnValue != 0 || results.Errors.HasErrors))
-                        status = SR.Resources.GetString(SR.Etw_Failure, CultureInfo.InstalledUICulture);
+                        status = SR.GetString(SR.Etw_Failure, CultureInfo.InstalledUICulture);
                     else
-                        status = SR.Resources.GetString(SR.Etw_Success, CultureInfo.InstalledUICulture);
+                        status = SR.GetString(SR.Etw_Success, CultureInfo.InstalledUICulture);
 
                     EtwTrace.Trace(EtwTraceType.ETW_TYPE_COMPILE_LEAVE, context.WorkerRequest, fileNames, status);
                 }

@@ -322,7 +322,7 @@ namespace System.Web.Management {
             if (containerName == null || containerName.Length < 1) {
                 containerName = DefaultRsaKeyContainerName;
             }
-            
+#if !MONO            
             uint returnHR = (uint)UnsafeNativeMethods.DoesKeyContainerExist(containerName, csp, ((options & DO_RSA_PKU) == 0) ? 1 : 0);
             switch (returnHR) {
                 case 0:
@@ -342,6 +342,7 @@ namespace System.Web.Management {
                     Marshal.ThrowExceptionForHR((int)returnHR);
                     return;
             }
+#endif
         }
 
         private void DoKeyDelete(string containerName, string csp, long options)
@@ -387,6 +388,7 @@ namespace System.Web.Management {
 
         private void DoKeyAclChange(string containerName, string account, string csp, long options)
         {
+#if !MONO
             if (containerName == null || containerName.Length < 1) {
                 containerName = DefaultRsaKeyContainerName;
             }
@@ -402,6 +404,7 @@ namespace System.Web.Management {
             int returnHR = UnsafeNativeMethods.ChangeAccessToKeyContainer(containerName, account, csp, flags);
             if (returnHR != 0)
                 Marshal.ThrowExceptionForHR(returnHR);
+#endif
         }
 
         private RsaProtectedConfigurationProvider CreateRSAProvider(string containerName, string csp, long options)
@@ -415,6 +418,7 @@ namespace System.Web.Management {
             return prov;
         }
         private static void MakeSureContainerExists(string containerName, string csp, bool machineContainer) {
+#if !MONO
             uint returnHR = (uint) UnsafeNativeMethods.DoesKeyContainerExist(containerName, csp, machineContainer ? 1 : 0);
             switch (returnHR) {
                 case 0:
@@ -427,6 +431,7 @@ namespace System.Web.Management {
                     Marshal.ThrowExceptionForHR((int)returnHR);
                     return;
             }
+#endif
         }
 
         public void RemoveBrowserCaps(out IntPtr exception) {

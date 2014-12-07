@@ -3,7 +3,7 @@
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 //------------------------------------------------------------------------------
-
+#if !MONO || DIRECTORYSERVICES_DEP
 namespace System.Web.DataAccess 
 {
     using  System.Net;
@@ -93,3 +93,4 @@ namespace System.Web.DataAccess
         }
     }
 }
+#endif

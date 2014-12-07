@@ -108,11 +108,16 @@ namespace System.Web.Caching {
         DateTime                    _utcExpires;            /* when this item expires */
         TimeSpan                    _slidingExpiration;     /* expiration interval */
         byte                        _expiresBucket;         /* index of the expiration list (bucket) */
+#if !MONO
         ExpiresEntryRef             _expiresEntryRef;       /* ref into the expiration list */
+#endif
 
         // usage
         byte                        _usageBucket;           /* index of the usage list (== priority-1) */
+        
+#if !MONO
         UsageEntryRef               _usageEntryRef;         /* ref into the usage list */
+#endif
         DateTime                    _utcLastUpdate;         /* time we last updated usage */
         CacheInternal               _cache;
 
@@ -166,10 +171,14 @@ namespace System.Web.Caching {
                 _utcExpires = utcAbsoluteExpiration;
             } 
 
+#if !MONO
             _expiresEntryRef = ExpiresEntryRef.INVALID;
+#endif
             _expiresBucket = 0xff;
 
+#if !MONO
             _usageEntryRef = UsageEntryRef.INVALID;
+#endif
             if (priority == CacheItemPriority.NotRemovable) {
                 _usageBucket = 0xff;
             }
@@ -207,27 +216,35 @@ namespace System.Web.Caching {
             set {_expiresBucket = value;}
         }
 
+#if !MONO
         internal ExpiresEntryRef ExpiresEntryRef {
             get {return _expiresEntryRef;}
             set {_expiresEntryRef = value;}
         }
+#endif
 
         internal bool HasExpiration() {
             return _utcExpires < DateTime.MaxValue;
         }
 
         internal bool InExpires() {
+#if !MONO
             return !_expiresEntryRef.IsInvalid;
+#else
+            return false;
+#endif
         }
 
         internal byte UsageBucket {
             get {return _usageBucket;}
         }
 
+#if !MONO
         internal UsageEntryRef UsageEntryRef {
             get {return _usageEntryRef;}
             set {_usageEntryRef = value;}
         }
+#endif
 
         internal DateTime UtcLastUsageUpdate {
             get {return _utcLastUpdate;}
@@ -239,7 +256,11 @@ namespace System.Web.Caching {
         }
 
         internal bool InUsage() {
+#if !MONO
             return !_usageEntryRef.IsInvalid;
+#else
+            return false;
+#endif
         }
 
         internal CacheDependency Dependency {
@@ -408,7 +429,7 @@ namespace System.Web.Caching {
             }
         }
 
-#if USE_MEMORY_CACHE
+#if USE_MEMORY_CACHE || MONO
         internal CacheItemRemovedCallback CacheItemRemovedCallback {
             get {
                 CacheItemRemovedCallback callback = null;

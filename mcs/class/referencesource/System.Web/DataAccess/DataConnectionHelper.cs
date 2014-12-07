@@ -47,7 +47,7 @@ namespace System.Web.DataAccess
         {
             string userName = "NETWORK SERVICE";
             string domainName = "NT AUTHORITY";
-
+#if !MONO
             IntPtr pSid = IntPtr.Zero;
 
             try
@@ -94,7 +94,7 @@ namespace System.Web.DataAccess
                     UnsafeNativeMethods.LocalFree( pSid );
                 }
             }
-
+#endif
             return String.Empty;
         }
 

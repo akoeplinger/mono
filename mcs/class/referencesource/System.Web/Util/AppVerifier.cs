@@ -693,7 +693,7 @@
         [SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.IFormatProvider,System.String,System.Object[])",
             Justification = "Matches culture specified in Misc.WriteUnhandledExceptionToEventLog.")]
         internal static string FormatErrorString(string name, params object[] args) {
-            return String.Format(CultureInfo.InstalledUICulture, SR.Resources.GetString(name, CultureInfo.InstalledUICulture), args);
+            return String.Format(CultureInfo.InstalledUICulture, SR.GetString(name, CultureInfo.InstalledUICulture), args);
         }
 
         // contains a counter and invocation information for an AsyncCallback delegate

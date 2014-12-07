@@ -119,8 +119,10 @@ namespace System.Web {
                 return false;
 
             HttpRequest request = (context != null) ? context.Request : null;
+#if !MONO
             if (context != null && context.WorkerRequest is System.Web.SessionState.StateHttpWorkerRequest)
                 return false;
+#endif
 
             // Request.Browser might throw if the configuration file has some
             // bad format.

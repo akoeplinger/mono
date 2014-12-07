@@ -231,8 +231,11 @@ to the app's "web.config" file:
                 HttpDebugHandlerTimeLog.PrintTickDelta("About to call into MDM");
 #endif
 
+#if !MONO
                 int rc = UnsafeNativeMethods.AttachDebugger(clsId, sessId, context.WorkerRequest.GetUserToken());
-
+#else
+                int rc = 0;
+#endif
 #if PERF
                 HttpDebugHandlerTimeLog.PrintTickDelta("Returned from call to MDM");
 #endif

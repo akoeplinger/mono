@@ -24,7 +24,9 @@ namespace System.Web.UI {
     using System.Web.Compilation;
     using System.Web.Configuration;
 #if !FEATURE_PAL
+#if !MONO || DESIGN_DEP
     using System.Web.UI.Design;
+#endif
 #endif // !FEATURE_PAL
 
 // 
@@ -114,6 +116,7 @@ namespace System.Web.UI {
             }
 
 #if !FEATURE_PAL
+#if !MONO || DESIGN_DEP
             // If we're in the designer, check the WebFormsReferenceManager and ITypeResolutionService first.
             if (_parser.FInDesigner && (_parser.DesignerHost != null)) {
                 // If we are in the DesignTimeThemes Host, we can't actually go down this code path, let the TypeResolutionService try instead
@@ -140,7 +143,7 @@ namespace System.Web.UI {
                     }
                 }
             }
-
+#endif
 #endif // !FEATURE_PAL
 
             // Nothing more to try in non-hosted appdomains

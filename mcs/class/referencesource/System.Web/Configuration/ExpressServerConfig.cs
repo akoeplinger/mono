@@ -117,10 +117,12 @@ namespace System.Web.Configuration {
             int cBstr = 0;
             try {
                 int count = 0;
+#if !MONO
                 int result = _nativeConfig.MgdGetAppCollection(CurrentAppSiteName, vpath, out pBstr, out cBstr, out pAppCollection, out count);
                 if (result < 0 || pBstr == IntPtr.Zero) {
                     throw new InvalidOperationException(SR.GetString(SR.Cant_Enumerate_NativeDirs, result));
                 }
+#endif
                 string appRoot = StringUtil.StringFromWCharPtr(pBstr, cBstr);
                 Marshal.FreeBSTR(pBstr);
                 pBstr = IntPtr.Zero;
@@ -135,10 +137,12 @@ namespace System.Web.Configuration {
                 string appRootRelativePath = (lenNoTrailingSlash > lenAppRoot) ? vpath.Substring(lenAppRoot, lenNoTrailingSlash - lenAppRoot) : String.Empty;
 
                 for (uint index = 0; index < count; index++) {
+#if !MONO
                     result = UnsafeIISMethods.MgdGetNextVPath(pAppCollection, index, out pBstr, out cBstr);
                     if (result < 0 || pBstr == IntPtr.Zero) {
                         throw new InvalidOperationException(SR.GetString(SR.Cant_Enumerate_NativeDirs, result));
                     }
+#endif
                     // if cBstr = 1, then pBstr = "/" and can be ignored
                     string subVdir = (cBstr > 1) ? StringUtil.StringFromWCharPtr(pBstr, cBstr) : null;
                     Marshal.FreeBSTR(pBstr);
@@ -186,7 +190,11 @@ namespace System.Web.Configuration {
         }
 
         bool IServerConfig2.IsWithinApp(string virtualPath) {
+#if !MONO
             return _nativeConfig.MgdIsWithinApp(CurrentAppSiteName, HttpRuntime.AppDomainAppVirtualPathString, virtualPath);
+#else
+            return false;
+#endif
         }
 
         bool IServerConfig.GetUncUser(IApplicationHost appHost, VirtualPath path, out string username, out string password) {
@@ -200,6 +208,7 @@ namespace System.Web.Configuration {
             int cBstrPassword = 0;
 
             try {
+#if !MONO
                 int result = _nativeConfig.MgdGetVrPathCreds( appHost.GetSiteName(),
                                                               path.VirtualPathString,
                                                               out pBstrUserName,
@@ -211,6 +220,7 @@ namespace System.Web.Configuration {
                     password = (cBstrPassword > 0) ? StringUtil.StringFromWCharPtr(pBstrPassword, cBstrPassword) : null;
                     foundCreds = (!String.IsNullOrEmpty(username) && !String.IsNullOrEmpty(password));
                 }
+#endif
             }
             finally {
                 if (pBstrUserName != IntPtr.Zero) {
@@ -227,9 +237,11 @@ namespace System.Web.Configuration {
         long IServerConfig.GetW3WPMemoryLimitInKB() {
             long limit = 0;
 
+#if !MONO
             int result = UnsafeIISMethods.MgdGetMemoryLimitKB( out limit );
             if (result < 0)
                 return 0;
+#endif
 
             return limit;
         }        
@@ -298,12 +310,14 @@ namespace System.Web.Configuration {
                 }
                 // try to resolve the string
                 else {
+#if !MONO
                     uint id = _nativeConfig.MgdResolveSiteName(siteArgument);
                     if (id != 0) {
                         siteID = id.ToString(CultureInfo.InvariantCulture);
                         siteName = siteArgument;
                         return;
                     }
+#endif
                 }
 
                 if (!String.IsNullOrEmpty(resolvedName)) {
@@ -347,7 +361,7 @@ namespace System.Web.Configuration {
             if (!UInt32.TryParse(siteID, out siteValue)) {
                 return VirtualPath.RootVirtualPath;
             }
-
+#if !MONO
             IntPtr pBstr = IntPtr.Zero;
             int cBstr = 0;
             string appPath;
@@ -362,6 +376,9 @@ namespace System.Web.Configuration {
             }
 
             return (appPath != null) ? VirtualPath.Create(appPath) : VirtualPath.RootVirtualPath;
+#else
+            return null;
+#endif
         }
 
         private string MapPathCaching(string siteID, VirtualPath path) {

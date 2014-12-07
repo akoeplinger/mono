@@ -83,10 +83,12 @@ internal class WrappedWorkItemCallback {
     internal void Post() {
         _rootedThis = GCHandle.Alloc(this);
 
+#if !MONO
         if (UnsafeNativeMethods.PostThreadPoolWorkItem(_wrapperCallback) != 1) {
             _rootedThis.Free();
             throw new HttpException(SR.GetString(SR.Cannot_post_workitem));
         }
+#endif
     }
 
     private void OnCallback() {

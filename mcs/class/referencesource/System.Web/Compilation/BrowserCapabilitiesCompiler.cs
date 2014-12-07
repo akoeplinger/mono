@@ -50,7 +50,11 @@ namespace System.Web.Compilation {
                     // If we are targeting previous versions, try loading the 2.0 version of ASP.BrowserCapsFactory
                     // (Dev10 bug 795509)
                     if (MultiTargetingUtil.IsTargetFramework40OrAbove) {
+#if !MONO
                         version = ThisAssembly.Version;
+#else
+                        version = "4.0.0.0";
+#endif
                     } else {
                         version = "2.0.0.0";
                     }

@@ -16,7 +16,7 @@
     namespace System.Internal
 #elif SYSTEM_NAMESPACE
     namespace System
-#elif SYSTEM_WEB
+#elif SYSTEM_WEB || MONO
     namespace System.Web
 #elif SYSTEM_DATA_LINQ
     namespace System.Data.Linq

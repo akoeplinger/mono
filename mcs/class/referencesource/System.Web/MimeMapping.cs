@@ -453,6 +453,7 @@ namespace System.Web {
             }
 
             protected override void PopulateMappings() {
+#if !MONO
                 IntPtr mimeMapCollection = IntPtr.Zero;
                 try {
                     int result;
@@ -491,6 +492,7 @@ namespace System.Web {
                         Marshal.Release(mimeMapCollection);
                     }
                 }
+#endif
             }
         }
 

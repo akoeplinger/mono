@@ -65,6 +65,7 @@ using System.Collections;
 internal abstract class FileData {
 
     protected string _path;
+#if !MONO
     protected UnsafeNativeMethods.WIN32_FIND_DATA _wfd;
 
     internal string Name {
@@ -86,10 +87,38 @@ internal abstract class FileData {
     internal FindFileData GetFindFileData() {
         return new FindFileData(ref _wfd);
     }
+#else
+    protected string _fileName;
+
+    internal string Name {
+        get { return _fileName; }
+    }
+
+    internal string FullName {
+        get { return _path + Path.DirectorySeparatorChar + _fileName; }
+    }
+
+    internal bool IsDirectory {
+        get { return Directory.Exists(FullName); }
+    }
+
+    internal bool IsHidden {
+        get { return (File.GetAttributes(FullName) & FileAttributes.Hidden) == FileAttributes.Hidden; }
+    }
+
+    internal FindFileData GetFindFileData() {
+        return new FindFileData(_path, _fileName);
+    }
+#endif
 }
 
 internal class FileEnumerator: FileData, IEnumerable, IEnumerator, IDisposable {
+#if !MONO
     private IntPtr _hFindFile = UnsafeNativeMethods.INVALID_HANDLE_VALUE;
+#else
+    private int _currentIndex = 0;
+    private string[] _files;
+#endif
 
     internal static FileEnumerator Create(string path) {
         return new FileEnumerator(path);
@@ -105,10 +134,15 @@ internal class FileEnumerator: FileData, IEnumerable, IEnumerator, IDisposable {
 
     // Should the current file be excluded from the enumeration
     private bool SkipCurrent() {
-    
+
+#if !MONO
         // Skip false directories
         if (_wfd.cFileName == "." || _wfd.cFileName == "..")
             return true;
+#else
+        if (_fileName == "." || _fileName == "..")
+            return true;
+#endif
 
         return false;
     }
@@ -121,6 +155,7 @@ internal class FileEnumerator: FileData, IEnumerable, IEnumerator, IDisposable {
     bool IEnumerator.MoveNext() {
 
         for (;;) {
+#if !MONO
             if (_hFindFile == UnsafeNativeMethods.INVALID_HANDLE_VALUE) {
                 _hFindFile = UnsafeNativeMethods.FindFirstFile(_path + @"\*.*", out _wfd);
                 
@@ -133,7 +168,24 @@ internal class FileEnumerator: FileData, IEnumerable, IEnumerator, IDisposable {
                 if (!hasMoreFiles)
                     return false;
             }
-            
+#else
+            if (_files == null) {
+                _files = Directory.GetFiles(_path, "*.*");
+
+                 if(_files.Length == 0)
+                     return false;
+
+                 _fileName = Path.GetFileName(_files[_currentIndex]);
+            }
+            else {
+                _currentIndex++;
+                 bool hasMoreFiles = _currentIndex < _files.Length;
+                 if (!hasMoreFiles)
+                     return false;
+
+                 _fileName = Path.GetFileName(_files[_currentIndex]);
+            }
+#endif
             if (!SkipCurrent())
                 return true;
         }
@@ -150,10 +202,15 @@ internal class FileEnumerator: FileData, IEnumerable, IEnumerator, IDisposable {
     }
 
     void IDisposable.Dispose() {
+#if !MONO
         if (_hFindFile != UnsafeNativeMethods.INVALID_HANDLE_VALUE) {
             UnsafeNativeMethods.FindClose(_hFindFile);
             _hFindFile = UnsafeNativeMethods.INVALID_HANDLE_VALUE;
         }
+#else
+        _currentIndex = 0;
+        _files = null;
+#endif
         System.GC.SuppressFinalize(this);
     }
 }

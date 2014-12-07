@@ -24,7 +24,9 @@ namespace System.Web.Hosting {
     using System.Web.Management;
     using System.IO;
 
+#if !MONO
     using IIS = UnsafeIISMethods;
+#endif
 
     delegate void AsyncCompletionDelegate(
         IntPtr rootedObjectsPointer, 
@@ -345,6 +347,7 @@ namespace System.Web.Hosting {
                     // at least one module must be registered so that we
                     // call ProcessRequestNotification later and send the formatted
                     // InitializationException to the client.
+#if !MONO
                     int hresult = UnsafeIISMethods.MgdRegisterEventSubscription(
                         appContext,
                         InitExceptionModuleName,
@@ -377,6 +380,7 @@ namespace System.Web.Hosting {
                         throw new COMException( SR.GetString(SR.Failed_Pipeline_Subscription, HttpApplication.IMPLICIT_HANDLER),
                                                 hresult );
                     }
+#endif
                 }
 
                 if (app != null) {
@@ -460,9 +464,11 @@ namespace System.Web.Hosting {
         
         // called from managed code as a perf optimization to avoid calling back later
         internal static void DisposeHandler(HttpContext context, IntPtr nativeRequestContext, RequestNotificationStatus status) {
+#if !MONO
             if (IIS.MgdCanDisposeManagedContext(nativeRequestContext, status)) {
                 context.RootedObjects.Destroy();
             }
+#endif
         }
 
         //
@@ -516,7 +522,9 @@ namespace System.Web.Hosting {
                 root.WriteTransferEventIfNecessary();
                 context.RootedObjects = root;
 
+#if !MONO
                 IIS.MgdSetManagedHttpContext(nativeRequestContext, root.Pointer);
+#endif
             }
             else {
                 root = RootedObjects.FromPointer(rootedObjectsPointer);
@@ -529,13 +537,21 @@ namespace System.Web.Hosting {
 
             using (root.WithinTraceBlock()) {
                 if (workerRequestWasJustCreated) {
+#if !MONO
                     AspNetEventSource.Instance.RequestStarted(wr);
+#endif
                 }
 
                 int currentModuleIndex;
                 bool isPostNotification;
                 int currentNotification;
+#if !MONO
                 IIS.MgdGetCurrentNotificationInfo(nativeRequestContext, out currentModuleIndex, out isPostNotification, out currentNotification);
+#else
+                currentModuleIndex = 0;
+                isPostNotification = false;
+                currentNotification = 0;
+#endif
 
                 // If the HttpContext is null at this point, then we've already transitioned this request to a WebSockets request.
                 // The WebSockets module should already be running, and asynchronous module-level events (like SendResponse) are
@@ -605,7 +621,9 @@ namespace System.Web.Hosting {
 
                 if (status != RequestNotificationStatus.Pending) {
                     // The current notification may have changed due to the HttpApplication progressing the IIS state machine, so retrieve the info again.
+#if !MONO
                     IIS.MgdGetCurrentNotificationInfo(nativeRequestContext, out currentModuleIndex, out isPostNotification, out currentNotification);
+#endif
 
                     // WOS 1785741: (Perf) In profiles, 8% of HelloWorld is transitioning from native to managed.
                     // The fix is to keep managed code on the stack so that the AppDomain context remains on the
@@ -622,7 +640,9 @@ namespace System.Web.Hosting {
                                 context.InIndicateCompletion = true;
                                 Interlocked.Increment(ref _inIndicateCompletionCount);
                                 context.ThreadInsideIndicateCompletion = Thread.CurrentThread;
+#if !MONO
                                 IIS.MgdIndicateCompletion(nativeRequestContext, ref status);
+#endif
                             }
                             finally {
                                 context.ThreadInsideIndicateCompletion = null;
@@ -697,7 +717,9 @@ namespace System.Web.Hosting {
             }
             catch {
                 // treat as "400 Bad Request" since that's the only reason the HttpContext.ctor should throw
+#if !MONO
                 IIS.MgdSetBadRequestStatus(nativeRequestContext);
+#endif
             }
         }
 
@@ -736,8 +758,9 @@ namespace System.Web.Hosting {
                 if (s_thisAppDomainsIsapiAppId != null  && s_ApplicationContext != IntPtr.Zero) {
                     Debug.Trace("PipelineDomain", "Calling MgdAppDomainShutdown appId=" +
                         s_thisAppDomainsIsapiAppId + " (AppDomainAppId=" + HttpRuntime.AppDomainAppId + ")");
-
+#if !MONO
                     UnsafeIISMethods.MgdAppDomainShutdown(s_ApplicationContext);
+#endif
                 }
 
                 HttpRuntime.AddAppDomainTraceMessage(SR.GetString(SR.App_Domain_Restart));

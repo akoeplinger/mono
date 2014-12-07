@@ -52,7 +52,9 @@ namespace System.Web.Configuration {
                if (IntPtr.Zero != configSystem) {
                    // won't fail if valid pointer
                    // no cleanup needed, we don't own instance
+#if !MONO
                    UnsafeIISMethods.MgdSetNativeConfiguration(configSystem);
+#endif
                 }
             }
         }
@@ -139,12 +141,14 @@ namespace System.Web.Configuration {
                 }
                 // try to resolve the string
                 else {
+#if !MONO
                     uint id = UnsafeIISMethods.MgdResolveSiteName(IntPtr.Zero, siteArgument);
                     if (id != 0) {
                         siteID = id.ToString(CultureInfo.InvariantCulture);
                         siteName = siteArgument;
                         return;
                     }
+#endif
                 }
 
                 if (!String.IsNullOrEmpty(resolvedName)) {
@@ -195,6 +199,7 @@ namespace System.Web.Configuration {
             IntPtr pBstr = IntPtr.Zero;
             int cBstr = 0;
             string appPath;
+#if !MONO
             try {
                 int result = UnsafeIISMethods.MgdGetAppPathForPath(IntPtr.Zero, siteValue, path.VirtualPathString, out pBstr, out cBstr);
                 appPath = (result == 0 && cBstr > 0) ? StringUtil.StringFromWCharPtr(pBstr, cBstr) : null;
@@ -206,6 +211,9 @@ namespace System.Web.Configuration {
             }
 
             return (appPath != null) ? VirtualPath.Create(appPath) : VirtualPath.RootVirtualPath;
+#else
+            return null;
+#endif
         }
 
         private string MapPathCaching(string siteID, VirtualPath path) {

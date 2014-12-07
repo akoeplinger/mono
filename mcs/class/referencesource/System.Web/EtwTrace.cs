@@ -193,6 +193,7 @@ namespace System.Web {
 
         private static void ResolveWorkerRequestType(HttpWorkerRequest workerRequest)
         {
+#if !MONO
             if (workerRequest is IIS7WorkerRequest) {
                 s_WrType = EtwWorkerRequestType.IIS7Integrated;
             }
@@ -205,6 +206,9 @@ namespace System.Web {
             else {
                 s_WrType = EtwWorkerRequestType.Unknown;
             }
+#else
+            s_WrType = EtwWorkerRequestType.Unknown;
+#endif
         }
 
         internal static void TraceEnableCheck(EtwTraceConfigType configType, IntPtr p)
@@ -214,6 +218,7 @@ namespace System.Web {
                 return;
             
             switch (configType) {
+#if !MONO
                 case EtwTraceConfigType.IIS7_INTEGRATED:
                     bool f;
                     UnsafeIISMethods.MgdEtwGetTraceConfig(p /*pRequestContext*/, out f, out _traceFlags, out _traceLevel);
@@ -227,6 +232,7 @@ namespace System.Web {
                 case EtwTraceConfigType.DOWNLEVEL:
                     UnsafeNativeMethods.GetEtwValues(out _traceLevel, out _traceFlags);
                     break;
+#endif
                 default:
                     break;
             }
@@ -258,7 +264,8 @@ namespace System.Web {
 
             if (workerRequest == null)
                 return;
-            
+
+#if !MONO
             if (s_WrType == EtwWorkerRequestType.IIS7Integrated) {
                 UnsafeNativeMethods.TraceRaiseEventMgdHandler((int) traceType, ((IIS7WorkerRequest)workerRequest).RequestContext, data1, data2, data3, data4);
             }
@@ -268,14 +275,17 @@ namespace System.Web {
             else if (s_WrType == EtwWorkerRequestType.OutOfProc) {
                 UnsafeNativeMethods.PMTraceRaiseEvent((int) traceType, ((ISAPIWorkerRequest)workerRequest).Ecb, data1, data2, data3, data4);
             }
+#endif
         }
 
         internal static void Trace(EtwTraceType traceType, IntPtr ecb, string data1, string data2, bool inProc)
         {
+#if !MONO
             if (inProc)
                 UnsafeNativeMethods.TraceRaiseEventWithEcb((int) traceType, ecb, data1, data2, null, null);
             else 
                 UnsafeNativeMethods.PMTraceRaiseEvent((int) traceType, ecb, data1, data2, null, null);
+#endif
         }
 
     };

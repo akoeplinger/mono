@@ -5,10 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Web.Configuration;
+#if !MONO || MSBUILD_DEP
 using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks;
 using Microsoft.Build.Utilities;
-
+#endif
 using FrameworkName=System.Runtime.Versioning.FrameworkName;
 
 namespace System.Web.Compilation {
@@ -39,6 +40,14 @@ namespace System.Web.Compilation {
             set;
         }
     }
+
+#if MONO && !MSBUILD_DEP
+    class BuildErrorEventArgs {
+    }
+
+    class BuildWarningEventArgs {
+    }
+#endif
 
     internal enum ReferenceAssemblyType {
         FrameworkAssembly = 0,
@@ -78,10 +87,12 @@ namespace System.Web.Compilation {
 
                     if (MultiTargetingUtil.IsTargetFramework20 || MultiTargetingUtil.IsTargetFramework35) {
                         // Require 3.5 to be installed to be able to target pre-4.0
+#if !MONO || MSBUILD_DEP
                         var fxPath35 = ToolLocationHelper.GetPathToDotNetFramework(TargetDotNetFrameworkVersion.Version35);
                         if (string.IsNullOrEmpty(fxPath35)) {
                             throw new HttpException(SR.GetString(SR.Downlevel_requires_35));
                         }
+#endif
 
                         // For 2.0 and 3.5, verify that the reference assemblies are actually present.
                         // For 3.5, make sure the reference assemblies path do not consist of just 2.0 and 3.0 assemblies.
@@ -232,6 +243,7 @@ namespace System.Web.Compilation {
         /// Resolve a single assembly using the provided search paths and setting the targetframework directories.
         /// </summary>
         private static AssemblyResolutionResult ResolveAssembly(string assemblyName, IList<string> searchPaths, IList<string> targetFrameworkDirectories, bool checkDependencies) {
+#if !MONO || MSBUILD_DEP
             ResolveAssemblyReference rar = new ResolveAssemblyReference();
             MockEngine engine = new MockEngine();
             rar.BuildEngine = engine;
@@ -246,19 +258,24 @@ namespace System.Web.Compilation {
             };
             rar.Silent = true;
             rar.Execute();
+#endif
 
             AssemblyResolutionResult result = new AssemblyResolutionResult();
 
             List<string> resolvedFiles = new List<string>();
+#if !MONO || MSBUILD_DEP
             foreach (ITaskItem item in rar.ResolvedFiles) {
                 resolvedFiles.Add(item.ItemSpec);
             }
+#endif
             if (checkDependencies) {
                 CheckOutOfRangeDependencies(assemblyName);
             }
             result.ResolvedFiles = resolvedFiles.ToArray();
+#if !MONO || MSBUILD_DEP
             result.Warnings = engine.Warnings;
             result.Errors = engine.Errors;
+#endif
             return result;
         }
 
@@ -499,7 +516,11 @@ namespace System.Web.Compilation {
         }
 
         private static IList<string> GetPathToReferenceAssemblies(FrameworkName frameworkName){
+#if MONO // TODO: implement this
+            return new List<string>();
+#else
             return ToolLocationHelper.GetPathToReferenceAssemblies(frameworkName);
+#endif
         }
 
         /// <summary>
@@ -534,7 +555,7 @@ namespace System.Web.Compilation {
             }
         }
     }
-
+#if !MONO || MSBUILD_DEP
     /// Adapted the following code from \\ddindex2\sources2\OrcasSP\vsproject\xmake\Shared\UnitTests
 
     internal class MockEngine : IBuildEngine {
@@ -606,5 +627,5 @@ namespace System.Web.Compilation {
             throw new NotImplementedException();
         }
     }
-
+#endif
 }

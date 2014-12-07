@@ -44,11 +44,13 @@ namespace System.Web {
             // is decremented in Destroy().
             HttpRuntime.IncrementActivePipelineCount();
 
+#if !MONO
             // this is an instance field instead of a static field since ETW can be enabled at any time
             _activityIdTracingIsEnabled = ActivityIdHelper.Instance != null && AspNetEventSource.Instance.IsEnabled();
             if (_activityIdTracingIsEnabled) {
                 _requestActivityId = ActivityIdHelper.UnsafeCreateNewActivityId();
             }
+#endif
         }
 
         // The HttpContext associated with this request.
@@ -116,7 +118,9 @@ namespace System.Web {
                     Pointer = IntPtr.Zero;
                     HttpRuntime.DecrementActivePipelineCount();
 
+#if !MONO
                     AspNetEventSource.Instance.RequestCompleted();
+#endif
                 }
             }
         }
@@ -218,7 +222,9 @@ namespace System.Web {
             Debug.Assert(WorkerRequest != null);
             if (_activityIdTracingIsEnabled) {
                 Debug.Assert(_requestActivityId != Guid.Empty);
+#if !MONO
                 AspNetEventSource.Instance.RequestEnteredAspNetPipeline(WorkerRequest, _requestActivityId);
+#endif
             }
         }
 

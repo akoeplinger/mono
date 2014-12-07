@@ -8,7 +8,9 @@ using System.Text;
 using System.Web.Configuration;
 using System.Web.Hosting;
 using System.Web.Util;
+#if !MONO || MSBUILD_DEP
 using Microsoft.Build.Utilities;
+#endif
 using Microsoft.CSharp;
 using Microsoft.VisualBasic;
 using Microsoft.Win32;
@@ -87,6 +89,7 @@ namespace System.Web.Compilation {
         /// Finds out what the known framework names and also the latest one
         /// </summary>
         private static void InitializeKnownAndLatestFrameworkNames() {
+#if !MONO
             IList<string> names = ToolLocationHelper.GetSupportedTargetFrameworks();
             Version latestVersion = null;
             s_knownFrameworkNames = new List<FrameworkName>();
@@ -99,6 +102,7 @@ namespace System.Web.Compilation {
                     latestVersion = version;
                 }
             }
+#endif
         }
 
         /// <summary>
@@ -131,7 +135,7 @@ namespace System.Web.Compilation {
         /// Checks what is the target framework version and initializes the targetFrameworkName
         /// </summary>
         private static void InitializeTargetFrameworkName() {
-            string targetFrameworkMoniker = ConfigTargetFrameworkMoniker;
+			string targetFrameworkMoniker = null;//ConfigTargetFrameworkMoniker;
 
             // Check if web.config exists, and if not, assume 4.0
             if (!WebConfigExists) {

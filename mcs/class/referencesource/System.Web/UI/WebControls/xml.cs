@@ -584,8 +584,10 @@ namespace System.Web.UI.WebControls {
             }
 
             if (_compiledTransform != null) {
+#if !MONO
                 XmlWriter writer = XmlWriter.Create(output);
                 _compiledTransform.Transform(doc, _transformArgumentList, writer, null);
+#endif
             } else {
                 _transform.Transform(doc, _transformArgumentList, output, xr);
             }

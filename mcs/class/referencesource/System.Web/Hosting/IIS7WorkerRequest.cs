@@ -24,11 +24,12 @@ namespace System.Web.Hosting {
     using System.Web.Security;
     using System.Web.Util;
     using System.Web.WebSockets;
-
+#if !MONO
     using IIS = UnsafeIISMethods;
+#endif
 
     internal sealed class IIS7WorkerRequest : HttpWorkerRequest {
-
+#if !MONO
         // In http.h, Translate is 39 and User-Agent is 40, but in WorkerRequest.cs Translate is unknown and User-Agent is 39
         private const int IisHeaderTranslate = 39;
         private const string IisHeaderTranslateName = "Translate";
@@ -2648,5 +2649,218 @@ namespace System.Web.Hosting {
                 _allocator = value;
             }
         }
+#else
+        public override void EndOfRequest() {
+            throw new NotImplementedException();
+        }
+
+        public override void FlushResponse(bool finalFlush) {
+            throw new NotImplementedException();
+        }
+
+        public override string GetHttpVerbName() {
+            throw new NotImplementedException();
+        }
+
+        public override string GetHttpVersion() {
+            throw new NotImplementedException();
+        }
+
+        public override string GetLocalAddress() {
+            throw new NotImplementedException();
+        }
+
+        public override int GetLocalPort() {
+            throw new NotImplementedException();
+        }
+
+        public override string GetQueryString() {
+            throw new NotImplementedException();
+        }
+
+        public override string GetRawUrl() {
+            throw new NotImplementedException();
+        }
+
+        public override string GetRemoteAddress() {
+            throw new NotImplementedException();
+        }
+
+        public override int GetRemotePort() {
+            throw new NotImplementedException();
+        }
+
+        public override string GetUriPath() {
+            throw new NotImplementedException();
+        }
+
+        public override void SendKnownResponseHeader(int index, string value) {
+            throw new NotImplementedException();
+        }
+
+        public override void SendResponseFromFile(IntPtr handle, long offset, long length) {
+            throw new NotImplementedException();
+        }
+
+        public override void SendResponseFromFile(string filename, long offset, long length) {
+            throw new NotImplementedException();
+        }
+
+        public override void SendResponseFromMemory(byte[] data, int length) {
+            throw new NotImplementedException();
+        }
+
+        public override void SendStatus(int statusCode, string statusDescription) {
+            throw new NotImplementedException();
+        }
+
+        public override void SendUnknownResponseHeader(string name, string value) {
+            throw new NotImplementedException();
+        }
+
+        internal bool IsWebSocketModuleActive() {
+            return false;
+        }
+
+        internal bool IsWebSocketRequest() {
+            return false;
+        }
+
+        internal void AcceptWebSocket() {
+            throw new NotImplementedException();
+        }
+
+        internal bool GetIsChildRequest() {
+            return false;
+        }
+
+        internal bool IsUserInRole(String role) {
+            throw new NotImplementedException();
+        }
+
+        internal void ExplicitFlush() {
+        }
+
+        internal void SuppressSendResponseNotifications() {
+        }
+
+        internal string ReMapHandlerAndGetHandlerTypeString(HttpContext httpContext, string path, out bool handlerExists) {
+            handlerExists = false;
+            return "";
+        }
+
+        internal void ScheduleExecuteUrl(string url, string queryString, string method, bool preserveForm, byte[] entity, NameValueCollection headers, bool preserveUser) {
+        }
+
+        internal void OnAsyncCompletion(int bytesCompleted, int hresult, IntPtr pAsyncCompletionContext) {
+        }
+
+        internal void NotifyOfAsyncDisconnect() {
+        }
+
+        internal static IIS7WorkerRequest CreateWorkerRequest(IntPtr requestContext, bool etwProviderEnabled) {
+            return null;
+        }
+
+        internal string MapHandlerAndGetHandlerTypeString(string method, string path, bool convertNativeStaticFileModule, bool ignoreWildcardMappings) {
+            return "";
+        }
+
+        internal void SetScriptMapForRemapHandler() {
+        }
+
+        internal string GetManagedHandlerType() {
+            return "";
+        }
+
+        internal void DisableNotifications(
+                RequestNotification notifications,
+                RequestNotification postNotifications) {
+        }
+
+        internal void PushResponseToNative() {
+        }
+
+        internal void ClearResponse(bool clearEntity, bool clearHeaders) {
+        }
+
+        internal bool IsHandlerExecutionDenied() {
+            return false;
+        }
+
+        internal void SetRemapHandler(string handlerType, string handlerName) {
+        }
+
+        internal string GetCurrentModuleName() {
+            return "";
+        }
+
+        internal void SetPrincipal(IPrincipal user) {
+        }
+
+        internal void SetServerVariable(string name, string value) {
+        }
+
+        internal void AbortConnection() {
+        }
+
+        internal void SetRequestHeader(string name, string value, bool replace) {
+        }
+
+        internal void SetResponseHeader(string name, string value, bool replace) {
+        }
+
+        internal void RewriteNotifyPipeline(string newPath,
+                                            string newQueryString,
+                                            bool rebaseClientPath) {
+        }
+
+        internal ChannelBinding HttpChannelBindingToken {
+            get {
+                return null;
+            }
+        }
+
+        internal void InsertEntityBody(byte[] buffer, int offset, int count) {
+        }
+
+        internal bool TryGetClientDisconnectedCancellationToken(out CancellationToken cancellationToken) {
+            return false;
+        }
+
+        internal void ResponseFilterInstalled() {
+        }
+
+        internal bool IsResponseBuffered() {
+            return false;
+     	}
+
+        internal void SynchronizeVariables(HttpContext context) {
+        }
+
+        internal IntPtr RequestContext {
+            get {
+                return IntPtr.Zero;
+            }
+        }
+
+        internal void UnlockCachedResponseBytes() {
+        }
+
+        internal IntPtr AllocateRequestMemory(int size) {
+            return IntPtr.Zero;
+        }
+
+        internal void SendResponseFromIISAllocatedRequestMemory(IntPtr data,
+                                                                int length) {
+        }
+
+        internal ArrayList GetBufferedResponseChunks(bool disableRecycling, ArrayList substElements, ref bool hasSubstBlocks) {
+            return null;
+        }
+
+        internal void Dispose() {
+        }
+#endif
     }
 }

@@ -2265,9 +2265,12 @@ namespace System.Web {
         [AspNetHostingPermission(SecurityAction.Demand, Level=AspNetHostingPermissionLevel.Medium)]
         public void AppendToLog(String param) {
             // only makes sense for IIS
+#if !MONO
             if (_wr is System.Web.Hosting.ISAPIWorkerRequest)
                 ((System.Web.Hosting.ISAPIWorkerRequest)_wr).AppendLogParameter(param);
-            else if (_wr is System.Web.Hosting.IIS7WorkerRequest)
+            else
+#endif
+            if (_wr is System.Web.Hosting.IIS7WorkerRequest)
                 _context.Request.AppendToLogQueryString(param);
         }
 

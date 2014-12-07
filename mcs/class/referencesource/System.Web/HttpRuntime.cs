@@ -136,7 +136,7 @@ namespace System.Web {
 
             // load webengine.dll if it is not loaded already
 
-#if !FEATURE_PAL // FEATURE_PAL does not enable IIS-based hosting features
+#if !FEATURE_PAL && !MONO // FEATURE_PAL does not enable IIS-based hosting features
 
             installDir = RuntimeEnvironment.GetRuntimeDirectory();
 
@@ -284,6 +284,16 @@ namespace System.Web {
         //
         private static bool _enablePrefetchOptimization;
 
+
+		internal static void RefreshData(){
+			_theRuntime._appDomainAppId = GetAppDomainString(".appId");
+			_theRuntime._appDomainAppPath = GetAppDomainString(".appPath");
+			_theRuntime._appDomainAppVPath = VirtualPath.CreateNonRelativeTrailingSlash (GetAppDomainString(".appVPath"));
+			_theRuntime._appDomainId = GetAppDomainString(".domainId");
+
+			_theRuntime._isOnUNCShare = StringUtil.StringStartsWith(_theRuntime._appDomainAppPath, "\\\\");
+		}
+
         /////////////////////////////////////////////////////////////////////////
         // 3 steps of initialization:
         //     Init() is called from HttpRuntime cctor
@@ -296,7 +306,7 @@ namespace System.Web {
          */
         private void Init() {
             try {
-#if !FEATURE_PAL
+#if !FEATURE_PAL && !MONO
                 if (Environment.OSVersion.Platform != PlatformID.Win32NT)
                     throw new PlatformNotSupportedException(SR.GetString(SR.RequiresNT));
 #else // !FEATURE_PAL
@@ -451,7 +461,9 @@ namespace System.Web {
                     if(compilationSection != null) {
                         _enablePrefetchOptimization = compilationSection.EnablePrefetchOptimization;
                         if(_enablePrefetchOptimization) {
+#if !MONO
                             UnsafeNativeMethods.StartPrefetchActivity((uint)StringUtil.GetStringHashCode(_appDomainAppId));
+#endif
                         }
                     }
 
@@ -466,10 +478,10 @@ namespace System.Web {
                     }
 
                     if (trustSection == null || String.IsNullOrEmpty(trustSection.Level)) {
-                        throw new ConfigurationErrorsException(SR.GetString(SR.Config_section_not_present, "trust"));
+                    //    throw new ConfigurationErrorsException(SR.GetString(SR.Config_section_not_present, "trust"));
                     }
 
-                    if (trustSection.LegacyCasModel) {
+                    if (false /*trustSection.LegacyCasModel*/) {
                         try {
                             _disableProcessRequestInApplicationTrust = false;
                             _isLegacyCas = true;
@@ -488,8 +500,9 @@ namespace System.Web {
                     }
                     else {
                         _disableProcessRequestInApplicationTrust = true;
+						_trustLevel = "Full";
                         // Set code access policy properties of the runtime object
-                        SetTrustParameters(trustSection, securityPolicySection, policyLevel);
+                        //SetTrustParameters(trustSection, securityPolicySection, policyLevel);
                     }
 
                     // Configure fusion to use directories set in the app config
@@ -506,7 +519,8 @@ namespace System.Web {
                     // No section that runs before CompleteInit() should demand permissions,
                     // as the permissions set has not yet determined until SetTrustLevel()
                     // is called.
-                    HttpConfigurationSystem.CompleteInit();
+                    
+					//HttpConfigurationSystem.CompleteInit(); //TODO: REENABLE!!
 
                     //
                     // If an exception occurred loading configuration,
@@ -514,7 +528,7 @@ namespace System.Web {
                     // with the correct trust level set.
                     //
                     if (configInitException != null) {
-                        throw configInitException;
+						//    throw configInitException;  //TODO: REENABLE!!
                     }
 
                     SetThreadPoolLimits();
@@ -524,10 +538,12 @@ namespace System.Web {
                     // Initialize the build manager
                     BuildManager.InitializeBuildManager();
 
+#if !MONO
                     if(compilationSection != null && compilationSection.ProfileGuidedOptimizations == ProfileGuidedOptimizationsFlags.All) {
                         ProfileOptimization.SetProfileRoot(_codegenDir);
                         ProfileOptimization.StartProfile(profileFileName);
                     }
+#endif
 
                     // Determine apartment threading setting
                     InitApartmentThreading();
@@ -535,13 +551,13 @@ namespace System.Web {
                     // Init debugging
                     InitDebuggingSupport();
 
-                    _processRequestInApplicationTrust = trustSection.ProcessRequestInApplicationTrust;
+					_processRequestInApplicationTrust = true; //trustSection.ProcessRequestInApplicationTrust;
 
                     // Init AppDomain Resource Perf Counters
                     AppDomainResourcePerfCounters.Init();
 
 
-                    RelaxMapPathIfRequired();
+                  //  RelaxMapPathIfRequired();
                 }
                 catch (Exception e) {
                     _hostingInitFailed = true;
@@ -662,10 +678,12 @@ namespace System.Web {
                             HttpEncoder.InitializeOnFirstRequest();
                             RequestValidator.InitializeOnFirstRequest();
 
+#if !MONO
                             if (context.WorkerRequest is ISAPIWorkerRequestOutOfProc) {
                                 // Make sure that the <processModel> section has no errors
                                 ProcessModelSection processModel = RuntimeConfig.GetMachineConfig().ProcessModel;
                             }
+#endif
                         }
                         finally {
                             Thread.CurrentThread.CurrentUICulture = savedUICulture;
@@ -968,6 +986,7 @@ namespace System.Web {
                 // Don't do this if we are not in a CBM scenario and we're in a service (!UserInteractive), 
                 // as TEMP could point to unwanted places.
 
+				#if !MONO
 #if !FEATURE_PAL // always fail here
                 if ((!BuildManagerHost.InClientBuildManager) && (!Environment.UserInteractive))
 #endif // !FEATURE_PAL
@@ -975,6 +994,7 @@ namespace System.Web {
                     throw new HttpException(SR.GetString(SR.No_codegen_access,
                         System.Web.UI.Util.GetCurrentAccountName(), tempDirectory));
                 }
+				#endif
 
                 tempDirectory = Path.GetTempPath();
                 Debug.Assert(System.Web.UI.Util.HasWriteAccessToDirectory(tempDirectory));
@@ -1037,15 +1057,15 @@ namespace System.Web {
 
         private void InitRequestQueue() {
             RuntimeConfig config = RuntimeConfig.GetAppConfig();
-            HttpRuntimeSection runtimeConfig = config.HttpRuntime;
-            ProcessModelSection processConfig = config.ProcessModel;
+			HttpRuntimeSection runtimeConfig = null;//config.HttpRuntime;
+			ProcessModelSection processConfig = null;//config.ProcessModel;
 
-            if (processConfig.AutoConfig) {
+            if (true/*processConfig.AutoConfig*/) {
                 _requestQueue = new RequestQueue(
-                    88 * processConfig.CpuCount,
-                    76 * processConfig.CpuCount,
-                    runtimeConfig.AppRequestQueueLimit,
-                    processConfig.ClientConnectedCheck);
+                    88 * 1,//processConfig.CpuCount,
+                    76 * 1,//processConfig.CpuCount,
+                    100,//runtimeConfig.AppRequestQueueLimit,
+					TimeSpan.FromSeconds(5));//processConfig.ClientConnectedCheck);
             }
             else {
 
@@ -1096,7 +1116,7 @@ namespace System.Web {
         }
 
         private void InitApartmentThreading() {
-            HttpRuntimeSection runtimeConfig = RuntimeConfig.GetAppConfig().HttpRuntime;
+			HttpRuntimeSection runtimeConfig = null; //RuntimeConfig.GetAppConfig().HttpRuntime;
 
             if (runtimeConfig != null) {
                 _apartmentThreading = runtimeConfig.ApartmentThreading;
@@ -1107,6 +1127,7 @@ namespace System.Web {
         }
 
         private void InitTrace(HttpContext context) {
+			return;
             TraceSection traceConfig = RuntimeConfig.GetAppConfig().Trace;
 
             Profile.RequestsToProfile = traceConfig.RequestLimit;
@@ -1127,8 +1148,8 @@ namespace System.Web {
         }
 
         private void InitDebuggingSupport() {
-            CompilationSection compConfig = RuntimeConfig.GetAppConfig().Compilation;
-            _debuggingEnabled = compConfig.Debug;
+          //  CompilationSection compConfig = RuntimeConfig.GetAppConfig().Compilation;
+			_debuggingEnabled = true;// compConfig.Debug;
         }
 
         /*
@@ -1139,7 +1160,9 @@ namespace System.Web {
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         private void PreloadAssembliesFromBin() {
             bool appClientImpersonationEnabled = false;
-
+			#if MONO
+			return;
+			#endif
             if (!_isOnUNCShare) {
                 // if not on UNC share check if config has impersonation enabled (without userName)
                 IdentitySection c = RuntimeConfig.GetAppConfig().Identity;
@@ -1191,7 +1214,9 @@ namespace System.Web {
             // only set if different
             if (pmConfig.DefaultMaxWorkerThreadsForAutoConfig != workerMax || pmConfig.DefaultMaxIoThreadsForAutoConfig != ioMax) {
                 Debug.Trace("ThreadPool", "SetThreadLimit: from " + workerMax + "," + ioMax + " to " + pmConfig.DefaultMaxWorkerThreadsForAutoConfig + "," + pmConfig.DefaultMaxIoThreadsForAutoConfig);
+#if !MONO
                 UnsafeNativeMethods.SetClrThreadPoolLimits(pmConfig.DefaultMaxWorkerThreadsForAutoConfig, pmConfig.DefaultMaxIoThreadsForAutoConfig, true);
+#endif
             }
 
             // this is the code equivalent of setting maxconnection
@@ -1218,7 +1243,9 @@ namespace System.Web {
                     // only set if different
                     if (pmConfig.MaxWorkerThreadsTimesCpuCount != workerMax || pmConfig.MaxIoThreadsTimesCpuCount != ioMax) {
                         Debug.Trace("ThreadPool", "SetThreadLimit: from " + workerMax + "," + ioMax + " to " + pmConfig.MaxWorkerThreadsTimesCpuCount + "," + pmConfig.MaxIoThreadsTimesCpuCount);
+#if !MONO
                         UnsafeNativeMethods.SetClrThreadPoolLimits(pmConfig.MaxWorkerThreadsTimesCpuCount, pmConfig.MaxIoThreadsTimesCpuCount, false);
+#endif
                     }
                 }
 
@@ -1283,11 +1310,11 @@ namespace System.Web {
             }
 
             // process the config setting
-            HttpRuntimeSection runtimeConfig = RuntimeConfig.GetAppConfig().HttpRuntime;
-            if (!runtimeConfig.Enable) {
-                // throw 404 on first request init -- this will get cached until config changes
-                throw new HttpException(404, String.Empty);
-            }
+           // HttpRuntimeSection runtimeConfig = RuntimeConfig.GetAppConfig().HttpRuntime;
+           // if (!runtimeConfig.Enable) {
+           //     // throw 404 on first request init -- this will get cached until config changes
+           //     throw new HttpException(404, String.Empty);
+           // }
         }
 
         [FileIOPermission(SecurityAction.Assert, Unrestricted = true)]
@@ -1305,7 +1332,7 @@ namespace System.Web {
         }
 
         private void InitializeHealthMonitoring() {
-#if !FEATURE_PAL // FEATURE_PAL does not enable IIS-based hosting features
+#if !FEATURE_PAL && !MONO // FEATURE_PAL does not enable IIS-based hosting features
             ProcessModelSection pmConfig = RuntimeConfig.GetMachineConfig().ProcessModel;
             int deadLockInterval = (int)pmConfig.ResponseDeadlockInterval.TotalSeconds;
             int requestQueueLimit = pmConfig.RequestQueueLimit;
@@ -1337,19 +1364,19 @@ namespace System.Web {
 
                 // check for errors in <processModel> section
                 RuntimeConfig appConfig = RuntimeConfig.GetAppConfig();
-                object section = appConfig.ProcessModel;
+              //  object section = appConfig.ProcessModel;
                 // check for errors in <hostingEnvironment> section
-                section = appConfig.HostingEnvironment;
+             //   section = appConfig.HostingEnvironment;
             }
         }
 
         private void InitHeaderEncoding() {
-            HttpRuntimeSection runtimeConfig = RuntimeConfig.GetAppConfig().HttpRuntime;
-            _enableHeaderChecking = runtimeConfig.EnableHeaderChecking;
+            //HttpRuntimeSection runtimeConfig = RuntimeConfig.GetAppConfig().HttpRuntime;
+			_enableHeaderChecking = true;//runtimeConfig.EnableHeaderChecking;
         }
 
         private static void SetAutogenKeys() {
-#if !FEATURE_PAL // FEATURE_PAL does not enable cryptography
+#if !FEATURE_PAL && !MONO // FEATURE_PAL does not enable cryptography
             byte[] bKeysRandom = new byte[s_autogenKeys.Length];
             byte[] bKeysStored = new byte[s_autogenKeys.Length];
             bool fGetStoredKeys = false;
@@ -1385,6 +1412,7 @@ namespace System.Web {
             if (IsEngineLoaded) {
                 uint dwVersion;
                 bool fIsIntegratedMode;
+#if !MONO
                 UnsafeIISMethods.MgdGetIISVersionInformation(out dwVersion, out fIsIntegratedMode);
 
                 if (dwVersion != 0) {
@@ -1392,6 +1420,7 @@ namespace System.Web {
                     _iisVersion = new Version((int)(dwVersion >> 16), (int)(dwVersion & 0xffff));
                     _useIntegratedPipeline = fIsIntegratedMode;
                 }
+#endif
             }
         }
 
@@ -1440,11 +1469,13 @@ namespace System.Web {
                 int currentNotification;
 
                 // setup the HttpContext for this event/module combo
+#if !MONO
                 UnsafeIISMethods.MgdGetCurrentNotificationInfo(wr.RequestContext, out currentModuleIndex, out isPostNotification, out currentNotification);
 
                 context.CurrentModuleIndex = currentModuleIndex;
                 context.IsPostNotification = isPostNotification;
                 context.CurrentNotification = (RequestNotification) currentNotification;
+#endif
 #if DBG
                 Debug.Trace("PipelineRuntime", "HttpRuntime::ProcessRequestNotificationPrivate: notification=" + context.CurrentNotification.ToString()
                             + ", isPost=" + context.IsPostNotification
@@ -1545,7 +1576,11 @@ namespace System.Web {
             }
 
             IntPtr requestContext = wr.RequestContext;
+#if !MONO
             bool sendHeaders = UnsafeIISMethods.MgdIsLastNotification(requestContext, status);
+#else
+            bool sendHeaders = false;
+#endif
             try {
                 context.Response.UpdateNativeResponse(sendHeaders);
             }
@@ -1700,7 +1735,7 @@ namespace System.Web {
                     // synchronous handler
                     app.ProcessRequest(context);
                     FinishRequest(context.WorkerRequest, context, null);
-                }
+				}
             }
             catch (Exception e) {
                 context.Response.InitResponseWriter();
@@ -1985,8 +2020,9 @@ namespace System.Web {
             // wait for pending async io to complete,  prior to aborting requests
             // this isn't necessary for IIS 7, where the async sends are always done
             // from native code with native buffers
+#if !MONO
             System.Web.Hosting.ISAPIWorkerRequestInProcForIIS6.WaitForPendingAsyncIo();
-
+#endif
             // For IIS7 integrated pipeline, wait until GL_APPLICATION_STOP fires and
             // there are no active calls to IndicateCompletion before unloading the AppDomain
             if (HttpRuntime.UseIntegratedPipeline) {
@@ -2009,8 +2045,9 @@ namespace System.Web {
 
 #if !FEATURE_PAL // FEATURE_PAL does not enable IIS-based hosting features
             // double check for pending async io
+#if !MONO
             System.Web.Hosting.ISAPIWorkerRequestInProcForIIS6.WaitForPendingAsyncIo();
-
+#endif
             // stop sqlcachedependency polling
             SqlCacheDependencyManager.Dispose((drainTimeoutSec * 1000) / 2);
 #endif // !FEATURE_PAL
@@ -2082,8 +2119,10 @@ namespace System.Web {
             // Indicate completion to IIS, so that it can resume
             // request processing on an IIS thread
             Debug.Trace("PipelineRuntime", "OnRequestNotificationCompletion(" + status + ")");
+#if !MONO
             int result = UnsafeIISMethods.MgdPostCompletion(requestContext, status);
             Misc.ThrowIfFailedHr(result);
+#endif
         }
 
         /*
@@ -2310,7 +2349,9 @@ namespace System.Web {
 
             // tell unmanaged code not to dispatch requests to this app domain
             try {
+#if !MONO
                 ISAPIRuntime.RemoveThisAppDomainFromUnmanagedTable();
+#endif
                 PipelineRuntime.RemoveThisAppDomainFromUnmanagedTable();
                 AddAppDomainTraceMessage("AppDomainRestart");
             }
@@ -3333,9 +3374,10 @@ namespace System.Web {
             int iSize = 260;
 
             // 
-
+#if !MONO
             if (UnsafeNativeMethods.GetCachePath(2, buf, ref iSize) >= 0)
                 return buf.ToString();
+#endif
             throw new HttpException(SR.GetString(SR.GetGacLocaltion_failed));
         }
 
@@ -3352,10 +3394,15 @@ namespace System.Web {
             Debug.Assert(AppDomainAppId != null);
 
             // Don't do it if we are not running on IIS
-            if (wr == null || !(wr is System.Web.Hosting.ISAPIWorkerRequest)) {
+            if (wr == null
+#if !MONO
+             || !(wr is System.Web.Hosting.ISAPIWorkerRequest)
+#endif
+                ) {
                 return;
             }
 
+#if !MONO
             // Do it only for IIS 5
 #if !FEATURE_PAL // FEATURE_PAL does not enable IIS-based hosting features
             if (!(wr is System.Web.Hosting.ISAPIWorkerRequestInProcForIIS6))
@@ -3372,6 +3419,7 @@ namespace System.Web {
                     Debug.Trace("RestrictIISFolders", "Cannot restrict folder access for '" + AppDomainAppId + "'.");
                 }
             }
+#endif
         }
 
         //

@@ -94,9 +94,11 @@ namespace System.Web.Configuration {
         private static readonly ConfigurationProperty _propForms =
             new ConfigurationProperty("forms", typeof(FormsAuthenticationConfiguration), null, ConfigurationPropertyOptions.None);
 #pragma warning disable 618
+#if !MONO
         // Dev10 570002: This property is obsolete. The Passport authentication product is no longer supported and has been superseded by Live ID.
         private static readonly ConfigurationProperty _propPassport =
             new ConfigurationProperty("passport", typeof(PassportAuthentication), null, ConfigurationPropertyOptions.None);
+#endif
 #pragma warning restore 618
         private static readonly ConfigurationProperty _propMode =
             new ConfigurationProperty("mode", typeof(AuthenticationMode), AuthenticationMode.Windows, ConfigurationPropertyOptions.None);
@@ -105,7 +107,9 @@ namespace System.Web.Configuration {
             // Property initialization
             _properties = new ConfigurationPropertyCollection();
             _properties.Add(_propForms);
+#if !MONO
             _properties.Add(_propPassport);
+#endif
             _properties.Add(_propMode);
         }
 
@@ -128,6 +132,7 @@ namespace System.Web.Configuration {
             }
         }
 
+#if !MONO
         [ConfigurationProperty("passport")]
         [Obsolete("This property is obsolete. The Passport authentication product is no longer supported and has been superseded by Live ID.")]
         public PassportAuthentication Passport {
@@ -137,6 +142,7 @@ namespace System.Web.Configuration {
 #pragma warning restore 618
             }
         }
+#endif
 
         [ConfigurationProperty("mode", DefaultValue = AuthenticationMode.Windows)]
         public AuthenticationMode Mode {
@@ -162,10 +168,12 @@ namespace System.Web.Configuration {
         // need Passport installed to configure the server.
         internal void ValidateAuthenticationMode() {
 #pragma warning disable 618
+#if !MONO
             if (Mode == AuthenticationMode.Passport && UnsafeNativeMethods.PassportVersion() < 0) {
 #pragma warning restore 618
                 throw new ConfigurationErrorsException(SR.GetString(SR.Passport_not_installed));
             }
+#endif
         }
     }
 }

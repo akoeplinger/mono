@@ -41,7 +41,6 @@ namespace System.Web {
     using System.Web.Util;
     using System.Web.WebSockets;
 
-
     /// <devdoc>
     ///    <para>Encapsulates
     ///       all HTTP-specific
@@ -480,7 +479,9 @@ namespace System.Web {
                 _isIntegratedPipeline = true;
             }
 
+#if !MONO
             if (!(_wr is System.Web.SessionState.StateHttpWorkerRequest))
+#endif
                 CookielessHelper.RemoveCookielessValuesFromPath(); // This ensures that the cookieless-helper is initialized and
             // rewrites the path if the URI contains cookieless form-auth ticket, session-id, etc.
 
@@ -488,6 +489,7 @@ namespace System.Web {
             if (p != null && p.IsEnabled)
                 _topTraceContext = new TraceContext(this);
 
+#if !MONO
             // rewrite path in order to remove "/eurl.axd/guid", if it was
             // added to the URL by aspnet_filter.dll.
             string eurl = GetEurl();
@@ -514,8 +516,10 @@ namespace System.Web {
                     Request.InternalRewritePath(VirtualPath.Create(originalUrl), null, true);
                 }
             }
+#endif
         }
 
+#if !MONO
         // We have a feature that directs extensionless URLs
         // into managed code by appending "/eurl.axd/guid" to the path.  On IIS 6.0,
         // we restore the URL as soon as we get into managed code.  Here we  get the
@@ -541,6 +545,7 @@ namespace System.Web {
             }
             return eurl;
         }
+#endif
 
         // Current HttpContext off the call context
 #if DBG
@@ -710,6 +715,9 @@ namespace System.Web {
 
         public AsyncPreloadModeFlags AsyncPreloadMode {
             get {
+#if MONO
+                return AsyncPreloadModeFlags.None;
+#endif
                 if (!_asyncPreloadModeFlagsSet) {
                     _asyncPreloadModeFlags = RuntimeConfig.GetConfig(this).HttpRuntime.AsyncPreloadMode;
                     _asyncPreloadModeFlagsSet = true;
@@ -1701,9 +1709,13 @@ namespace System.Web {
             // Calls to Volatile.* are atomic, even for 64-bit fields.
             long ticks = Volatile.Read(ref _timeoutTicks);
             if (ticks == -1) {
+#if MONO
+                ticks = TimeSpan.FromSeconds(110).Ticks;
+#else
                 // Only go to config if the value hasn't yet been initialized.
                 HttpRuntimeSection cfg = RuntimeConfig.GetConfig(this).HttpRuntime;
                 ticks = cfg.ExecutionTimeout.Ticks;
+#endif
 
                 // If another thread already came in and initialized _timeoutTicks,
                 // return that value instead of the value we just read from config.
@@ -1906,6 +1918,7 @@ namespace System.Web {
 #endif // !FEATURE_PAL
         }
 
+#if !MONO
         internal int CallISAPI(UnsafeNativeMethods.CallISAPIFunc iFunction, byte [] bufIn, byte [] bufOut) {
 
             if (_wr == null || !(_wr is System.Web.Hosting.ISAPIWorkerRequest))
@@ -1916,9 +1929,10 @@ namespace System.Web {
                 throw new NotImplementedException ("ROTORTODO");
 #endif // !FEATURE_PAL
         }
+#endif
 
         internal void SendEmptyResponse() {
-#if !FEATURE_PAL // FEATURE_PAL does not enable IIS-based hosting features
+#if !FEATURE_PAL && !MONO // FEATURE_PAL does not enable IIS-based hosting features
             if (_wr != null  && (_wr is System.Web.Hosting.ISAPIWorkerRequest))
                 ((System.Web.Hosting.ISAPIWorkerRequest) _wr).SendEmptyResponse();
 #endif // !FEATURE_PAL
@@ -2150,7 +2164,7 @@ namespace System.Web {
             get {
                 // by default use app identity
                 IntPtr token = HostingEnvironment.ApplicationIdentityToken;
-                IdentitySection c = RuntimeConfig.GetConfig(this).Identity;
+                IdentitySection c = null;//RuntimeConfig.GetConfig(this).Identity;
                 if (c != null) {
                     if (c.Impersonate) {
                         token = (c.ImpersonateToken != IntPtr.Zero) ? c.ImpersonateToken : ClientIdentityToken;

@@ -87,7 +87,7 @@ namespace System.Web.Configuration {
         private static readonly ConfigurationProperty _propStateNetworkTimeout =
             new ConfigurationProperty("stateNetworkTimeout",
                                         typeof(TimeSpan),
-#if FEATURE_PAL // FEATURE_PAL does not enable OutOfProcSessionStore
+#if FEATURE_PAL || MONO // FEATURE_PAL does not enable OutOfProcSessionStore
                                         TimeSpan.FromSeconds(600),
 #else // FEATURE_PAL
                                         TimeSpan.FromSeconds((long)

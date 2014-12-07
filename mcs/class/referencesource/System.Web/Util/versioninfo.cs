@@ -51,7 +51,7 @@ namespace System.Web.Util {
         }
 
         internal static string GetLoadedModuleFileName(string module) {
-#if !FEATURE_PAL // FEATURE_PAL does not fully support FileVersionInfo
+#if !FEATURE_PAL && !MONO // FEATURE_PAL does not fully support FileVersionInfo
             IntPtr h = UnsafeNativeMethods.GetModuleHandle(module);
             if (h == IntPtr.Zero)
                 return null;
@@ -89,8 +89,8 @@ namespace System.Web.Util {
         }
 
         internal static string EngineVersion {
-#if !FEATURE_PAL // FEATURE_PAL does not enable IIS-based hosting features
             get {
+#if !FEATURE_PAL && !MONO // FEATURE_PAL does not enable IIS-based hosting features
                 if (_engineVersion == null) {
                     lock(_lock) {
                         if (_engineVersion == null)

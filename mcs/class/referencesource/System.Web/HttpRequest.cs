@@ -2578,10 +2578,12 @@ namespace System.Web {
                 return false;
             }
 
+#if !MONO
             // 1. State server requests
             if (_wr is StateHttpWorkerRequest) {
                 return false;
             }
+#endif
 
             // 2. DevDiv2 162442: When IIS has already rejected the request and we are inside logrequest or end request
             if (_wr is IIS7WorkerRequest &&
@@ -2596,6 +2598,11 @@ namespace System.Web {
         }
 
         internal void ValidateInputIfRequiredByConfig() {
+
+			#if MONO
+			return;
+			#endif
+
             // Do we need to enable request validation?
             RuntimeConfig config = RuntimeConfig.GetConfig(Context);
             HttpRuntimeSection runtimeSection = config.HttpRuntime;
@@ -3144,8 +3151,10 @@ namespace System.Web {
             get {
                 if (_wr is IIS7WorkerRequest)
                     return ((IIS7WorkerRequest)_wr).HttpChannelBindingToken;
+#if !MONO
                 else if (_wr is ISAPIWorkerRequestInProc)
                     return ((ISAPIWorkerRequestInProc)_wr).HttpChannelBindingToken;
+#endif
                 throw new PlatformNotSupportedException();
             }
         }

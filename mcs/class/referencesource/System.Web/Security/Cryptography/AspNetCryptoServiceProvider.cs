@@ -85,7 +85,7 @@ namespace System.Web.Security.Cryptography {
             // Provides all of the necessary dependencies for an application-level
             // AspNetCryptoServiceProvider.
 
-            MachineKeySection machineKeySection = MachineKeySection.GetApplicationConfig();
+			MachineKeySection machineKeySection = new MachineKeySection();// MachineKeySection.GetApplicationConfig();
 
             return new AspNetCryptoServiceProvider(
                 machineKeySection: machineKeySection,

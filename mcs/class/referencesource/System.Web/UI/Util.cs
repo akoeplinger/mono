@@ -167,7 +167,7 @@ internal static class Util {
 
         // Check if a file encoding is specified in the config
         Encoding fileEncoding = null;
-        GlobalizationSection globConfig = RuntimeConfig.GetConfig(configPath).Globalization;
+		GlobalizationSection globConfig = new GlobalizationSection (); //RuntimeConfig.GetConfig(configPath).Globalization;
         fileEncoding = globConfig.FileEncoding;
 
         // If not, use the default encoding
@@ -297,7 +297,13 @@ internal static class Util {
         // Get the path to a dummy file in that directory
         string dummyFile = Path.Combine(dir, "~AspAccessCheck_" +
             HostingEnvironment.AppDomainUniqueInteger.ToString(
-                "x", CultureInfo.InvariantCulture) + SafeNativeMethods.GetCurrentThreadId() + ".tmp");
+                "x", CultureInfo.InvariantCulture) + 
+#if !MONO
+                SafeNativeMethods.GetCurrentThreadId()
+#else
+                System.Threading.Thread.CurrentThread.ManagedThreadId
+#endif                
+                + ".tmp");
         FileStream fs = null;
 
         bool success = false;

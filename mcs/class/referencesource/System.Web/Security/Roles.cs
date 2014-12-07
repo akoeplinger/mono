@@ -113,7 +113,7 @@ namespace System.Web.Security {
             } finally {
                 if (HostingEnvironment.IsHosted && EtwTrace.IsTraceEnabled(EtwTraceLevel.Information, EtwTraceFlags.AppSvc) && HttpContext.Current != null) {
                     if (EtwTrace.IsTraceEnabled(EtwTraceLevel.Verbose, EtwTraceFlags.AppSvc)) {
-                        string status = SR.Resources.GetString(isUserInRole ? SR.Etw_Success : SR.Etw_Failure, CultureInfo.InstalledUICulture);
+                        string status = SR.GetString(isUserInRole ? SR.Etw_Success : SR.Etw_Failure, CultureInfo.InstalledUICulture);
                         EtwTrace.Trace(EtwTraceType.ETW_TYPE_ROLE_IS_USER_IN_ROLE, HttpContext.Current.WorkerRequest, isRolePrincipal ? "RolePrincipal" : Provider.GetType().FullName, username, roleName, status);
                     }
 

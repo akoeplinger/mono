@@ -295,12 +295,14 @@
             CultureInfo culture = null;
             CultureInfo uiculture = null;
 
+			#if !MONO
             GlobalizationSection globConfig = RuntimeConfig.GetConfig(HttpContext).Globalization;
             if (!String.IsNullOrEmpty(globConfig.Culture))
                 culture = HttpContext.CultureFromConfig(globConfig.Culture, true);
 
             if (!String.IsNullOrEmpty(globConfig.UICulture))
                 uiculture = HttpContext.CultureFromConfig(globConfig.UICulture, false);
+			#endif
 
             if (HttpContext.DynamicCulture != null)
                 culture = HttpContext.DynamicCulture;

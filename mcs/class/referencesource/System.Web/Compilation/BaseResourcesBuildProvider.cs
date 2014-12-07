@@ -8,7 +8,9 @@ namespace System.Web.Compilation {
 
 using System;
 using System.Resources;
+#if !MONO || DESIGN_DEP
 using System.Resources.Tools;
+#endif
 using System.Reflection;
 using System.Globalization;
 using System.Collections;
@@ -159,6 +161,7 @@ internal abstract class BaseResourcesBuildProvider : BuildProvider {
         // Generate a strongly typed class from the resources
         CodeDomProvider provider = assemblyBuilder.CodeDomProvider;
         string[] unmatchable;
+#if !MONO || DESIGN_DEP
         CodeCompileUnit ccu = StronglyTypedResourceBuilder.Create(
             resourceList, _typeName, _ns,
             provider, false /*internalClass*/, out unmatchable);
@@ -186,6 +189,7 @@ internal abstract class BaseResourcesBuildProvider : BuildProvider {
 
         // Add the code compile unit to the compilation
         assemblyBuilder.AddCodeCompileUnit(this, ccu);
+#endif
     }
 
     private IDictionary GetResourceList(IResourceReader reader) {

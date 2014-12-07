@@ -135,6 +135,10 @@ namespace System.Web.Util {
         }
 
         private static HttpEncoder GetCustomEncoderFromConfig() {
+#if MONO
+            return new HttpEncoder();
+#endif
+
             // App since this is static per AppDomain
             RuntimeConfig config = RuntimeConfig.GetAppConfig();
             HttpRuntimeSection runtimeSection = config.HttpRuntime;

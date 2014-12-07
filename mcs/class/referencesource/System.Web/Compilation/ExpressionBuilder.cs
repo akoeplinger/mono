@@ -15,7 +15,9 @@ namespace System.Web.Compilation {
     using System.Web;
     using System.Web.Hosting;
 #if !FEATURE_PAL
+#if !MONO || DESIGN_DEP
     using System.Web.UI.Design;
+#endif
 #endif // !FEATURE_PAL
     using System.Web.UI;
     using System.Web.Util;
@@ -53,12 +55,14 @@ namespace System.Web.Compilation {
 
             // If we are in the designer, we need to access IWebApplication config instead
 #if !FEATURE_PAL // FEATURE_PAL does not support designer-based features
+#if !MONO || DESIGN_DEP
             if (host != null) {
                 IWebApplication webapp = (IWebApplication)host.GetService(typeof(IWebApplication));
                 if (webapp != null) {
                     config = webapp.OpenWebConfiguration(true).GetSection("system.web/compilation") as CompilationSection;
                 }
             }
+#endif
 #endif // !FEATURE_PAL
 
             // If we failed to get config from the designer, fall back on runtime config always

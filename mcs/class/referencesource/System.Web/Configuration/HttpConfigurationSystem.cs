@@ -283,7 +283,9 @@ namespace System.Web.Configuration {
         static internal string MachineConfigurationDirectory {
             get {
                 if (s_MachineConfigurationDirectory == null) {
-#if !FEATURE_PAL
+#if MONO
+                    s_MachineConfigurationDirectory = Path.GetDirectoryName(System.Runtime.InteropServices.RuntimeEnvironment.SystemConfigurationFile);
+#elif !FEATURE_PAL
                     s_MachineConfigurationDirectory = Path.Combine(MsCorLibDirectory, MachineConfigSubdirectory);
 #else // !FEATURE_PAL
                     System.UInt32 length = 0;

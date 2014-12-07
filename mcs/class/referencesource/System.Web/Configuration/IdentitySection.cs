@@ -231,6 +231,7 @@ namespace System.Web.Configuration {
 
         internal static IntPtr CreateUserToken(String name, String password, out String error) {
             IntPtr token = IntPtr.Zero;
+#if !MONO
             // when using ASP.NET process model call back via ISAPI
             if (VersionInfo.ExeName == "aspnet_wp") {
                 byte[] bOut = new byte[IntPtr.Size];
@@ -270,7 +271,9 @@ namespace System.Web.Configuration {
             if (token == IntPtr.Zero) {
                 Debug.Trace("Token", "Failed to create token for (" + name + "," + password + ")");
             }
-
+#else
+            error = "";
+#endif
             return token;
         }
 

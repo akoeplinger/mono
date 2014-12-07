@@ -80,12 +80,12 @@ namespace System.Web {
         }
 
         private void SetDefaultsFromConfig() {
-            HttpCookiesSection config = RuntimeConfig.GetConfig().HttpCookies;
-            _secure = config.RequireSSL;
-            _httpOnly = config.HttpOnlyCookies;
+            //HttpCookiesSection config = RuntimeConfig.GetConfig().HttpCookies;
+			_secure = false;//config.RequireSSL;
+			_httpOnly = false;//config.HttpOnlyCookies;
             
-            if (config.Domain != null && config.Domain.Length > 0)
-                _domain = config.Domain;
+           // if (config.Domain != null && config.Domain.Length > 0)
+          //      _domain = config.Domain;
         }
 
         /*

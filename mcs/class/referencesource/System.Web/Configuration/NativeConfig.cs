@@ -19,6 +19,7 @@ namespace System.Web.Configuration {
         }
 
         internal NativeConfig(string version) {
+#if !MONO
             if (version == null) {
                 throw new ArgumentNullException("version");
             }
@@ -27,6 +28,7 @@ namespace System.Web.Configuration {
                 hresult = UnsafeIISMethods.MgdCreateNativeConfigSystem(out _nativeConfig);
             }
             Misc.ThrowIfFailedHr(hresult);
+#endif
         }
 
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
@@ -43,6 +45,7 @@ namespace System.Web.Configuration {
             if (disposing) {
                 // release managed resources
             }
+#if !MONO
             // release native resources
             if (_nativeConfig != IntPtr.Zero) {
                 IntPtr pConfigSystem = Interlocked.Exchange(ref _nativeConfig, IntPtr.Zero);
@@ -51,12 +54,14 @@ namespace System.Web.Configuration {
                     Misc.ThrowIfFailedHr(hresult);
                 }
             }
+#endif
         }
 
         internal string GetSiteNameFromId(uint siteID) {
             IntPtr pBstr = IntPtr.Zero;
             int cBstr = 0;
             string siteName = null;
+#if !MONO
             try {
                 int result = UnsafeIISMethods.MgdGetSiteNameFromId(_nativeConfig, siteID, out pBstr, out cBstr);
                 siteName = (result == 0 && pBstr != IntPtr.Zero) ? StringUtil.StringFromWCharPtr(pBstr, cBstr) : String.Empty;
@@ -66,11 +71,13 @@ namespace System.Web.Configuration {
                     Marshal.FreeBSTR(pBstr);
                 }
             }
+#endif
             return siteName;
         }
 
         internal string MapPathDirect(string siteName, VirtualPath path) {
             string physicalPath = null;
+#if !MONO
             IntPtr pBstr = IntPtr.Zero;
             int cBstr = 0;
             try {
@@ -85,9 +92,10 @@ namespace System.Web.Configuration {
                     Marshal.FreeBSTR(pBstr);
                 }                 
             }
+#endif
             return physicalPath;
         }
-
+#if !MONO
         internal int MgdGetAppCollection(string siteName, string virtualPath, out IntPtr pBstr, out int cBstr, out IntPtr pAppCollection, out int count) {
             return UnsafeIISMethods.MgdGetAppCollection(_nativeConfig, siteName, virtualPath, out pBstr, out cBstr, out pAppCollection, out count);
         }
@@ -107,6 +115,7 @@ namespace System.Web.Configuration {
         internal int MgdGetAppPathForPath(uint siteId, string virtualPath, out IntPtr bstrPath, out int cchPath) {
             return UnsafeIISMethods.MgdGetAppPathForPath(_nativeConfig, siteId, virtualPath, out bstrPath, out cchPath);
         }
+#endif
     }
 }
 

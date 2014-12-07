@@ -661,6 +661,7 @@ namespace System.Web.Configuration
             int bytesWritten = 0;
             byte[] iv = new byte[ivLength];
 
+#if !MONO
             // get SHA1 hash of the buffer and copy to the IV.
             // if hash length is less than IV length, re-hash the hash and
             // append until IV is full.
@@ -678,6 +679,7 @@ namespace System.Web.Configuration
                 bytesWritten += bytesToCopy;
                 bytesToWrite -= bytesToCopy;
             }
+#endif
             return iv;
         }
 
@@ -696,8 +698,10 @@ namespace System.Web.Configuration
             if (validationKey.Length > _AutoGenValidationKeySize)
             {
                 key = new byte[_HashSize];
+#if !MONO
                 int hr = UnsafeNativeMethods.GetSHA1Hash(validationKey, validationKey.Length, key, key.Length);
                 Marshal.ThrowExceptionForHR(hr);
+#endif
             }
 
             if (inner == null)
@@ -722,12 +726,14 @@ namespace System.Web.Configuration
             if (length < 0 || buf == null || (start + length) > buf.Length)
                 throw new ArgumentException(SR.GetString(SR.InvalidArgumentValue, "length"));
             byte[] hash = new byte[_HashSize];
+#if !MONO
             int hr = UnsafeNativeMethods.GetHMACSHA1Hash(buf, start, length,
                                                          modifier, (modifier == null) ? 0 : modifier.Length,
                                                          s_inner, s_inner.Length, s_outer, s_outer.Length,
                                                          hash, hash.Length);
             if (hr == 0)
                 return hash;
+#endif
             _UseHMACSHA = false;
             return null;
         }
@@ -781,7 +787,7 @@ namespace System.Web.Configuration
             if (s_config == null) {
                 lock (s_initLock) {
                     if (s_config == null) {
-                        s_config = RuntimeConfig.GetAppConfig().MachineKey;
+						s_config = new MachineKeySection();//RuntimeConfig.GetAppConfig().MachineKey;
                     }
                 }
             }
@@ -1228,8 +1234,10 @@ namespace System.Web.Configuration
                 return hashAlgo.ComputeHash(bAll);
             } else {
                 byte[] newHash = new byte[MD5_HASH_SIZE];
+#if !MONO
                 int hr = UnsafeNativeMethods.GetSHA1Hash(bAll, bAll.Length, newHash, newHash.Length);
                 Marshal.ThrowExceptionForHR(hr);
+#endif
                 return newHash;
             }
         }

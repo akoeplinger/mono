@@ -20,7 +20,7 @@ namespace System.Web.Caching {
     using System.Web.Util;
     using System.Security.Permissions;
     using System.Globalization;
-#if USE_MEMORY_CACHE
+#if USE_MEMORY_CACHE || (MONO && CACHE_DEP)
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Runtime.Caching;
@@ -49,7 +49,7 @@ namespace System.Web.Caching {
         Action<Object, EventArgs>  _objNotify;             // Associated object to notify when a change occurs 
         SafeBitVector32            _bits;                  // status bits for ready, used, changed, disposed  
         DateTime                   _utcLastModified;       // Time of last modified item
-#if USE_MEMORY_CACHE
+#if USE_MEMORY_CACHE || (MONO && CACHE_DEP)
         HostFileChangeMonitor _fileChangeMonitor;
         CacheEntryChangeMonitor _entryChangeMonitor;
 #endif
@@ -197,7 +197,7 @@ namespace System.Web.Caching {
             Init(false, filenames, cachekeys, dependency, utcStart);
         }
 
-#if USE_MEMORY_CACHE
+#if USE_MEMORY_CACHE || (MONO && CACHE_DEP)
         void OnChangedCallback(object state) {
             Debug.Trace("CacheDependencyFileChange", "OnChangedCallback fired");
             NotifyDependencyChanged(this, EventArgs.Empty);            
@@ -302,7 +302,7 @@ namespace System.Web.Caching {
 #endif
 
         void Init(bool isPublic, string[] filenamesArg, string[] cachekeysArg, CacheDependency dependency, DateTime utcStart) {
-#if USE_MEMORY_CACHE
+#if USE_MEMORY_CACHE || (MONO && CACHE_DEP)
             if (CacheInternal.UseMemoryCache) {
                 InitForMemoryCache(isPublic, filenamesArg, cachekeysArg, dependency, utcStart);
                 return;
@@ -668,7 +668,7 @@ namespace System.Web.Caching {
                 }
             }
 
-#if USE_MEMORY_CACHE
+#if USE_MEMORY_CACHE || (MONO && CACHE_DEP)
             if (_fileChangeMonitor != null) {
                 _fileChangeMonitor.Dispose();
             }
@@ -854,7 +854,7 @@ namespace System.Web.Caching {
         //
         internal virtual bool IsFileDependency()
         {
-#if USE_MEMORY_CACHE
+#if USE_MEMORY_CACHE || (MONO && CACHE_DEP)
             if (CacheInternal.UseMemoryCache) {
                 if (_entryChangeMonitor != null) {
                     return false;
@@ -907,7 +907,7 @@ namespace System.Web.Caching {
         /// <returns></returns>
         public virtual string[] GetFileDependencies()
         {
-#if USE_MEMORY_CACHE
+#if USE_MEMORY_CACHE || (MONO && CACHE_DEP)
             if (CacheInternal.UseMemoryCache) {
                 if (_fileChangeMonitor != null) {
                     ReadOnlyCollection<string> paths = _fileChangeMonitor.FilePaths;
@@ -1158,4 +1158,3 @@ namespace System.Web.Caching {
         }
     }
 }
-

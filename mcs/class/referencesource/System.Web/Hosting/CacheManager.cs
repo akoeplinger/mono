@@ -78,8 +78,10 @@ namespace System.Web.Hosting {
             _appManager = appManager;
             _limit = privateBytesLimit;
 
+#if !MONO
             _pid = (uint) SafeNativeMethods.GetCurrentProcessId();
-            
+#endif
+
             // the initial expected maximum increase in private bytes is 2MB per second per CPU
             _minMaxDelta = 2 * MEGABYTE * SystemInfo.GetNumProcessCPUs();
             AdjustMaxDeltaAndPressureMarks(_minMaxDelta);
@@ -388,6 +390,7 @@ namespace System.Web.Hosting {
             // better. The name of that function is GetProcessMemoryInfo. For hosting
             // scenarios where a larger number of w3wp.exe instances are running, we 
             // want to use the new API (VSWhidbey 417366).
+#if !MONO
             long privateBytes;
             if (_useGetProcessMemoryInfo) {
                 long privatePageCount;
@@ -401,7 +404,10 @@ namespace System.Web.Hosting {
                 UnsafeNativeMethods.GetProcessMemoryInformation(_pid, out privatePageCount, out dummy, true /*nocache*/);
                 privateBytes = (long)privatePageCount << MEGABYTE_SHIFT;
             }
-        
+#else
+            long privateBytes = 0;
+#endif
+
             // increment the index (it's either 1 or 0)
             Debug.Assert(SAMPLE_COUNT == 2);
             _idx = _idx ^ 1;

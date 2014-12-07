@@ -17,7 +17,7 @@ namespace System.Web.Configuration {
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         public void GacInstall(string assemblyPath) {
-
+#if !MONO
 #if !FEATURE_PAL
             IAssemblyCache ac = null;
             int hr = NativeMethods.CreateAssemblyCache(out ac, 0);
@@ -54,10 +54,12 @@ namespace System.Web.Configuration {
             if (0 != hr) {
                 throw new Exception(SR.GetString(SR.Failed_gac_install));
             }
+#endif
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         public bool GacUnInstall(string assemblyName) {
+#if !MONO
             IAssemblyCache ac = null;
             uint position = 0;
             int hr = NativeMethods.CreateAssemblyCache(out ac, 0);
@@ -72,7 +74,7 @@ namespace System.Web.Configuration {
             if (0 != hr) {
                 throw new Exception(SR.GetString(SR.Failed_gac_uninstall));
             }
-
+#endif
             return true;
         }
     }

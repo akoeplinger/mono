@@ -39,7 +39,9 @@ namespace System.Web {
         private void Dispose(bool disposing) {
             if (_savedToken.Handle != IntPtr.Zero) {
                 try {} finally {
+#if !MONO
                     UnsafeNativeMethods.CloseHandle(_savedToken.Handle);
+#endif
                     _savedToken = new HandleRef(this, IntPtr.Zero);
                 }
             }
@@ -47,6 +49,7 @@ namespace System.Web {
 
         // impersonate a given token
         protected void ImpersonateToken(HandleRef token) {
+#if !MONO
             try {
                 // first revert
                 _savedToken = new HandleRef(this, GetCurrentToken());
@@ -70,10 +73,12 @@ namespace System.Web {
                 RestoreImpersonation();
                 throw;
             }
+#endif
         }
 
         // restore impersonation to the original state
         private void RestoreImpersonation() {
+#if !MONO
             // first revert before reimpersonating
             if (_impersonating) {
                 UnsafeNativeMethods.RevertToSelf();
@@ -90,6 +95,7 @@ namespace System.Web {
 
                 _reverted = false;
             }
+#endif
         }
 
         // 'public' version of Dispose
@@ -105,6 +111,7 @@ namespace System.Web {
         private static IntPtr GetCurrentToken() {
             IntPtr token = IntPtr.Zero;
 
+#if !MONO
             if (UnsafeNativeMethods.OpenThreadToken(
                         UnsafeNativeMethods.GetCurrentThread(),
                         UnsafeNativeMethods.TOKEN_READ | UnsafeNativeMethods.TOKEN_IMPERSONATE,
@@ -116,6 +123,7 @@ namespace System.Web {
                     throw new HttpException(SR.GetString(SR.Cannot_impersonate));
                 }
             }
+#endif
 
             return token;
         }
@@ -130,7 +138,9 @@ namespace System.Web {
 
                    if (token != IntPtr.Zero) {
                         impersonating = true;
+#if !MONO
                         UnsafeNativeMethods.CloseHandle(token);
+#endif
                    }
                 }
 

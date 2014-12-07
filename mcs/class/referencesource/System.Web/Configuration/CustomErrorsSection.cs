@@ -199,6 +199,11 @@ namespace System.Web.Configuration {
         }
 
         internal static CustomErrorsSection GetSettings(HttpContext context, bool canThrow) {
+
+			#if MONO
+			return new CustomErrorsSection();
+			#endif
+
             CustomErrorsSection ce = null;
             RuntimeConfig runtimeConfig = null;
             if (canThrow) {

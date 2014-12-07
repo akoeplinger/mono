@@ -90,7 +90,11 @@ public class Transactions {
 
         int rc;
         try {
+#if !MONO
             rc = UnsafeNativeMethods.TransactManagedCallback(execCallback, (int)mode);
+#else
+            rc = 0;
+#endif
         }
         finally {
             PerfCounters.DecrementCounter(AppPerfCounter.TRANSACTIONS_PENDING);

@@ -72,7 +72,7 @@ namespace System.Web {
         // Called by HttpRuntime.HostingInit to initialize UrlMetadataSlidingExpiration
         //
         static internal void InitializeUrlMetadataSlidingExpiration(HostingEnvironmentSection section) {
-            TimeSpan slidingExp = section.UrlMetadataSlidingExpiration;
+			TimeSpan slidingExp = TimeSpan.Zero;//section.UrlMetadataSlidingExpiration;
             if (slidingExp == TimeSpan.Zero) {
                 // a value of TimeSpan.Zero means don't cache
                 // this "feature" was added for Bing, because they

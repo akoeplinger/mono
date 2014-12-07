@@ -654,7 +654,7 @@ internal static class UrlPath {
         if (path == null)
             return false;
         int l = path.Length;
-        if (l == 0 || path[l-1] != '\\')
+        if (l == 0 || path[l-1] != Path.DirectorySeparatorChar)
             return false;
         if (l == 3 && path[1] == ':')   // c:\ case
             return false;
@@ -664,6 +664,11 @@ internal static class UrlPath {
     internal static bool PathIsDriveRoot(string path) {
         if (path != null) {
             int l = path.Length;
+#if MONO
+            if (l == 1 && path[1] == '/') {
+                return true;
+            }
+#endif
             if (l == 3 && path[1] == ':' && path[2] == '\\') {
                 return true;
             }

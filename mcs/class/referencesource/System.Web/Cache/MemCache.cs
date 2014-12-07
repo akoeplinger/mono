@@ -1,7 +1,7 @@
 // <copyright file="MemCache.cs" company="Microsoft">
 //   Copyright (c) 2009 Microsoft Corporation.  All rights reserved.
 // </copyright>
-#if USE_MEMORY_CACHE
+#if USE_MEMORY_CACHE || (MONO && CACHE_DEP)
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -121,7 +121,11 @@ namespace System.Web.Caching {
             if (newEntry.Dependency != null) {
                 policy.ChangeMonitors.Add(new DependencyChangeMonitor(newEntry.Dependency));
             }
+#if !MONO
             policy.Priority = (newEntry.UsageBucket == 0xff) ? System.Runtime.Caching.CacheItemPriority.NotRemovable : System.Runtime.Caching.CacheItemPriority.Default;
+#else
+            policy.Priority = System.Runtime.Caching.CacheItemPriority.Default;
+#endif
             CacheItemRemovedCallback callback = newEntry.CacheItemRemovedCallback;
             if (callback != null) {
                 policy.RemovedCallback = (new RemovedCallback(callback)).CacheEntryRemovedCallback;

@@ -264,12 +264,14 @@ namespace System.Web.Configuration {
             }
         }
 
+#if !MONO || WEBSERVICES_DEP
         [ConfigurationProperty("webServices")]
         public System.Web.Services.Configuration.WebServicesSection WebServices {
             get {
                 return (System.Web.Services.Configuration.WebServicesSection) Sections["webServices"];
             }
         }
+#endif
 
         [ConfigurationProperty("xhtmlConformance")]
         public XhtmlConformanceSection XhtmlConformance {

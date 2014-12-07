@@ -336,12 +336,15 @@ namespace System.Web.Security {
         /////////////////////////////////////////////////////////////////////////////
         internal FileSecurityDescriptorWrapper(String strFile) {
             _FileName = FileUtil.RemoveTrailingDirectoryBackSlash(strFile);
+#if !MONO
             _securityDescriptor = UnsafeNativeMethods.GetFileSecurityDescriptor(_FileName);
+#endif
         }
 
         /////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////
         internal bool IsAccessAllowed(IntPtr iToken, int iAccess) {
+#if !MONO
             if (iToken == IntPtr.Zero)
                 return true;
 
@@ -356,6 +359,7 @@ namespace System.Web.Security {
                             return true;
                         if (_securityDescriptor == UnsafeNativeMethods.INVALID_HANDLE_VALUE)
                             return false;
+
                         else
                             return (UnsafeNativeMethods.IsAccessToFileAllowed(_securityDescriptor, iToken, iAccess) != 0);
                     }
@@ -367,11 +371,15 @@ namespace System.Web.Security {
             }
 
             return IsAccessAllowedUsingNewSecurityDescriptor(iToken, iAccess);
+#else
+            return false;
+#endif
         }
 
         /////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////
         private bool IsAccessAllowedUsingNewSecurityDescriptor(IntPtr iToken, int iAccess) {
+#if !MONO
             if (iToken == IntPtr.Zero)
                 return true;
 
@@ -390,6 +398,9 @@ namespace System.Web.Security {
             } catch {
                 throw;
             }
+#else
+            return false;
+#endif
         }
 
         /////////////////////////////////////////////////////////////////////////////
@@ -401,6 +412,7 @@ namespace System.Web.Security {
         /////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////
         internal void FreeSecurityDescriptor() {
+#if !MONO
             if (!IsSecurityDescriptorValid())
                 return;
             _SecurityDescriptorBeingFreed = true;
@@ -420,24 +432,31 @@ namespace System.Web.Security {
             } catch {
                 throw;
             }
+#endif
         }
 
         /////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////
         internal bool IsSecurityDescriptorValid() {
+#if !MONO
             return
                 _securityDescriptor != UnsafeNativeMethods.INVALID_HANDLE_VALUE &&
                 _securityDescriptor != IntPtr.Zero;
+#else
+            return false;
+#endif
         }
 
         /////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////
         internal string GetCacheDependencyPath() {
             // if security descriptor is invalid, we cannot cache it
+#if !MONO
             if (_securityDescriptor == UnsafeNativeMethods.INVALID_HANDLE_VALUE) {
                 Debug.Trace("FAM", "GetCacheDependencyPath: invalid security descriptor");
                 return null;
             }
+#endif
             // if security descriptor is valid (file exists), cache it with a dependency on the file name
             if (_securityDescriptor != IntPtr.Zero) {
                 Debug.Trace("FAM", "GetCacheDependencyPath: valid security descriptor");

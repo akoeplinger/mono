@@ -52,6 +52,7 @@ namespace System.Web.Configuration {
 
         internal static string MapPathActual(string siteName, VirtualPath path) {
             string physicalPath = null;
+#if !MONO
             IntPtr pBstr = IntPtr.Zero;
             int cBstr = 0;
             try {
@@ -66,6 +67,7 @@ namespace System.Web.Configuration {
                     Marshal.FreeBSTR(pBstr);
                 }                 
             }
+#endif
             return physicalPath;
         }
 
@@ -76,6 +78,7 @@ namespace System.Web.Configuration {
             IntPtr pBstr = IntPtr.Zero;
             int cBstr = 0;
             string siteName = null;
+#if !MONO
             try {
                 int result = UnsafeIISMethods.MgdGetSiteNameFromId(IntPtr.Zero, siteId, out pBstr, out cBstr);
                 siteName = (result == 0 && pBstr != IntPtr.Zero) ? StringUtil.StringFromWCharPtr(pBstr, cBstr) : String.Empty;
@@ -85,7 +88,7 @@ namespace System.Web.Configuration {
                     Marshal.FreeBSTR(pBstr);
                 }
             }
-
+#endif
             if ( siteId == DEFAULT_SITE_ID_UINT) {
                 s_defaultSiteName = siteName;
             }            
@@ -95,17 +98,21 @@ namespace System.Web.Configuration {
 
         private class NativeConfigWrapper : CriticalFinalizerObject {
             internal NativeConfigWrapper() {
+#if !MONO
                 int result = UnsafeIISMethods.MgdInitNativeConfig();
 
                 if (result < 0) {
                     s_InitedExternalConfig = 0;
                     throw new InvalidOperationException(SR.GetString(SR.Cant_Init_Native_Config, result.ToString("X8", CultureInfo.InvariantCulture)));
                 }                
+#endif
             }
 
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             ~NativeConfigWrapper() {
+#if !MONO
                 UnsafeIISMethods.MgdTerminateNativeConfig();                    
+#endif
             }
         }        
     }    

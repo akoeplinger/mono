@@ -59,7 +59,9 @@ namespace System.Web.Configuration {
                     if (IntPtr.Zero != configSystem) {
                         // won't fail if valid pointer
                         // no cleanup needed, we don't own instance
+#if !MONO
                         UnsafeIISMethods.MgdSetNativeConfiguration(configSystem);
+#endif
                     }
                 }
             }
@@ -107,10 +109,12 @@ namespace System.Web.Configuration {
             int cBstr = 0;
             try {
                 int count = 0;
+#if !MONO
                 int result = UnsafeIISMethods.MgdGetAppCollection(IntPtr.Zero, _siteNameForCurrentApplication, vpath, out pBstr, out cBstr, out pAppCollection, out count);
                 if (result < 0 || pBstr == IntPtr.Zero) {
                     throw new InvalidOperationException(SR.GetString(SR.Cant_Enumerate_NativeDirs, result));
                 }
+#endif
                 string appRoot = StringUtil.StringFromWCharPtr(pBstr, cBstr);
                 Marshal.FreeBSTR(pBstr);
                 pBstr = IntPtr.Zero;
@@ -125,10 +129,12 @@ namespace System.Web.Configuration {
                 string appRootRelativePath = (lenNoTrailingSlash > lenAppRoot) ? vpath.Substring(lenAppRoot, lenNoTrailingSlash - lenAppRoot) : String.Empty;
 
                 for (uint index = 0; index < count; index++) {
+#if !MONO
                     result = UnsafeIISMethods.MgdGetNextVPath(pAppCollection, index, out pBstr, out cBstr);
                     if (result < 0 || pBstr == IntPtr.Zero) {
                         throw new InvalidOperationException(SR.GetString(SR.Cant_Enumerate_NativeDirs, result));
                     }
+#endif
                     // if cBstr = 1, then pBstr = "/" and can be ignored
                     string subVdir = (cBstr > 1) ? StringUtil.StringFromWCharPtr(pBstr, cBstr) : null;
                     Marshal.FreeBSTR(pBstr);
@@ -176,7 +182,11 @@ namespace System.Web.Configuration {
         }
 
         bool IServerConfig2.IsWithinApp(string virtualPath) {
+#if !MONO
             return UnsafeIISMethods.MgdIsWithinApp(IntPtr.Zero, _siteNameForCurrentApplication, HttpRuntime.AppDomainAppVirtualPathString, virtualPath);
+#else
+            return false;
+#endif
         }
 
         bool IServerConfig.GetUncUser(IApplicationHost appHost, VirtualPath path, out string username, out string password) {
@@ -190,6 +200,7 @@ namespace System.Web.Configuration {
             int cBstrPassword = 0;
 
             try {
+#if !MONO
                 int result = UnsafeIISMethods.MgdGetVrPathCreds( IntPtr.Zero,
                                                                  appHost.GetSiteName(),
                                                                  path.VirtualPathString,
@@ -202,6 +213,7 @@ namespace System.Web.Configuration {
                     password = (cBstrPassword > 0) ? StringUtil.StringFromWCharPtr(pBstrPassword, cBstrPassword) : null;
                     foundCreds = (!String.IsNullOrEmpty(username) && !String.IsNullOrEmpty(password));
                 }
+#endif
             }
             finally {
                 if (pBstrUserName != IntPtr.Zero) {
@@ -217,11 +229,11 @@ namespace System.Web.Configuration {
 
         long IServerConfig.GetW3WPMemoryLimitInKB() {
             long limit = 0;
-
+#if !MONO
             int result = UnsafeIISMethods.MgdGetMemoryLimitKB( out limit );
             if (result < 0)
                 return 0;
-
+#endif
             return limit;
         }        
     }

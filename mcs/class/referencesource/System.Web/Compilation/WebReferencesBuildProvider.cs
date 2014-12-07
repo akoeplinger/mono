@@ -14,8 +14,10 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Xml.Serialization;
 #if !FEATURE_PAL
+#if !MONO || WEBSERVICES_DEP
 using System.Web.Services.Description;
 using System.Web.Services.Discovery;
+#endif
 #endif // !FEATURE_PAL
 using System.Web.Hosting;
 using System.Web.UI;
@@ -83,7 +85,7 @@ internal class WebReferencesBuildProvider: BuildProvider {
             ns = String.Join(".", chunks);
         }
 #if !FEATURE_PAL // FEATURE_PAL does not support System.Web.Services
-
+#if !MONO || WEBSERVICES_DEP
         CodeNamespace codeNamespace = new CodeNamespace(ns);
 
         // for each discomap file, read all references and add them to the WebReferenceCollection
@@ -138,6 +140,9 @@ internal class WebReferencesBuildProvider: BuildProvider {
         StringCollection shareWarnings = ServiceDescriptionImporter.GenerateWebReferences(webs, assemblyBuilder.CodeDomProvider, codeCompileUnit, options);
         // Add the CodeCompileUnit to the compilation
         assemblyBuilder.AddCodeCompileUnit(this, codeCompileUnit);
+#else
+        return;
+#endif
 #else // !FEATURE_PAL
         return;
 #endif // !FEATURE_PAL

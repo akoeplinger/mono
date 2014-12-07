@@ -26,7 +26,9 @@ namespace System.Web {
         }
         
         override protected bool ReleaseHandle() {
+#if !MONO
             UnsafeNativeMethods.PerfCloseAppCounters(handle);
+#endif
             handle = IntPtr.Zero;
             return true;
         }
@@ -62,6 +64,7 @@ namespace System.Web {
                 if (! HttpRuntime.IsEngineLoaded) 
                     return;
 
+#if !MONO
                 // Open the global counters
                 if (_global == IntPtr.Zero) {
                     _global = UnsafeNativeMethods.PerfOpenGlobalCounters();
@@ -78,6 +81,7 @@ namespace System.Web {
                         _instance = UnsafeNativeMethods.PerfOpenAppCounters(appName);
                     }
                 }
+#endif
             }
             catch (Exception e) {
                 Debug.Trace("Perfcounters", "Exception: " + e.StackTrace);
@@ -87,62 +91,82 @@ namespace System.Web {
         // Make sure webengine.dll is loaded before attempting to call into it (ASURT 98531)
 
         internal static void IncrementCounter(AppPerfCounter counter) {
+#if !MONO
             if (_instance != null)
                 UnsafeNativeMethods.PerfIncrementCounter(_instance.UnsafeHandle, (int) counter);
+#endif
         }
 
         internal static void DecrementCounter(AppPerfCounter counter) {
+#if !MONO
             if (_instance != null)
                 UnsafeNativeMethods.PerfDecrementCounter(_instance.UnsafeHandle, (int) counter);
+#endif
         }
 
         internal static void IncrementCounterEx(AppPerfCounter counter, int delta) {
+#if !MONO
             if (_instance != null)
                 UnsafeNativeMethods.PerfIncrementCounterEx(_instance.UnsafeHandle, (int) counter, delta);
+#endif
         }
 
         internal static void SetCounter(AppPerfCounter counter, int value) {
+#if !MONO
             if (_instance != null)
                 UnsafeNativeMethods.PerfSetCounter(_instance.UnsafeHandle, (int) counter, value);
+#endif
         }
 
         // It's important that this be debug only. We don't want production
         // code to access shared memory that another process could corrupt.
 #if DBG
         internal static int GetCounter(AppPerfCounter counter) {
+#if !MONO
             if (_instance != null)
                 return UnsafeNativeMethods.PerfGetCounter(_instance.UnsafeHandle, (int) counter);
             else
+#endif
                 return -1;
         }
 #endif
 
         internal static int GetGlobalCounter(GlobalPerfCounter counter) {
+#if !MONO
             if (_global != IntPtr.Zero)
                 return UnsafeNativeMethods.PerfGetCounter(_global, (int) counter);
             else
+#endif
                 return -1;
         }
 
         internal static void IncrementGlobalCounter(GlobalPerfCounter counter) {
+#if !MONO
             if (_global != IntPtr.Zero)
                 UnsafeNativeMethods.PerfIncrementCounter(_global, (int) counter);
+#endif
         }
 
         internal static void DecrementGlobalCounter(GlobalPerfCounter counter) {
+#if !MONO
             if (_global != IntPtr.Zero)
                 UnsafeNativeMethods.PerfDecrementCounter(_global, (int) counter);
+#endif
         }
 
         internal static void SetGlobalCounter(GlobalPerfCounter counter, int value) {
+#if !MONO
             if (_global != IntPtr.Zero)
                 UnsafeNativeMethods.PerfSetCounter(_global, (int) counter, value);
+#endif
         }
 
         internal static void IncrementStateServiceCounter(StateServicePerfCounter counter) {
             if (_stateService == IntPtr.Zero)
                 return;
+#if !MONO
             UnsafeNativeMethods.PerfIncrementCounter(_stateService, (int) counter);
+#endif
             
             switch (counter) {
                 case StateServicePerfCounter.STATE_SERVICE_SESSIONS_TOTAL:
@@ -165,7 +189,9 @@ namespace System.Web {
         internal static void DecrementStateServiceCounter(StateServicePerfCounter counter) {
             if (_stateService == IntPtr.Zero)
                 return;
+#if !MONO
             UnsafeNativeMethods.PerfDecrementCounter(_stateService, (int) counter);
+#endif
             
             switch (counter) {
                 case StateServicePerfCounter.STATE_SERVICE_SESSIONS_TOTAL:
@@ -188,7 +214,9 @@ namespace System.Web {
         internal static void SetStateServiceCounter(StateServicePerfCounter counter, int value) {
             if (_stateService == IntPtr.Zero)
                 return;
+#if !MONO
             UnsafeNativeMethods.PerfSetCounter(_stateService, (int) counter, value);
+#endif
             
             switch (counter) {
                 case StateServicePerfCounter.STATE_SERVICE_SESSIONS_TOTAL:

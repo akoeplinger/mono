@@ -199,12 +199,14 @@ namespace System.Web.Security {
         {
             RoleClaimProvider claimProvider = new RoleClaimProvider(this, claimsIdentity);
 
+#if !MONO
             if (s_type == null)
             {
                 s_type = typeof(DynamicRoleClaimProvider);
             }
 
             s_type.InvokeMember("AddDynamicRoleClaims", BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.Static, null, null, new object[] { claimsIdentity, claimProvider.Claims }, CultureInfo.InvariantCulture);
+#endif
         }
 
 

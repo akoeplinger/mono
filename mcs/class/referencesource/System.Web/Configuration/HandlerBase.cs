@@ -271,6 +271,7 @@ namespace System.Web.Configuration {
                 return true;
             }
 
+#if !MONO
             const int size = 1024;
             StringBuilder str = new StringBuilder(size);
             int iRet = UnsafeNativeMethods.GetCredentialFromRegistry(value, str, size);
@@ -287,6 +288,9 @@ namespace System.Web.Configuration {
                     return false;
                 }
             }
+#else
+            return false;
+#endif
         }
 
         internal static bool CheckAndReadConnectionString(ref string connectionString, bool throwIfError) {

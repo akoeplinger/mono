@@ -19,6 +19,7 @@ namespace System.Web.Management {
     public sealed class IisTraceWebEventProvider  : WebEventProvider {
 
         public IisTraceWebEventProvider() {
+#if !MONO
             // only supported on IIS version 7 and later
             HttpContext context = HttpContext.Current;
             if (context != null) {
@@ -26,6 +27,7 @@ namespace System.Web.Management {
                     throw new PlatformNotSupportedException(SR.GetString(SR.Requires_Iis_7));
                 }
             }
+#endif
         }
 
         public override void Initialize(string name, NameValueCollection config)

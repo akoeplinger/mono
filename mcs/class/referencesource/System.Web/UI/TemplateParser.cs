@@ -541,8 +541,8 @@ public abstract class TemplateParser : BaseParser, IAssemblyDependencyParser {
 
         // Get the config sections we care about
         if (!FInDesigner) {
-            _compConfig = MTConfigUtil.GetCompilationConfig(CurrentVirtualPath);
-            _pagesConfig = MTConfigUtil.GetPagesConfig(CurrentVirtualPath);
+				_compConfig = new CompilationSection ();// MTConfigUtil.GetCompilationConfig(CurrentVirtualPath);
+				_pagesConfig = new PagesSection ();// MTConfigUtil.GetPagesConfig(CurrentVirtualPath);
         }
 
         // Get default settings from config
@@ -944,6 +944,7 @@ public abstract class TemplateParser : BaseParser, IAssemblyDependencyParser {
      * Parse the contents of the string
      */
     private void ParseStringInternal(string text, Encoding fileEncoding) {
+
         int textPos = 0;
 
         // Find the last '>' in the input string
@@ -1118,7 +1119,7 @@ public abstract class TemplateParser : BaseParser, IAssemblyDependencyParser {
             else if ((match = endtagRegex.Match(text, textPos)).Success)
 #endif
             {
-                if (!ProcessEndTag(match))
+					if (!ProcessEndTag(match))
                     fMatchedButNotProcessed = true;
             }
 

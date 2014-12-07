@@ -12,7 +12,7 @@ namespace System.Web.Configuration {
     using System.Collections;
     using System.Collections.Specialized;
     using System.IO;
-#if !FEATURE_PAL
+#if !FEATURE_PAL && !MONO
     using System.ServiceProcess;
 #endif // !FEATURE_PAL
     using System.Linq;
@@ -30,7 +30,9 @@ namespace System.Web.Configuration {
     using System.Xml;
     using System.Xml.Schema;
 
+#if !MONO || MSBUILD_DEP
     using Microsoft.Build.Utilities;
+#endif
     using Microsoft.CSharp;
     using System.Diagnostics.CodeAnalysis;
 
@@ -136,7 +138,11 @@ namespace System.Web.Configuration {
                         // ASP.BrowserCapsFactory, so we need to read the token file from the 2.0 path.
                         // (Dev10 bug 795509)
                         string subPath = @"config\browsers\" + _publicKeyTokenFileName;
+#if !MONO || MSBUILD_DEP
                         publicKeyTokenFile = ToolLocationHelper.GetPathToDotNetFrameworkFile(subPath, TargetDotNetFrameworkVersion.Version20);
+#else
+                        publicKeyTokenFile = "";
+#endif
                     }
                     _publicKeyToken = LoadPublicKeyTokenFromFile(publicKeyTokenFile);
                     _publicKeyTokenLoaded = true;
@@ -209,7 +215,13 @@ namespace System.Web.Configuration {
 
             // Removing existing copy from GAC
             GacUtil gacutil = new GacUtil();
-            bool assemblyRemoved = gacutil.GacUnInstall("ASP.BrowserCapsFactory, Version=" + ThisAssembly.Version + ", Culture=neutral");
+            bool assemblyRemoved = gacutil.GacUnInstall("ASP.BrowserCapsFactory, Version=" + 
+#if !MONO
+            ThisAssembly.Version
+#else
+            "4.0.0.0"
+#endif
+             + ", Culture=neutral");
             if (!assemblyRemoved) {
                 return false;
             }
@@ -233,7 +245,7 @@ namespace System.Web.Configuration {
         }
 
         private void RestartW3SVCIfNecessary() {
-#if !FEATURE_PAL
+#if !FEATURE_PAL && !MONO
             try {
                 // Dev10 bug 734918
                 // We should not fail when the w3svc service is not installed.
@@ -707,7 +719,13 @@ namespace System.Web.Configuration {
             declaration = new CodeAttributeDeclaration(
                 "System.Reflection.AssemblyVersion",
                 new CodeAttributeArgument[] {
-                    new CodeAttributeArgument(new CodePrimitiveExpression(ThisAssembly.Version))});
+                    new CodeAttributeArgument(new CodePrimitiveExpression(
+#if !MONO
+                    ThisAssembly.Version
+#else
+                    "4.0.0.0"
+#endif
+                    ))});
             ccu.AssemblyCustomAttributes.Add(declaration);
 
             CodeNamespace cnamespace = new CodeNamespace("ASP");

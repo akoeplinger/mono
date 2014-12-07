@@ -16,10 +16,12 @@ namespace System.Web.Util {
 
     // This is a ManualResetEvent that corresponds to the OnGlobalStopListening event.
     internal sealed class StopListeningWaitHandle : WaitHandle {
+#if !MONO
         [SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources", Justification = @"This is a pseudohandle so shouldn't be closed.")]
         private static IntPtr _processHandle = GetCurrentProcess();
-
+#endif
         public StopListeningWaitHandle() {
+#if !MONO
             // This handle is process-wide and not ref counted, so no need to wrap inside a SafeHandle
             IntPtr eventHandle = UnsafeIISMethods.MgdGetStopListeningEventHandle();
 
@@ -41,8 +43,10 @@ namespace System.Web.Util {
             }
 
             this.SafeWaitHandle = safeWaitHandle;
+#endif
         }
 
+#if !MONO
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         [SuppressUnmanagedCodeSecurity]
@@ -54,5 +58,6 @@ namespace System.Web.Util {
         [SuppressUnmanagedCodeSecurity]
         [SuppressMessage("Microsoft.Security", "CA2118:ReviewSuppressUnmanagedCodeSecurityUsage", Justification = "We carefully control this method's callers.")]
         private static extern bool DuplicateHandle([In] IntPtr hSourceProcessHandle, [In] IntPtr hSourceHandle, [In] IntPtr hTargetProcessHandle, [Out] out SafeWaitHandle lpTargetHandle, [In] uint dwDesiredAccess, [In] bool bInheritHandle, [In] uint dwOptions);
+#endif
     }
 }

@@ -40,6 +40,10 @@ namespace System.Web.Util {
         }
 
         private static RequestValidator GetCustomValidatorFromConfig() {
+#if MONO
+            return new RequestValidator();
+#endif
+
             // App since this is static per AppDomain
             RuntimeConfig config = RuntimeConfig.GetAppConfig();
             HttpRuntimeSection runtimeSection = config.HttpRuntime;

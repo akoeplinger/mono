@@ -10,7 +10,6 @@ namespace System.Web.Configuration {
     using System.IO;
     using System.Runtime.InteropServices;
     using System.Security.Permissions;
-    using Microsoft.Runtime.Hosting;
 
     internal class StrongNameUtility {
 
@@ -19,6 +18,7 @@ namespace System.Web.Configuration {
         }
         
         internal static bool GenerateStrongNameFile(string filename) {
+#if !MONO
             // variables that hold the unmanaged key
             IntPtr keyBlob = IntPtr.Zero;
             int generatedSize = 0;
@@ -59,7 +59,7 @@ namespace System.Web.Configuration {
                     StrongNameHelpers.StrongNameFreeBuffer(keyBlob);
                 }
             }
-
+#endif
             return true;
         }
     }

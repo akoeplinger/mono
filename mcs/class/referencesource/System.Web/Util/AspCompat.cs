@@ -246,8 +246,10 @@ internal class AspCompatApplicationStep : HttpApplication.IExecutionStep, IManag
             Object component = session[i];
 
             if (component != null && component.GetType().FullName == "System.__ComObject") {
+#if !MONO
                 if (UnsafeNativeMethods.AspCompatIsApartmentComponent(component) != 0)
                     return true;
+#endif
             }
         }
 
@@ -258,13 +260,14 @@ internal class AspCompatApplicationStep : HttpApplication.IExecutionStep, IManag
         // has to be in asp compat mode
         if (!IsInAspCompatMode)
             return;
-
+#if !MONO
         int rc = UnsafeNativeMethods.AspCompatOnPageStart(component);
         if (rc != 1)
             throw new HttpException(SR.GetString(SR.Error_onpagestart));
 
         if (UnsafeNativeMethods.AspCompatIsApartmentComponent(component) != 0)
             Current.RememberStaComponent(component);
+#endif
     }
 
     internal static void OnPageStartSessionObjects() {
@@ -286,9 +289,11 @@ internal class AspCompatApplicationStep : HttpApplication.IExecutionStep, IManag
             Object component = session[i];
 
             if (component != null && !(component is string)) {
+#if !MONO
                 int rc = UnsafeNativeMethods.AspCompatOnPageStart(component);
                 if (rc != 1)
                     throw new HttpException(SR.GetString(SR.Error_onpagestart));
+#endif
             }
         }
     }
@@ -352,11 +357,13 @@ internal class AspCompatApplicationStep : HttpApplication.IExecutionStep, IManag
             bool sharedActivity = (_sessionId != null);
             int    activityHash = sharedActivity ? _sessionId.GetHashCode() : 0;
 
+#if !MONO
             if (UnsafeNativeMethods.AspCompatProcessRequest(_execCallback, this, sharedActivity, activityHash) != 1) {
                 // failed to queue up the execution in ASP compat mode
                 _rootedThis.Free();
                 _ar.Complete(true, null, new HttpException(SR.GetString(SR.Cannot_access_AspCompat)));
             }
+#endif
         }
 
         return _ar;
@@ -430,8 +437,9 @@ internal class AspCompatApplicationStep : HttpApplication.IExecutionStep, IManag
         }
         finally {
             // call PageEnd
+#if !MONO
             UnsafeNativeMethods.AspCompatOnPageEnd();
-        
+#endif
             // release all STA components not in session
             if (_staComponents != null) {
                 foreach (Object component in _staComponents) {

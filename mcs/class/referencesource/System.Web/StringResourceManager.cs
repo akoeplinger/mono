@@ -39,7 +39,7 @@ internal class StringResourceManager {
 
         string dllPath = t.Module.FullyQualifiedName;
 
-
+#if !MONO
         IntPtr hModule = UnsafeNativeMethods.GetModuleHandle(dllPath);
         if (hModule == IntPtr.Zero) {
             // GetModuleHandle could fail if the assembly was renamed to .delete.  So we fall back to
@@ -77,8 +77,10 @@ internal class StringResourceManager {
         if (!UnsafeNativeMethods.IsValidResource(hModule, pv, resSize)) {
             throw new InvalidOperationException();
         }
-
         return new SafeStringResource(pv, resSize);
+#else
+        return null;
+#endif
     }
 }
 

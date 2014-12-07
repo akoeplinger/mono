@@ -131,7 +131,7 @@ namespace System.ComponentModel.DataAnnotations {
                     // If the property is not configured properly, then throw a missing member exception
                     if (badlyConfigured) {
                         string exceptionMessage = String.Format(CultureInfo.CurrentCulture, 
-#if SYSTEM_WEB
+#if SYSTEM_WEB || MONO
                             SR.GetString(SR.LocalizableString_LocalizationFailed),
 #else
                             DataAnnotationsResources.LocalizableString_LocalizationFailed, 

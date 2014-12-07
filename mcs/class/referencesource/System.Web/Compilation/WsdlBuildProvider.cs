@@ -3,7 +3,7 @@
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>                                                                
 //------------------------------------------------------------------------------
-
+#if !MONO || WEBSERVICES_DEP
 namespace System.Web.Compilation {
 
 using System;
@@ -69,3 +69,4 @@ internal class WsdlBuildProvider: BuildProvider {
 }
 
 }
+#endif

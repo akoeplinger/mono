@@ -29,6 +29,7 @@ namespace System.Web.Util {
         internal const string   DATE_FORMAT = @"yyyy/MM/dd HH:mm:ss.ffff";
         internal const string   TIME_FORMAT = @"HH:mm:ss:ffff";
 
+#if !MONO
         // Some of these APIs must be always available, not #ifdefed away.
         [SuppressUnmanagedCodeSecurity]
         private static partial class NativeMethods {
@@ -177,6 +178,7 @@ namespace System.Web.Util {
                 return r == 0;
             }
         }
+#endif
 
         private enum TagValue {
             Disabled = 0,
@@ -842,7 +844,11 @@ A=Exit process R=Debug I=Continue";
         // We don't #ifdef this away since we might need to change behavior based
         // on whether one is attached.
         internal static bool IsDebuggerPresent() {
+#if !MONO
             return (NativeMethods.IsDebuggerPresent() || System.Diagnostics.Debugger.IsAttached);
+#else
+            return System.Diagnostics.Debugger.IsAttached;
+#endif
         }
 
         //

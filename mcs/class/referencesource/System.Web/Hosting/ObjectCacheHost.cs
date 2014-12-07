@@ -1,7 +1,7 @@
 // <copyright file="ObjectCacheHost.cs" company="Microsoft">
 //   Copyright (c) 2009 Microsoft Corporation.  All rights reserved.
 // </copyright>
-
+#if !MONO || CACHE_DEP
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Caching;
@@ -137,3 +137,4 @@ namespace System.Web.Hosting {
         }
     }
 }
+#endif

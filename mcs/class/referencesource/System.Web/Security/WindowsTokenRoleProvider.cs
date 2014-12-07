@@ -92,12 +92,14 @@ namespace System.Web.Security {
                 return false;
             StringBuilder error = new StringBuilder(1024);
             IntPtr token = GetCurrentTokenAndCheckName(username);
+#if !MONO
             switch (UnsafeNativeMethods.IsUserInRole(token, roleName, error, 1024)) {
                 case 1:
                     return true;
                 case 0:
                     return false;
             }
+#endif
             throw new ProviderException(SR.GetString(SR.API_failed_due_to_error, error.ToString()));
         }
 
@@ -112,6 +114,7 @@ namespace System.Web.Security {
             StringBuilder allRoles = new StringBuilder(1024);
             StringBuilder error    = new StringBuilder(1024);
 
+#if !MONO
             int status = UnsafeNativeMethods.GetGroupsForUser(token, allRoles, 1024, error, 1024);
             if (status < 0)
             {
@@ -120,6 +123,7 @@ namespace System.Web.Security {
             }
             if (status <= 0)
                 throw new ProviderException(SR.GetString(SR.API_failed_due_to_error, error.ToString()));
+#endif
             string [] roles = allRoles.ToString().Split('\t');
             return AddLocalGroupsWithoutDomainNames(roles);
         }

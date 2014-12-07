@@ -20,8 +20,9 @@ namespace System.Web {
     using System.Threading;
     using System.Web.Util;
     using System.Web.Hosting;
-
+#if !MONO
     using IIS = System.Web.Hosting.UnsafeIISMethods;
+#endif
 
     //
     //  HttpWriter buffer recycling support
@@ -87,6 +88,16 @@ namespace System.Web {
      */
     internal sealed class HttpResponseBufferElement : HttpBaseMemoryResponseBufferElement, IHttpResponseElement {
         private byte[] _data;
+
+		#if MONO
+		internal HttpResponseBufferElement() {
+		_free=_size=1024*10;
+		_data = new byte[_size];
+		_recycle=false;
+		}
+		#endif
+
+
 
         /*
          * Constructor that accepts the data buffer and holds on to it
@@ -165,7 +176,7 @@ namespace System.Web {
         }
     }
 
-#if !FEATURE_PAL // FEATURE_PAL does not enable IIS-based hosting features
+#if !FEATURE_PAL && !MONO // FEATURE_PAL does not enable IIS-based hosting features
     /*
      * Unmanaged memory response buffer
      */
@@ -897,8 +908,9 @@ namespace System.Web {
             }
         }
 
+
         private HttpBaseMemoryResponseBufferElement CreateNewMemoryBufferElement() {
-            return new HttpResponseUnmanagedBufferElement(); /* using unmanaged buffers */
+            return new HttpResponseBufferElement(); /* using unmanaged buffers */
         }
 
     internal void DisposeIntegratedBuffers() {
@@ -1062,7 +1074,7 @@ namespace System.Web {
                 _buffers.Add(new HttpResponseBufferElement(data, size));
                 return;
             }
-
+			
             // do other buffers if needed
             while (size > 0) {
                 _lastBuffer = CreateNewMemoryBufferElement();
@@ -1091,6 +1103,7 @@ namespace System.Web {
                 offset += n;
             }
 
+#if !MONO
             // do other buffers if needed
             while (size > 0) {
                 _lastBuffer = CreateNewMemoryBufferElement();
@@ -1099,6 +1112,7 @@ namespace System.Web {
                 offset += n;
                 size -= n;
             }
+#endif
         }
 
         //

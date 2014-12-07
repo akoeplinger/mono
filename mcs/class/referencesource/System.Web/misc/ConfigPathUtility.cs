@@ -6,7 +6,7 @@
 
 namespace System.Configuration {
 
-#if CONFIGPATHUTILITY_SYSTEMWEB
+#if CONFIGPATHUTILITY_SYSTEMWEB || MONO
     using Debug=System.Web.Util.Debug;
 #endif
 
@@ -113,7 +113,7 @@ namespace System.Configuration {
 #endif
 
 // Avoid unused code warning in System.Configuration by including functions in assembly-specific #defines
-#if CONFIGPATHUTILITY_SYSTEMWEB
+#if CONFIGPATHUTILITY_SYSTEMWEB || MONO
         static internal string GetParent(string configPath) {
             Debug.Assert(String.IsNullOrEmpty(configPath) || IsValid(configPath), "String.IsNullOrEmpty(configPath) || IsValid(configPath)");
 

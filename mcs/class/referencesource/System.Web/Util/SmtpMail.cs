@@ -275,6 +275,7 @@ public class SmtpMail {
         }
 
         private static bool CdoSysExists() {
+#if !MONO
             // Check that the cdosys.dll exists
             if(cdoSysLibraryInfo == CdoSysLibraryStatus.NotChecked) {
                 string fullDllPath = PathUtil.GetSystemDllFullPath("cdosys.dll");
@@ -289,6 +290,9 @@ public class SmtpMail {
             }
             // return cached value, found at a previous check
             return (cdoSysLibraryInfo == CdoSysLibraryStatus.Exists);
+#else
+            return false;
+#endif
         }
 
         internal static bool OsSupportsCdoSys() {

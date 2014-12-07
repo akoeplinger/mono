@@ -24,7 +24,9 @@ namespace System.Web.UI {
     using System.Web.UI.WebControls;
     using System.Web.Util;
 #if !FEATURE_PAL
+#if !MONO || DESIGN_DEP
     using System.Web.UI.Design;
+#endif
 #endif // !FEATURE_PAL
 
 

@@ -37,17 +37,17 @@ namespace System.Web.Compilation {
         private static int _maxConcurrentCompilations;
 
         internal static bool IsDebuggingEnabled(HttpContext context) {
-            CompilationSection compConfig = MTConfigUtil.GetCompilationConfig(context);
+			CompilationSection compConfig = new CompilationSection (); // MTConfigUtil.GetCompilationConfig(context);
             return compConfig.Debug;
         }
 
         internal static bool IsBatchingEnabled(string configPath) {
-            CompilationSection config = MTConfigUtil.GetCompilationConfig(configPath);
+			CompilationSection config = new CompilationSection ();//MTConfigUtil.GetCompilationConfig(configPath);
             return config.Batch;
         }
 
         internal static int GetRecompilationsBeforeAppRestarts() {
-            CompilationSection config = MTConfigUtil.GetCompilationAppConfig();
+			CompilationSection config = new CompilationSection ();//MTConfigUtil.GetCompilationAppConfig();
             return config.NumRecompilesBeforeAppRestart;
         }
 
@@ -58,7 +58,7 @@ namespace System.Web.Compilation {
         internal static CompilerType GetDefaultLanguageCompilerInfo(CompilationSection compConfig, VirtualPath configPath) {
             if (compConfig == null) {
                 // Get the <compilation> config object
-                compConfig = MTConfigUtil.GetCompilationConfig(configPath);
+				compConfig = new CompilationSection ();//MTConfigUtil.GetCompilationConfig(configPath);
             }
 
             // If no default language was specified in config, use VB
@@ -92,7 +92,7 @@ namespace System.Web.Compilation {
          */
         private static CompilerType GetCompilerInfoFromExtension(VirtualPath configPath, string extension) {
             // Get the <compilation> config object
-            CompilationSection config = MTConfigUtil.GetCompilationConfig(configPath);
+			CompilationSection config = new CompilationSection ();//MTConfigUtil.GetCompilationConfig(configPath);
 
             return config.GetCompilerInfoFromExtension(extension, true /*throwOnFail*/);
         }
@@ -102,7 +102,7 @@ namespace System.Web.Compilation {
          */
         internal static CompilerType GetCompilerInfoFromLanguage(VirtualPath configPath, string language) {
             // Get the <compilation> config object
-            CompilationSection config = MTConfigUtil.GetCompilationConfig(configPath);
+			CompilationSection config = new CompilationSection ();//MTConfigUtil.GetCompilationConfig(configPath);
 
             return config.GetCompilerInfoFromLanguage(language);
         }
@@ -112,7 +112,7 @@ namespace System.Web.Compilation {
 
             if (compConfig == null) {
                 // Get the <compilation> config object
-                compConfig = MTConfigUtil.GetCompilationConfig(configPath);
+				compConfig = new CompilationSection ();//MTConfigUtil.GetCompilationConfig(configPath);
             }
 
             if (compConfig.DefaultLanguage == null)
@@ -123,9 +123,9 @@ namespace System.Web.Compilation {
 
         internal static CodeSubDirectoriesCollection GetCodeSubDirectories() {
             // Get the <compilation> config object
-            CompilationSection config = MTConfigUtil.GetCompilationAppConfig();
+			CompilationSection config = new CompilationSection ();//MTConfigUtil.GetCompilationAppConfig();
 
-            CodeSubDirectoriesCollection codeSubDirectories = config.CodeSubDirectories;
+			CodeSubDirectoriesCollection codeSubDirectories = config.CodeSubDirectories;
 
             // Make sure the config data is valid
             if (codeSubDirectories != null) {
@@ -282,7 +282,7 @@ namespace System.Web.Compilation {
             BuildProviderAppliesTo neededFor, bool failIfUnknown) {
 
             // Get the <compilation> config object
-            CompilationSection config = MTConfigUtil.GetCompilationConfig(configPath);
+			CompilationSection config = new CompilationSection ();//MTConfigUtil.GetCompilationConfig(configPath);
 
             return GetBuildProviderTypeFromExtension(config, extension, neededFor, failIfUnknown);
         }
@@ -373,7 +373,7 @@ namespace System.Web.Compilation {
             createStub = false;
 
             // Get the <compilation> config object
-            CompilationSection config = MTConfigUtil.GetCompilationConfig(virtualPath);
+			CompilationSection config = new CompilationSection ();//MTConfigUtil.GetCompilationConfig(virtualPath);
 
             string extension = virtualPath.Extension;
 
@@ -652,7 +652,7 @@ namespace System.Web.Compilation {
                         maxConcurrentCompilations = AppSettings.MaxConcurrentCompilations.Value;
                     }
                     else {
-                        CompilationSection config = MTConfigUtil.GetCompilationAppConfig();
+						CompilationSection config = new CompilationSection ();//MTConfigUtil.GetCompilationAppConfig();
                         maxConcurrentCompilations = config.MaxConcurrentCompilations;
                     }
 

@@ -4,7 +4,7 @@
 // </copyright>                                                                
 //------------------------------------------------------------------------------
 
-#if OBJECTSTATEFORMATTER
+#if OBJECTSTATEFORMATTER || MONO
 
 namespace System.Web.UI {
     using System;

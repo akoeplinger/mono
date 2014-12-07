@@ -397,7 +397,7 @@ namespace System.Web.Compilation {
             _globalAsaxVirtualPath = HttpRuntime.AppDomainAppVirtualPathObject.SimpleCombine(
                 HttpApplicationFactory.applicationFileName);
 
-            _webHashFilePath = Path.Combine(HttpRuntime.CodegenDirInternal, "hash\\hash.web");
+			_webHashFilePath = Path.Combine(HttpRuntime.CodegenDirInternal, "hash"+Path.DirectorySeparatorChar+"hash.web");
 
             // Indicate whether we should ignore the top level compilation exceptions.
             // In CBM case, we want to continue processing the page and return partial info even
@@ -614,11 +614,11 @@ namespace System.Web.Compilation {
             }
 
             RuntimeConfig appConfig = RuntimeConfig.GetAppConfig();
-            CompilationSection compConfig = appConfig.Compilation;
+            //CompilationSection compConfig = appConfig.Compilation;
 
             // Ignore the OptimizeCompilations flag in ClientBuildManager mode
             if (!BuildManagerHost.InClientBuildManager) {
-                _optimizeCompilations = compConfig.OptimizeCompilations;
+				_optimizeCompilations = true; //compConfig.OptimizeCompilations;
             }
 
             // In optimized compilation mode, we don't clean out all the compilations just because a top level
@@ -645,18 +645,18 @@ namespace System.Web.Compilation {
             // Add a dependency on the hash of the app level <compilation> section, since it
             // affects all compilations, including the code directory.  It it changes,
             // we may as well, start all over.
-            specialFilesHashCodeCombiner.AddObject(compConfig.RecompilationHash);
+            //specialFilesHashCodeCombiner.AddObject(compConfig.RecompilationHash);
 
-            ProfileSection profileSection = appConfig.Profile;
-            specialFilesHashCodeCombiner.AddObject(profileSection.RecompilationHash);
+            //ProfileSection profileSection = appConfig.Profile;
+            //specialFilesHashCodeCombiner.AddObject(profileSection.RecompilationHash);
 
             // Add a dependency on file encoding (DevDiv 4560)
-            specialFilesHashCodeCombiner.AddObject(appConfig.Globalization.FileEncoding);
+            //specialFilesHashCodeCombiner.AddObject(appConfig.Globalization.FileEncoding);
 
             // Also add a dependency on the <trust> config section
-            TrustSection casConfig = appConfig.Trust;
-            specialFilesHashCodeCombiner.AddObject(casConfig.Level);
-            specialFilesHashCodeCombiner.AddObject(casConfig.OriginUrl);
+            //TrustSection casConfig = appConfig.Trust;
+            //specialFilesHashCodeCombiner.AddObject(casConfig.Level);
+            //specialFilesHashCodeCombiner.AddObject(casConfig.OriginUrl);
 
             // Add a dependency on whether profile is enabled
             specialFilesHashCodeCombiner.AddObject(ProfileManager.Enabled);
@@ -664,7 +664,7 @@ namespace System.Web.Compilation {
             // Add a dependency to the force debug flag.
             specialFilesHashCodeCombiner.AddObject(PrecompilingWithDebugInfo);
 
-            CheckCodeGenFiles(specialFilesHashCodeCombiner.CombinedHash, cachedHash);
+            //CheckCodeGenFiles(specialFilesHashCodeCombiner.CombinedHash, cachedHash);
             return specialFilesHashCodeCombiner.CombinedHash;
         }
 
@@ -685,8 +685,8 @@ namespace System.Web.Compilation {
                 // VSWhidbey 537929 : Setup a filechange monitor for the web.hash file. If this file is modified,
                 // we will need to shutdown the appdomain so we don't use the obsolete assemblies. The new appdomain
                 // will use the up-to-date assemblies.
-                HttpRuntime.FileChangesMonitor.StartMonitoringFile(_webHashFilePath,
-                    new FileChangeEventHandler(this.OnWebHashFileChange));
+                //HttpRuntime.FileChangesMonitor.StartMonitoringFile(_webHashFilePath,
+                //    new FileChangeEventHandler(this.OnWebHashFileChange));
                 Debug.Assert(File.Exists(_webHashFilePath), _webHashFilePath);
             }
             finally {
@@ -710,7 +710,7 @@ namespace System.Web.Compilation {
                         cachedTopLevelFilesHash + " New=" + currentHash);
                 }
 
-                _codeGenCache.RemoveAllCodegenFiles();
+                //_codeGenCache.RemoveAllCodegenFiles();
             }
             else {
                 Debug.Trace("BuildManager", "BuildManager: the special files are up to date");
@@ -812,7 +812,8 @@ namespace System.Web.Compilation {
 
                 Debug.Assert(PreStartInitStage == Compilation.PreStartInitStage.AfterPreStartInit);
 
-                return new HashSet<string>(methods.Select(m => m.DeclaringType.Assembly.FullName), StringComparer.OrdinalIgnoreCase);
+				return new HashSet<string> ();
+                //return new HashSet<string>(methods.Select(m => m.DeclaringType.Assembly.FullName), StringComparer.OrdinalIgnoreCase);
             }
         }
 
@@ -914,8 +915,8 @@ namespace System.Web.Compilation {
         }
 
         private static ICollection<MethodInfo> GetPreStartInitMethodsFromReferencedAssemblies() {
-            CompilationSection compConfig = MTConfigUtil.GetCompilationConfig(HttpRuntime.AppDomainAppVirtualPath);
-            var referencedAssemblies = BuildManager.GetReferencedAssemblies(compConfig).Cast<Assembly>();
+            //CompilationSection compConfig = MTConfigUtil.GetCompilationConfig(HttpRuntime.AppDomainAppVirtualPath);
+			var referencedAssemblies = new List<Assembly> ();// BuildManager.GetReferencedAssemblies(compConfig).Cast<Assembly>();
             return GetPreStartInitMethodsFromAssemblyCollection(referencedAssemblies, buildingFromCache: false);
         }
 
@@ -1958,7 +1959,7 @@ namespace System.Web.Compilation {
                 try {
                     sdc.Process();
                 }
-                catch {
+				catch (Exception ex) {
                     return false;
                 }
             }

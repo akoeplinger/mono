@@ -95,7 +95,7 @@ namespace System.Web.Security {
                 if (_Initialized)
                     return;
 
-                AuthenticationSection settings = RuntimeConfig.GetAppConfig().Authentication;
+				AuthenticationSection settings = new AuthenticationSection (); //RuntimeConfig.GetAppConfig().Authentication;
                 settings.ValidateAuthenticationMode();
                 _FormsName = settings.Forms.Name;
                 _RequireSSL = settings.Forms.RequireSSL;
@@ -202,11 +202,15 @@ namespace System.Web.Security {
             byte []           pBin = new byte[4];
             long []           pDates = new long[2];
 
+#if !MONO
             int iRet = UnsafeNativeMethods.CookieAuthParseTicket(bBlob, ticketLength,
                                                                    name, iSize,
                                                                    data, iSize,
                                                                    path, iSize,
                                                                    pBin, pDates);
+#else
+            int iRet = 0;
+#endif
 
             if (iRet != 0)
                 return null;
@@ -842,10 +846,14 @@ namespace System.Web.Security {
             pDates[0] = ticket.IssueDate.ToFileTime();
             pDates[1] = ticket.Expiration.ToFileTime();
 
+#if !MONO
             int iRet = UnsafeNativeMethods.CookieAuthConstructTicket(
                         bData, bData.Length,
                         ticket.Name, ticket.UserData, ticket.CookiePath,
                         pBin, pDates);
+#else
+            int iRet = 0;
+#endif
 
             if (iRet < 0)
                 return null;

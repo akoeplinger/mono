@@ -16,6 +16,7 @@ namespace System.Web {
 
         [AspNetHostingPermission(SecurityAction.Demand, Level=AspNetHostingPermissionLevel.High)]
         static public ProcessInfo    GetCurrentProcessInfo() {
+#if !MONO
             HttpContext context = HttpContext.Current;
             if (context == null || context.WorkerRequest == null || 
                 !(context.WorkerRequest is System.Web.Hosting.ISAPIWorkerRequestOutOfProc))
@@ -41,11 +42,15 @@ namespace System.Web {
 
             return new ProcessInfo(startTime, age, pid, dwReqExecuted, 
                                    ProcessStatus.Alive, ProcessShutdownReason.None, mem);
+#else
+            return null;
+#endif
         }
 
 
         [AspNetHostingPermission(SecurityAction.Demand, Level=AspNetHostingPermissionLevel.High)]
         static public ProcessInfo[]  GetHistory(int numRecords) {
+#if !MONO
             HttpContext context = HttpContext.Current;
             if (context == null || context.WorkerRequest == null || 
                 !(context.WorkerRequest is System.Web.Hosting.ISAPIWorkerRequestOutOfProc))
@@ -111,6 +116,9 @@ namespace System.Web {
             }
 
             return ret;
+#else
+            return null;
+#endif
         }
     }
 

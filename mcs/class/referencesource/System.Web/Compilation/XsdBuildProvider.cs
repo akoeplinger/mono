@@ -9,7 +9,9 @@ namespace System.Web.Compilation {
 using System;
 using System.IO;
 using System.Data;
+#if !MONO || DESIGN_DEP
 using System.Data.Design;
+#endif
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Xml;
@@ -23,7 +25,9 @@ using System.Collections;
 
 using Util=System.Web.UI.Util;
 #if !FEATURE_PAL // FEATURE_PAL does not support System.Data.Design
+#if !MONO || DESIGN_DEP
 using TypedDataSetGenerator=System.Data.Design.TypedDataSetGenerator;
+#endif
 #endif // !FEATURE_PAL 
 
 [BuildProviderAppliesTo(BuildProviderAppliesTo.Code)]
@@ -33,6 +37,7 @@ internal class XsdBuildProvider: BuildProvider {
     [SuppressMessage("Microsoft.Security.Xml", "CA3056:UseXmlReaderForLoad", Justification = "Developer-controlled .xml files in application directory are implicitly trusted by ASP.Net.")]
     public override void GenerateCode(AssemblyBuilder assemblyBuilder)  {
 #if !FEATURE_PAL // FEATURE_PAL does not support System.Data.Design
+#if !MONO || DESIGN_DEP
         // Get the namespace that we will use
         string ns = Util.GetNamespaceFromVirtualPath(VirtualPathObject);
 
@@ -86,6 +91,7 @@ internal class XsdBuildProvider: BuildProvider {
 
         // Add the CodeCompileUnit to the compilation
         assemblyBuilder.AddCodeCompileUnit(this, codeCompileUnit);
+#endif
 #else // !FEATURE_PAL 
         throw new NotImplementedException("System.Data.Design - ROTORTODO");
 #endif // !FEATURE_PAL 

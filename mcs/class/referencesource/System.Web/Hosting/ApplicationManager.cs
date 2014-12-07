@@ -1,3 +1,4 @@
+#define WEB_SINGLE_APPDOMAIN
 //------------------------------------------------------------------------------
 // <copyright file="ApplicationManager.cs" company="Microsoft">
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
@@ -966,7 +967,9 @@ namespace System.Web.Hosting {
                     bool skipAdditionalConfigChecks = false;
                     if (inClientBuildManager && hostingParameters.IISExpressVersion != null) {
                         permissionSet = new PermissionSet(PermissionState.Unrestricted);
+#if !MONO
                         setup.PartialTrustVisibleAssemblies = defaultPartialTrustVisibleAssemblies;
+#endif
                         appConfig = GetAppConfigIISExpress(siteID, appSegment, hostingParameters.IISExpressVersion);
                         skipAdditionalConfigChecks = true;
                     }
@@ -984,20 +987,22 @@ namespace System.Web.Hosting {
                     }
 
                     HttpRuntimeSection httpRuntimeSection = (HttpRuntimeSection)appConfig.GetSection("system.web/httpRuntime");
-                    if (httpRuntimeSection == null) {
-                        throw new ConfigurationErrorsException(SR.GetString(SR.Config_section_not_present, "httpRuntime"));
-                    }
+                    //if (httpRuntimeSection == null) {
+                     //   throw new ConfigurationErrorsException(SR.GetString(SR.Config_section_not_present, "httpRuntime"));
+                    //}
 
                     // DevDiv #403846 - Change certain config defaults if <httpRuntime targetFramework="4.5" /> exists in config.
                     // We store this information in the AppDomain data because certain configuration sections (like <compilation>)
                     // are loaded before config is "baked" in the child AppDomain, and if we make <compilation> and other sections
                     // dependent on <httpRuntime> which may not have been loaded yet, we risk introducing ----s. Putting this value
                     // in the AppDomain data guarantees that it is available before the first call to the config system.
-                    FrameworkName targetFrameworkName = httpRuntimeSection.GetTargetFrameworkName();
+                    FrameworkName targetFrameworkName = null; //	httpRuntimeSection.GetTargetFrameworkName();
                     if (targetFrameworkName != null) {
                         appDomainAdditionalData[System.Web.Util.BinaryCompatibility.TargetFrameworkKey] = targetFrameworkName;
                     }
-
+#if MONO
+                    skipAdditionalConfigChecks = true;
+#endif
                     if (!skipAdditionalConfigChecks) {
                         // DevDiv #71268 - Add <httpRuntime defaultRegexMatchTimeout="HH:MM:SS" /> configuration attribute
                         if (httpRuntimeSection.DefaultRegexMatchTimeout != TimeSpan.Zero) {
@@ -1119,13 +1124,17 @@ namespace System.Web.Hosting {
 
                         if (inClientBuildManager) {
                             permissionSet = new PermissionSet(PermissionState.Unrestricted);
+#if !MONO
                             setup.PartialTrustVisibleAssemblies = defaultPartialTrustVisibleAssemblies;
+#endif
                         }
                         else {
                             if (!switches.UseLegacyCas) {
                                 if (trustSection.Level == "Full") {
                                     permissionSet = new PermissionSet(PermissionState.Unrestricted);
+#if !MONO
                                     setup.PartialTrustVisibleAssemblies = defaultPartialTrustVisibleAssemblies;
+#endif
                                 }
                                 else {
                                     SecurityPolicySection securityPolicySection = (SecurityPolicySection)appConfig.GetSection("system.web/securityPolicy");
@@ -1174,7 +1183,9 @@ namespace System.Web.Hosting {
                                 if (partialTrustVisibleAssemblies == null) {
                                     partialTrustVisibleAssemblies = defaultPartialTrustVisibleAssemblies;
                                 }
+#if !MONO
                                 setup.PartialTrustVisibleAssemblies = partialTrustVisibleAssemblies;
+#endif
                             }
                         }
                     }
@@ -1183,12 +1194,16 @@ namespace System.Web.Hosting {
                     appDomainStartupConfigurationException = e;
                     permissionSet = new PermissionSet(PermissionState.Unrestricted);
                 }
-
+#if MONO  // TODO: this can be removed once the config stuff is working
+                permissionSet = new PermissionSet(PermissionState.Unrestricted);
+#endif
                 // Set the AppDomainManager if needed
                 Type appDomainManagerType = AspNetAppDomainManager.GetAspNetAppDomainManagerType(requireHostExecutionContextManager, requireHostSecurityManager);
                 if (appDomainManagerType != null) {
+#if !MONO
                     setup.AppDomainManagerType = appDomainManagerType.FullName;
                     setup.AppDomainManagerAssembly = appDomainManagerType.Assembly.FullName;
+#endif
                 }
 
                 // Apply compatibility switches
@@ -1204,8 +1219,8 @@ GetDefaultDomainIdentity(),
 #endif // FEATURE_PAL
 setup);
                     }
-                    else {
-                        appDomain = AppDomain.CreateDomain(domainId,
+                else {
+                    appDomain = AppDomain.CreateDomain(domainId,
 #if FEATURE_PAL // FEATURE_PAL: hack to avoid non-supported hosting features
                                                            null,
 #else // FEATURE_PAL
@@ -1214,11 +1229,20 @@ GetDefaultDomainIdentity(),
 setup,
                                                            permissionSet,
                                                            fullTrustAssemblies.ToArray() /* fully trusted assemblies list: empty list means only trust GAC assemblies */);
-                    }
+
+                }
                     foreach (DictionaryEntry e in bindings)
+#if WEB_SINGLE_APPDOMAIN
+                        AppDomain.CurrentDomain.SetData((String)e.Key, (String)e.Value);
+#else
                         appDomain.SetData((String)e.Key, (String)e.Value);
+#endif
                     foreach (var entry in appDomainAdditionalData)
+#if WEB_SINGLE_APPDOMAIN
+                        AppDomain.CurrentDomain.SetData(entry.Key, entry.Value);
+#else
                         appDomain.SetData(entry.Key, entry.Value);
+#endif
                 }
                 catch (Exception e) {
                     Debug.Trace("AppManager", "AppDomain.CreateDomain failed", e);
@@ -1231,10 +1255,13 @@ setup,
                     ictxConfig = null;
                 }
                 if (uncTokenConfig != IntPtr.Zero) {
+#if !MONO
                     UnsafeNativeMethods.CloseHandle(uncTokenConfig);
+#endif
                     uncTokenConfig = IntPtr.Zero;
                 }
             }
+
 
             if (appDomain == null) {
                 throw new SystemException(SR.GetString(SR.Cannot_create_AppDomain), appDomainCreationException);
@@ -1271,7 +1298,6 @@ setup,
                 }
             }
 
-
             if (uncToken != IntPtr.Zero) {
                 try {
                     ictx = new ImpersonationContext(uncToken);
@@ -1279,10 +1305,15 @@ setup,
                 catch {
                 }
                 finally {
+#if !MONO
                     UnsafeNativeMethods.CloseHandle(uncToken);
+#endif
                 }
             }
 
+#if WEB_SINGLE_APPDOMAIN // TODO: this works, but not in the debugger (needs investigation) !!
+            HostingEnvironment env = new HostingEnvironment();
+#else
             try {
 
                 // Create the hosting environment in the app domain
@@ -1309,10 +1340,12 @@ setup,
             }
 
             HostingEnvironment env = (h != null) ? h.Unwrap() as HostingEnvironment : null;
+#endif
 
             if (env == null)
-                throw new SystemException(SR.GetString(SR.Cannot_create_HostEnv));
+                throw new SystemException (SR.GetString (SR.Cannot_create_HostEnv));
 
+            Console.WriteLine ("Current AppDomain-ID: " + AppDomain.CurrentDomain.Id);
             // initialize the hosting environment
             IConfigMapPathFactory configMapPathFactory = appHost.GetConfigMapPathFactory();
             if (appDomainStartupConfigurationException == null) {
@@ -1689,6 +1722,7 @@ setup,
 
         private static Evidence GetDefaultDomainIdentity() {
             Evidence evidence = AppDomain.CurrentDomain.Evidence; // CurrentDomain.Evidence returns a clone so we can modify it if we need
+#if !MONO
             bool hasZone = evidence.GetHostEvidence<Zone>() != null;
             bool hasUrl = evidence.GetHostEvidence<Url>() != null;
 
@@ -1697,7 +1731,7 @@ setup,
 
             if (!hasUrl)
                 evidence.AddHostEvidence(new Url("ms-internal-microsoft-asp-net-webhost-20"));
-
+#endif
             return evidence;
         }
 
@@ -1800,7 +1834,11 @@ setup,
 
             private static bool GetIsStringHashCodeRandomizationDetected() {
                 // known test vector
+#if !MONO
                 return (StringComparer.InvariantCultureIgnoreCase.GetHashCode("The quick brown fox jumps over the lazy dog.") != 0x703e662e);
+#else
+                return false;
+#endif
             }
 
             // Visual Studio / WebMatrix will set DEV_ENVIRONMENT=1 when launching an ASP.NET host in a development environment.

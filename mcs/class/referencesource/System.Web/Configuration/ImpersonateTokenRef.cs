@@ -30,13 +30,17 @@ namespace System.Web.Configuration {
         // The handle can be kept alive by HttpContext.s_appIdentityConfig (see ASURT#121815)
         ~ImpersonateTokenRef() {
             if (_handle != IntPtr.Zero) {
+#if !MONO
                 UnsafeNativeMethods.CloseHandle(_handle);
+#endif
                 _handle = IntPtr.Zero;
             }
         }
         void IDisposable.Dispose() {
             if (_handle != IntPtr.Zero) {
+#if !MONO
                 UnsafeNativeMethods.CloseHandle(_handle);
+#endif
                 _handle = IntPtr.Zero;
             }
             GC.SuppressFinalize(this);

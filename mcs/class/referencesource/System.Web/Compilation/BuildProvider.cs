@@ -209,6 +209,13 @@ public abstract class BuildProvider {
 
     internal static BuildProviderInfo GetBuildProviderInfo(System.Web.Configuration.CompilationSection config, string extension) {
         Debug.Assert(extension != null);
+
+			#if MONO
+			if(extension==".aspx")
+			return new CompilationBuildProviderInfo(typeof(PageBuildProvider));
+			#endif
+
+
         var entry = config.BuildProviders[extension];
         if (entry != null) {
             return entry.BuildProviderInfo;

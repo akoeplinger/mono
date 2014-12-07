@@ -202,10 +202,10 @@ namespace System.Web.UI {
                         else {
                             HttpContext context = Context;
                             if (context != null) {
-                                EffectiveClientIDModeValue = RuntimeConfig.GetConfig(context).Pages.ClientIDMode;
+								EffectiveClientIDModeValue = new PagesSection ().ClientIDMode;//RuntimeConfig.GetConfig(context).Pages.ClientIDMode;
                             }
                             else {
-                                EffectiveClientIDModeValue = RuntimeConfig.GetConfig().Pages.ClientIDMode;
+								EffectiveClientIDModeValue = new PagesSection ().ClientIDMode; //RuntimeConfig.GetConfig().Pages.ClientIDMode;
                             }
                         }
                     }
@@ -958,6 +958,11 @@ namespace System.Web.UI {
         }
 
         internal XhtmlConformanceSection GetXhtmlConformanceSection() {
+
+			#if MONO
+			return new XhtmlConformanceSection();
+			#endif
+
             HttpContext context = Context;
             XhtmlConformanceSection xhtmlConformanceSection;
             if (context != null) {
@@ -981,7 +986,7 @@ namespace System.Web.UI {
                 if (_occasionalFields == null ||
                     _occasionalFields.RareFields == null ||
                     _occasionalFields.RareFields.RenderingCompatibility == null) {
-                        return RuntimeConfig.Pages.ControlRenderingCompatibilityVersion;
+					return new PagesSection().ControlRenderingCompatibilityVersion;//RuntimeConfig.Pages.ControlRenderingCompatibilityVersion;
                 }
                 return _occasionalFields.RareFields.RenderingCompatibility;
             }
@@ -2799,6 +2804,10 @@ namespace System.Web.UI {
         }
 
         internal bool CalculateEffectiveValidateRequest() {
+			#if MONO
+			return true;
+			#endif
+
             RuntimeConfig config = RuntimeConfig.GetConfig();
             HttpRuntimeSection runtimeSection = config.HttpRuntime;
             if (runtimeSection.RequestValidationMode >= VersionUtil.Framework45) {

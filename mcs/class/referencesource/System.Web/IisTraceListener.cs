@@ -20,6 +20,7 @@ namespace System.Web {
 
 
         public IisTraceListener() {
+#if !MONO
             // only supported on IIS version 7 and later
             HttpContext context = HttpContext.Current;
             if (context != null) {
@@ -27,6 +28,7 @@ namespace System.Web {
                     throw new PlatformNotSupportedException(SR.GetString(SR.Requires_Iis_7));
                 }
             }
+#endif
         }
 
         // the listener apis

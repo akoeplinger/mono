@@ -24,14 +24,21 @@ namespace System.Web.Configuration {
     using System.Xml;
     using System.Text;
     using System.Runtime.InteropServices;
+#if !MONO || MSBUILD_DEP
     using Microsoft.Build.Utilities;
+#endif
 
     //
     // Configuration host for web applications.
     //
     internal sealed class WebConfigurationHost : DelegatingConfigHost, IInternalConfigWebHost {
+#if !MONO
         const string InternalHostTypeName = "System.Configuration.Internal.InternalConfigHost, " + AssemblyRef.SystemConfiguration;
         const string InternalConfigConfigurationFactoryTypeName = "System.Configuration.Internal.InternalConfigConfigurationFactory, " + AssemblyRef.SystemConfiguration;
+#else
+        const string InternalHostTypeName = "System.Configuration.InternalWebConfigurationHost, " + AssemblyRef.SystemConfiguration;
+        const string InternalConfigConfigurationFactoryTypeName = "System.Configuration.InternalConfigurationFactory, " + AssemblyRef.SystemConfiguration;
+#endif
 
         internal const string           MachineConfigName = "machine";
         internal const string           MachineConfigPath = "machine";
@@ -896,6 +903,7 @@ namespace System.Web.Configuration {
 
 
         private static string GetMachineConfigPathFromTargetFrameworkMoniker(string moniker) {
+#if !MONO || MSBUILD_DEP
             TargetDotNetFrameworkVersion ver = GetTargetFrameworkVersionEnumFromMoniker(moniker);
             if (ver == TargetDotNetFrameworkVersion.VersionLatest)
                 return null;
@@ -903,8 +911,12 @@ namespace System.Web.Configuration {
             string machineConfig = ToolLocationHelper.GetPathToDotNetFrameworkFile(@"config\machine.config", ver);
             new FileIOPermission(FileIOPermissionAccess.PathDiscovery, machineConfig).Demand();
             return machineConfig;
+#else
+            return null;
+#endif
         }
 
+#if !MONO || MSBUILD_DEP
         private static TargetDotNetFrameworkVersion GetTargetFrameworkVersionEnumFromMoniker(string moniker)
         {
             // 
@@ -914,5 +926,6 @@ namespace System.Web.Configuration {
             }
             return TargetDotNetFrameworkVersion.VersionLatest;
         }
+#endif
     }
 }

@@ -175,7 +175,7 @@ namespace MonoTests.System.Web {
 			HttpRequest r = HttpContext.Current.Request;
 			string appBase = r.PhysicalApplicationPath.TrimEnd (Path.DirectorySeparatorChar);
 			Assert.AreEqual (appBase, r.MapPath ("~"), "test1");
-			Assert.AreEqual (appBase, r.MapPath (null), "test1a");
+			Assert.AreEqual (appBase, r.MapPath ((string)null), "test1a");
 			Assert.AreEqual (appBase, r.MapPath (""), "test1b");
 			Assert.AreEqual (appBase, r.MapPath (" "), "test1c");
 			Assert.AreEqual (appBase + Path.DirectorySeparatorChar, r.MapPath ("~/"), "test1");

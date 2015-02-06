@@ -45,7 +45,7 @@ namespace MonoTests.System.Web.Hosting {
 		
 		[SetUp] public void startup ()
 		{
-			cwd = Environment.CurrentDirectory;
+			cwd = "/home/alexander/Desktop/test"; //Environment.CurrentDirectory;
 			bindir = Path.Combine (cwd, "bin");
 
 			Uri u = new Uri (typeof (SimpleWorkerRequestTest).Assembly.CodeBase);
@@ -169,7 +169,7 @@ namespace MonoTests.System.Web.Hosting {
 		}
 
 		public class Host : MarshalByRefObject {
-			string cwd = Environment.CurrentDirectory;
+			string cwd = "/home/alexander/Desktop/test";//Environment.CurrentDirectory;
 
 			
 			public void Demo ()

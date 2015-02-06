@@ -30,7 +30,7 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Web;
-using System.Web.Script.Services;
+//using System.Web.Script.Services;
 
 namespace System.ServiceModel.Description
 {
@@ -52,7 +52,7 @@ namespace System.ServiceModel.Description
 		[OperationContract]
 		public string Get ()
 		{
-			return ProxyGenerator.GetClientProxyScript (type, path, debug);
+			return ""; //ProxyGenerator.GetClientProxyScript (type, path, debug);
 		}
 	}
 

@@ -48,8 +48,6 @@ namespace MonoTests.System.Web.Configuration {
 
 			Assert.IsNotNull (a.Forms, "A1");
 			Assert.AreEqual (typeof (FormsAuthenticationConfiguration), a.Forms.GetType(), "A2");
-			Assert.IsNotNull (a.Passport, "A3");
-			Assert.AreEqual (typeof (PassportAuthentication), a.Passport.GetType(), "A4");
 			Assert.AreEqual (AuthenticationMode.Windows, a.Mode, "A5");
 		}
 	}

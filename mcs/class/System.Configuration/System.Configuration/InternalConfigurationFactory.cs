@@ -56,7 +56,7 @@ namespace System.Configuration {
 		public void Init (Type typeConfigHost, params object[] hostInitParams)
 		{
 			this.hostInitParams = hostInitParams;
-			host = (IInternalConfigHost) Activator.CreateInstance (typeConfigHost);
+			host = (IInternalConfigHost) Activator.CreateInstance (typeConfigHost, true);
 			root = new InternalConfigurationRoot ();
 			root.Init (host, false);
 		}

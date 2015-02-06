@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Web-tests-net_4_5", "System.Web-tests-net_4_5.csproj", "{715EA166-6447-4341-B727-C7AC2084665B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTester", "ConsoleTester\ConsoleTester.csproj", "{BBE803AE-D257-4D4F-8923-75681BB8A566}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{715EA166-6447-4341-B727-C7AC2084665B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{715EA166-6447-4341-B727-C7AC2084665B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{715EA166-6447-4341-B727-C7AC2084665B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{715EA166-6447-4341-B727-C7AC2084665B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBE803AE-D257-4D4F-8923-75681BB8A566}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBE803AE-D257-4D4F-8923-75681BB8A566}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBE803AE-D257-4D4F-8923-75681BB8A566}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBE803AE-D257-4D4F-8923-75681BB8A566}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

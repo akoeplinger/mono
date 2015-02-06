@@ -508,11 +508,7 @@ namespace MonoTests.System.Web {
 
 			UnknownResponseHeader unknown;
 
-			Assert.AreEqual (3, f.UnknownResponseHeaders.Count, "#C1");
-
-			unknown = (UnknownResponseHeader) f.UnknownResponseHeaders ["X-AspNet-Version"];
-			Assert.AreEqual ("X-AspNet-Version", unknown.Name, "#C2");
-			Assert.AreEqual (Environment.Version.ToString (3), unknown.Value, "#C3");
+			Assert.AreEqual (2, f.UnknownResponseHeaders.Count, "#C1");
 
 			unknown = (UnknownResponseHeader) f.UnknownResponseHeaders ["Content-Disposition"];
 			Assert.AreEqual ("Content-Disposition", unknown.Name, "#C4");

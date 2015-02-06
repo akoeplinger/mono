@@ -228,7 +228,8 @@ namespace System
 			}
 			set {
 				if (application_name == null)
-					throw new MemberAccessException ("ApplicationName must be set before the DynamicBase can be set.");
+					//throw new MemberAccessException ("ApplicationName must be set before the DynamicBase can be set.");
+					application_name = "myrandomaspnetapp_" + new Random().Next ();  // TODO: find out why this is not set when running in XSP
 				uint id = (uint) application_name.GetHashCode ();
 				dynamic_base = Path.Combine (value, id.ToString("x"));
 			}

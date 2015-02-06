@@ -32,9 +32,6 @@ namespace SystemWebTestShim {
 	public class BuildManager {
 		public static void SuppressDebugModeMessages ()
 		{
-#if !TARGET_DOTNET
-			global::System.Web.Compilation.BuildManager.suppressDebugModeMessages = true;
-#endif
 		}
 	}
 }

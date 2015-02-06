@@ -755,6 +755,7 @@ namespace MonoTests.System.Web.UI {
 
 			WebTest t = new WebTest ("PageLifecycleTest.aspx");
 			string PageRenderHtml = t.Run ();
+			Console.WriteLine (PageRenderHtml);
 			ArrayList eventlist = t.UserData as ArrayList;
 			if (eventlist == null)
 				Assert.Fail ("User data does not been created fail");
@@ -989,10 +990,13 @@ namespace MonoTests.System.Web.UI {
 			Assert.AreEqual (null, p.Form, "Form#1");
 			WebTest t = new WebTest (PageInvoker.CreateOnLoad (Form_Load));
 			t.Run ();
+			Console.WriteLine (t.Response.Body);
 		}
 
 		public static void Form_Load (Page p)
 		{
+			Console.WriteLine ("This is page load");
+			Console.WriteLine (Environment.StackTrace);
 			Assert.IsNotNull (p.Form, "Form#2");
 			Assert.AreEqual ("form1", p.Form.ID, "Form#3");
 			Assert.AreEqual (typeof (HtmlForm), p.Form.GetType (), "Form#4");

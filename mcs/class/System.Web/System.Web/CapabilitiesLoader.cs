@@ -106,7 +106,7 @@ namespace System.Web
 			((ArrayList) tbl ["browsers"]).Add (tbl["browser"]);
 
 			foreach (string key in data.Keys)
-				tbl [key.ToLower (Helpers.InvariantCulture).Trim ()] = data [key];
+				tbl [key.ToLower (CultureInfo.InvariantCulture).Trim ()] = data [key];
 			
 			return tbl;
 		}
@@ -138,7 +138,7 @@ namespace System.Web
 				if (text [0] != expression [0] ||
 				    String.Compare (text, 1, expression, 1,
 				    		    text.Length - 1, false,
-						    Helpers.InvariantCulture) != 0) {
+						    CultureInfo.InvariantCulture) != 0) {
 					return false;
 				}
 				expression = expression.Substring (text.Length);
@@ -400,7 +400,7 @@ namespace System.Web
 			
 			while ((str = input.ReadLine ()) != null && str.Length != 0) {
 				keyvalue = str.Split (eq, 2);
-				key = keyvalue [0].ToLower (Helpers.InvariantCulture).Trim ();
+				key = keyvalue [0].ToLower (CultureInfo.InvariantCulture).Trim ();
 				if (key.Length == 0)
 					continue;
 				data.Add (key, keyvalue [1]);

@@ -38,11 +38,7 @@ namespace SystemWebTestShim {
 	using Orig = System.Web.UI.Adapters;
 
 	public class PageAdapter : Orig.PageAdapter {
-#if TARGET_DOTNET
 		public PageAdapter (Page p) : base () { }
-#else
-		public PageAdapter (Page p) : base (p) {}
-#endif
 	}
 }
 
@@ -50,11 +46,7 @@ namespace SystemWebTestShim {
 	using Orig = System.Web.UI.WebControls.Adapters;
 
 	public class DataBoundControlAdapter : Orig.DataBoundControlAdapter {
-#if TARGET_DOTNET
 		public DataBoundControlAdapter (DataBoundControl c) : base () { }
-#else
-		public DataBoundControlAdapter (DataBoundControl c) : base (c) {}
-#endif
 
 		public new void PerformDataBinding (IEnumerable data)
 		{
@@ -63,11 +55,7 @@ namespace SystemWebTestShim {
 	}
 
 	public class HierarchicalDataBoundControlAdapter : Orig.HierarchicalDataBoundControlAdapter {
-#if TARGET_DOTNET
 		public HierarchicalDataBoundControlAdapter (HierarchicalDataBoundControl h) : base () { }
-#else
-		public HierarchicalDataBoundControlAdapter (HierarchicalDataBoundControl h) : base (h) {}
-#endif
 
 		public new void PerformDataBinding ()
 		{
@@ -76,27 +64,15 @@ namespace SystemWebTestShim {
 	}
 
 	public class WebControlAdapter : Orig.WebControlAdapter {
-#if TARGET_DOTNET
 		public WebControlAdapter (WebControl c) : base () {}
-#else
-		public WebControlAdapter (WebControl c) : base (c) {}
-#endif
 	}
 
 	public class MenuAdapter : Orig.MenuAdapter {
-#if TARGET_DOTNET
 		public MenuAdapter (Menu c) : base () {}
-#else
-		public MenuAdapter (Menu c) : base (c) {}
-#endif
 	}
 
 	public class HideDisabledControlAdapter : Orig.HideDisabledControlAdapter {
-#if TARGET_DOTNET
 		public HideDisabledControlAdapter (WebControl c) : base () { }
-#else
-		public HideDisabledControlAdapter (WebControl c) : base (c) {}
-#endif
 
 		public new void Render (HtmlTextWriter w)
 		{

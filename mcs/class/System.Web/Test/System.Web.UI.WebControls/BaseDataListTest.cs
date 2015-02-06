@@ -90,7 +90,7 @@ namespace MonoTests.System.Web.UI.WebControls {
 		{
 		}
 
-		protected override void PrepareControlHierarchy ()
+		protected internal override void PrepareControlHierarchy ()
 		{
 		}
 

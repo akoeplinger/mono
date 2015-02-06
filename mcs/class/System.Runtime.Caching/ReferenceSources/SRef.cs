@@ -18,8 +18,9 @@ namespace System.Runtime.Caching {
         }
 
         internal long ApproximateSize {
-            get { return (long) Marshal.SizeOf (_sizedRef.GetType ()); }
-        }
+            //get { return (long) Marshal.SizeOf (_sizedRef.GetType ()); }
+			get { return 100; }
+		}
 
         internal void Dispose() {
 

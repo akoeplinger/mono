@@ -251,9 +251,9 @@ LIB_MCS_FLAGS = \
 
 ifneq (plainweb/,$(intermediate))
 LIB_REFS += System.Web.Services
-LIB_MCS_FLAGS += -define:WEBSERVICES_DEP
+LIB_MCS_FLAGS += -define:WEBSERVICES_DEP -r:System.Web.Services.dll -define:DESIGN_DEP -r:System.Design.dll -define:CACHE_DEP -r:System.Runtime.Caching.dll -define:MSBUILD_DEP -r:Microsoft.Build.Framework.dll -r:Microsoft.Build.Tasks.v4.0.dll -r:Microsoft.Build.Utilities.v4.0.dll
 
-all-local: System.Web/UplevelHelper.cs resources/TranslationResources.resources 
+all-local: resources/TranslationResources.resources 
 
 endif
 
@@ -269,9 +269,7 @@ EXTRA_DISTFILES = \
 	$(TEST_RESOURCE_FILES) \
 	$(TEST_APP_CODE_FILES) \
 	$(TEST_APP_GLOBALRESOURCES_FILES) \
-	UplevelHelperDefinitions.xml \
 	$(RESX_DIST) \
-	SQLiteProviders_DatabaseSchema.sql \
 	$(shell find Test/standalone-runner-support/ -name "*.cs" -type f -printf "'%p' ") \
 	$(shell find Test/standalone-tests/ -name "*.cs" -type f -printf "'%p' " -o -name "*.cs.in" -type f -printf "'%p' ") \
 	$(shell find Test/standalone/ -path '*/.svn' -prune -o -type f -printf "'%p' ") \
@@ -279,16 +277,30 @@ EXTRA_DISTFILES = \
 	System.Web_standalone_test.dll.sources \
 	standalone-runner-support.dll.sources \
 	$(shell find Test/System.Web.Caching/CacheItemPriorityQueueTestData/ -name "Sequence*.*" -type f -printf "'%p' ") \
-	ASPState.sql
-
-BUILT_SOURCES = System.Web/UplevelHelper.cs 
 
 include ../../build/library.make
 
-$(the_libdir_base)System.Web.dll: $(the_libdir_base)System.Web.Services.dll
+$(the_libdir_base)System.Web.dll: $(the_libdir_base)System.Web.Services.dll $(the_libdir_base)System.Design.dll $(the_libdir_base)System.Runtime.Caching.dll $(the_libdir_base)System.Runtime.Caching.dll $(the_libdir_base)Microsoft.Build.Framework.dll $(the_libdir_base)Microsoft.Build.Utilities.v4.0.dll $(the_libdir_base)Microsoft.Build.Tasks.v4.0.dll
 
 $(the_libdir_base)System.Web.Services.dll:
 	(cd ../System.Web.Services; $(MAKE) $@)
+
+$(the_libdir_base)System.Design.dll:
+	(cd ../System.Design; $(MAKE) $@)
+
+$(the_libdir_base)System.Runtime.Caching.dll:
+	(cd ../System.Runtime.Caching; $(MAKE) $@)
+
+$(the_libdir_base)Microsoft.Build.Framework.dll:
+	(cd ../Microsoft.Build.Framework; $(MAKE) $@)
+
+$(the_libdir_base)Microsoft.Build.Utilities.v4.0.dll:
+	(cd ../Microsoft.Build.Utilities; $(MAKE) $@)
+
+$(the_libdir_base)Microsoft.Build.Tasks.v4.0.dll:
+	(cd ../Microsoft.Build.Engine; $(MAKE))
+	(cd ../Mono.XBuild.Tasks; $(MAKE))
+	(cd ../Microsoft.Build.Tasks; $(MAKE) $@)
 
 ifneq (plainweb/,$(intermediate))
 $(the_libdir_base)plainweb/System.Web.dll:
@@ -296,7 +308,7 @@ $(the_libdir_base)plainweb/System.Web.dll:
 
 endif
 
-.NOTPARALLEL: $(the_libdir_base)plainweb/System.Web.dll $(the_libdir_base)System.Web.Services.dll
+.NOTPARALLEL: $(the_libdir_base)plainweb/System.Web.dll $(the_libdir_base)System.Web.Services.dll $(the_libdir_base)System.Design.dll $(the_libdir_base)System.Runtime.Caching.dll $(the_libdir_base)Microsoft.Build.Framework.dll $(the_libdir_base)Microsoft.Build.Utilities.v4.0.dll $(the_libdir_base)Microsoft.Build.Tasks.v4.0.dll
 
 ifdef DEBUG
 LIB_MCS_FLAGS += -define:DEBUG
@@ -367,9 +379,6 @@ $(build_lib): $(RESX_RES) $(RESOURCE_FILES_2) $(RESOURCE_FILES_1)
 
 $(RESX_RES): %.resources: %.resx
 	$(RESGEN) `echo $< | $(PLATFORM_CHANGE_SEPARATOR_CMD)`
-
-System.Web/UplevelHelper.cs: UplevelHelperDefinitions.xml
-	MONO_PATH="$(topdir)/class/lib/$(BOOTSTRAP_PROFILE)$(PLATFORM_PATH_SEPARATOR)$$MONO_PATH" $(RUNTIME) $(RUNTIME_FLAGS) $(topdir)/class/lib/$(BUILD_TOOLS_PROFILE)/culevel.exe -o $@ $^
 
 run-aaa: test
 	$(TEST_RUNTIME) $(TEST_HARNESS) $(TEST_HARNESS_FLAGS) $(LOCAL_TEST_HARNESS_FLAGS) \

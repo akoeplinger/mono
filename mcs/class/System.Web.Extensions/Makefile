@@ -59,7 +59,7 @@ LIB_REFS = System System.Core System.Drawing System.Data System.Data.Linq System
 LIB_MCS_FLAGS = \
 	-unsafe \
 	-define:NET_3_5			\
-	-define:SYSTEM_WEB_EXTENSIONS	\
+	-define:WEB_EXTENSIONS_CODE	\
 	-r:$(corlib)	 		\
 	$(OTHER_LIB_MCS_FLAGS) 		\
 	$(RESOURCE_FILES:%=/resource:%)

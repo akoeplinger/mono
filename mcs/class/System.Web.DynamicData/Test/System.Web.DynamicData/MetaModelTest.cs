@@ -248,7 +248,7 @@ namespace MonoTests.System.Web.DynamicData
 			MetaModel m = Utils.GetModel<MyDataContext2> ();
 			MetaTable t;
 
-			Assert.Throws<ArgumentNullException> (() => m.TryGetTable (null, out t), "#A1");
+			Assert.Throws<ArgumentNullException> (() => m.TryGetTable ((string)null, out t), "#A1");
 
 			Assert.IsTrue (m.TryGetTable ("FooTable", out t), "#B1");
 			Assert.IsNotNull (t, "#B2");

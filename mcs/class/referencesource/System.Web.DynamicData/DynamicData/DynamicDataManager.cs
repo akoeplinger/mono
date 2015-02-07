@@ -202,7 +202,9 @@ namespace System.Web.DynamicData {
                 fieldControl.FieldsGenerator = new DefaultAutoFieldGenerator(table);
             }
             var linqDataSource = dataSource as LinqDataSource;
+#if !MONO
             var entityDataSource = dataSource as EntityDataSource;
+#endif
             // If the context type is not set, we need to set it
             if (dataSource.ContextType == null) {
                 dataSource.ContextType = table.DataContextType;
@@ -215,11 +217,13 @@ namespace System.Web.DynamicData {
                     };
                 }
 
+#if !MONO
                 if (entityDataSource != null) {
                     entityDataSource.ContextCreating += delegate(object sender, EntityDataSourceContextCreatingEventArgs e) {
                         e.Context = (ObjectContext)table.CreateContext();
                     };
                 }
+#endif
             }
 
             // If the datasource doesn't have an EntitySetName (aka TableName), set it from the meta table

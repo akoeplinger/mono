@@ -40,86 +40,6 @@ using MonoTests.Common;
 
 namespace MonoTests.System.Web.DynamicData
 {
-	class FakeWorkerRequest : HttpWorkerRequest
-	{
-		public override string GetUriPath()
-		{
-			return "/";
-		}
-
-		public override string GetQueryString()
-		{
-			return "GetQueryString";
-		}
-
-		public override string GetRawUrl()
-		{
-			return "GetRawUrl";
-		}
-
-		public override string GetHttpVerbName()
-		{
-			return "GetVerbName";
-		}
-
-		public override string GetHttpVersion()
-		{
-			return "GetHttpVersion";
-		}
-
-		public override string GetRemoteAddress()
-		{
-			return "__GetRemoteAddress";
-		}
-
-		public override int GetRemotePort()
-		{
-			return 1010;
-		}
-
-		public override string GetLocalAddress()
-		{
-			return "GetLocalAddress";
-		}
-
-		public override int GetLocalPort()
-		{
-			return 2020;
-		}
-
-		public override void SendStatus(int s, string x)
-		{
-		}
-
-		public override void SendKnownResponseHeader(int x, string j)
-		{
-		}
-
-		public override void SendUnknownResponseHeader(string a, string b)
-		{
-		}
-
-		public override void SendResponseFromMemory(byte[] arr, int x)
-		{
-		}
-
-		public override void SendResponseFromFile(string a, long b, long c)
-		{
-		}
-
-		public override void SendResponseFromFile(IntPtr a, long b, long c)
-		{
-		}
-
-		public override void FlushResponse(bool x)
-		{
-		}
-
-		public override void EndOfRequest()
-		{
-		}
-	}
-	
 	[TestFixture]
 	public class DynamicDataExtensionsTest
 	{
@@ -167,7 +87,7 @@ namespace MonoTests.System.Web.DynamicData
 		[ExpectedException (typeof (InvalidOperationException))]
 		public void DynamicDataExtensions_GetTable_Test2()
 		{
-			HttpContext.Current = new HttpContext(new FakeWorkerRequest());
+			HttpContext.Current = new HttpContext(new FakeHttpWorkerRequest());
 			var dds = new LinqDataSource();
 			dds.TableName = "test";
 
@@ -178,7 +98,7 @@ namespace MonoTests.System.Web.DynamicData
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void DynamicDataExtensions_GetTable_Test3()
 		{
-			HttpContext.Current = new HttpContext(new FakeWorkerRequest());
+			HttpContext.Current = new HttpContext(new FakeHttpWorkerRequest());
 			var dds = new LinqDataSource();
 
 			dds.GetTable();

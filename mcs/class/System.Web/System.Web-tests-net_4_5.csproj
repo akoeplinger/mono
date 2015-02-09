@@ -164,9 +164,6 @@
     <Compile Include="Test\System.Web.Security\MembershipProviderTest.cs" />
     <Compile Include="Test\System.Web.Security\MembershipTest.cs" />
     <Compile Include="Test\System.Web.Security\MembershipUserCollectionTest.cs" />
-    <Compile Include="Test\System.Web.Security\PassportAuthenticationEventArgsCas.cs" />
-    <Compile Include="Test\System.Web.Security\PassportAuthenticationModuleCas.cs" />
-    <Compile Include="Test\System.Web.Security\PassportIdentityCas.cs" />
     <Compile Include="Test\System.Web.Security\RolePrincipalTest.cs" />
     <Compile Include="Test\System.Web.Security\RolesTest.cs" />
     <Compile Include="Test\System.Web.Security\UrlAuthorizationModuleCas.cs" />
@@ -606,7 +603,6 @@
     <Compile Include="Test\System.Web\TraceContextRecordTest.cs" />
     <Compile Include="Test\System.Web\VirtualPathUtilityTest.cs" />
     <Compile Include="Test\System.Web\XmlSiteMapProviderTest.cs" />
-    <Compile Include="System.Web\UplevelHelper.cs" />
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -656,7 +652,6 @@
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
-      <Package>nunit</Package>
     </Reference>
     <Reference Include="System.Net">
       <HintPath>..\lib\net_4_5\System.Net.dll</HintPath>

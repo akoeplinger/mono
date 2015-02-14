@@ -32,12 +32,12 @@ namespace System.Web.Configuration {
     // Configuration host for web applications.
     //
     internal sealed class WebConfigurationHost : DelegatingConfigHost, IInternalConfigWebHost {
-#if !MONO
-        const string InternalHostTypeName = "System.Configuration.Internal.InternalConfigHost, " + AssemblyRef.SystemConfiguration;
-        const string InternalConfigConfigurationFactoryTypeName = "System.Configuration.Internal.InternalConfigConfigurationFactory, " + AssemblyRef.SystemConfiguration;
-#else
+#if MONO
         const string InternalHostTypeName = "System.Configuration.InternalWebConfigurationHost, " + AssemblyRef.SystemConfiguration;
         const string InternalConfigConfigurationFactoryTypeName = "System.Configuration.InternalConfigurationFactory, " + AssemblyRef.SystemConfiguration;
+#else
+        const string InternalHostTypeName = "System.Configuration.Internal.InternalConfigHost, " + AssemblyRef.SystemConfiguration;
+        const string InternalConfigConfigurationFactoryTypeName = "System.Configuration.Internal.InternalConfigConfigurationFactory, " + AssemblyRef.SystemConfiguration;
 #endif
 
         internal const string           MachineConfigName = "machine";

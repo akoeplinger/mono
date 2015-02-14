@@ -349,9 +349,8 @@ namespace System.Web.Hosting {
             _appPhysicalPath = HttpRuntime.AppDomainAppPathInternal;
             _appHost = appHost;
             _configMapPath = configMapPathFactory.Create(_appVirtualPath.VirtualPathString, _appPhysicalPath);
-#if !MONO
-             HttpConfigurationSystem.EnsureInit(_configMapPath, true, false); // TODO: REENABLE THIS!!
-#endif
+             HttpConfigurationSystem.EnsureInit(_configMapPath, true, false);
+
             // attempt to cache and use IConfigMapPath2 provider
             // which supports VirtualPath's to save on conversions
             _configMapPath2 = _configMapPath as IConfigMapPath2;

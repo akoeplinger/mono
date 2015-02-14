@@ -28,8 +28,13 @@ namespace System.Web.Configuration {
     using UrlPath = System.Web.Util.UrlPath;
 
     internal class HttpConfigurationSystem : IInternalConfigSystem {
+#if MONO
+        private const string InternalConfigSettingsFactoryTypeString = "System.Configuration.InternalConfigurationFactory, " + AssemblyRef.SystemConfiguration;
+        internal const string ConfigSystemTypeString = "System.Configuration.InternalConfigurationSystem, " + AssemblyRef.SystemConfiguration;
+#else
         private const string InternalConfigSettingsFactoryTypeString = "System.Configuration.Internal.InternalConfigSettingsFactory, " + AssemblyRef.SystemConfiguration;
         internal const string ConfigSystemTypeString = "System.Configuration.Internal.ConfigSystem, " + AssemblyRef.SystemConfiguration;
+#endif
 
 #if !PLATFORM_UNIX // File system paths must be lowercased in UNIX
         internal const string MachineConfigSubdirectory = "Config";
@@ -58,7 +63,7 @@ namespace System.Web.Configuration {
         static private string                           s_RootWebConfigurationFilePath;
 
         static private IInternalConfigRoot              s_configRoot;
-        static private IInternalConfigSettingsFactory   s_configSettingsFactory;
+        //static private IInternalConfigSettingsFactory   s_configSettingsFactory;
         static private bool                             s_initComplete;
 
         static HttpConfigurationSystem() {
@@ -110,9 +115,9 @@ namespace System.Web.Configuration {
                         // ConfigurationManager.SetConfigurationSystem, which is an internal static method
                         // in System.Configuration.dll.  If we want to call that here, we have to use
                         // reflection and that's what we want to avoid.
-                        Type typeFactory = Type.GetType(InternalConfigSettingsFactoryTypeString, true);
-                        s_configSettingsFactory = (IInternalConfigSettingsFactory) Activator.CreateInstance(typeFactory, true);
-                        s_configSettingsFactory.SetConfigurationSystem(configSystem, initComplete);
+                        //Type typeFactory = Type.GetType(InternalConfigSettingsFactoryTypeString, true);
+                        //s_configSettingsFactory = (IInternalConfigSettingsFactory) Activator.CreateInstance(typeFactory, true);
+                        //s_configSettingsFactory.SetConfigurationSystem(configSystem, initComplete);
 
                         // The system has been successfully set, so mark that we should use it.
                         s_httpConfigSystem = configSystem;
@@ -129,8 +134,8 @@ namespace System.Web.Configuration {
 
         static internal void CompleteInit() {
             Debug.Assert(!s_initComplete, "!s_initComplete");
-            s_configSettingsFactory.CompleteInit();
-            s_configSettingsFactory = null;
+            //s_configSettingsFactory.CompleteInit();
+            //s_configSettingsFactory = null;
         }
 
         // Return true if the HttpConfigurationSystem is being used
@@ -239,6 +244,9 @@ namespace System.Web.Configuration {
         // Used by CachedPathData to retreive config records.
         //
         static internal IInternalConfigRecord GetUniqueConfigRecord(string configPath) {
+			#if MONO
+return null;
+#endif
             if (!UseHttpConfigurationSystem)
                 return null;
 

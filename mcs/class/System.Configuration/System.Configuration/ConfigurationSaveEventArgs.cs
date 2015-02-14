@@ -31,7 +31,7 @@ using System;
 
 namespace System.Configuration 
 {
-	class ConfigurationSaveEventArgs : EventArgs
+	public class ConfigurationSaveEventArgs : EventArgs
 	{
 		public string StreamPath { get; private set; }
 		public bool Start { get; private set; }

@@ -380,7 +380,7 @@ System.Web.RegularExpressions/WebResourceRegex.cs
 ../../../external/referencesource/System.Web/Configuration/HttpCapabilitiesEvaluator.cs
 ../../../external/referencesource/System.Web/Configuration/HttpCapabilitiesSectionHandler.cs
 ../../../external/referencesource/System.Web/Configuration/HttpConfigurationContext.cs
-../../../external/referencesource/System.Web/Configuration/HttpConfigurationSystem.cs
+System.Web.Configuration_2.0/HttpConfigurationSystem.cs
 ../../../external/referencesource/System.Web/Configuration/HttpCookiesSection.cs
 ../../../external/referencesource/System.Web/Configuration/HttpHandlerActionCollection.cs
 ../../../external/referencesource/System.Web/Configuration/HttpHandlerAction.cs
@@ -505,7 +505,8 @@ System.Web.RegularExpressions/WebResourceRegex.cs
 ../../../external/referencesource/System.Web/Configuration/WebConfigurationFileMap.cs
 ../../../external/referencesource/System.Web/Configuration/WebConfigurationHost.cs
 ../../../external/referencesource/System.Web/Configuration/WebConfigurationHostFileChange.cs
-../../../external/referencesource/System.Web/Configuration/WebConfigurationManager.cs
+System.Web.Configuration_2.0/WebConfigurationManager.cs
+System.Web.Configuration_2.0/LruCache.cs
 ../../../external/referencesource/System.Web/Configuration/WebContext.cs
 ../../../external/referencesource/System.Web/Configuration/WebControlsSection.cs
 ../../../external/referencesource/System.Web/Configuration/WebLevel.cs

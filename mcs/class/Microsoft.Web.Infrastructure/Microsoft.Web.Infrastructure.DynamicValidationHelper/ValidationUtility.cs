@@ -50,12 +50,12 @@ namespace Microsoft.Web.Infrastructure.DynamicValidationHelper
 				return;
 
 			// Store unvalidated values at context so we can access them later.
-			context.Items [UNVALIDATED_DATA_KEY] = new object [] { req.FormUnvalidated, req.QueryStringUnvalidated };
+			context.Items [UNVALIDATED_DATA_KEY] = new object [] { req.Unvalidated.Form, req.Unvalidated.QueryString };
 
 			// Just to be safe, make sure it's on
 			req.ValidateInput ();
-			req.SetFormCollection (new LazyWebROCollection (RequestValidationSource.Form, req.FormUnvalidated), true);
-			req.SetQueryStringCollection (new LazyWebROCollection (RequestValidationSource.QueryString, req.QueryStringUnvalidated), true);
+			//req.SetFormCollection (new LazyWebROCollection (RequestValidationSource.Form, req.Unvalidated.Form), true);
+			//req.SetQueryStringCollection (new LazyWebROCollection (RequestValidationSource.QueryString, req.QueryStringUnvalidated), true);
 		}
 
 		[SecuritySafeCritical]
@@ -65,7 +65,7 @@ namespace Microsoft.Web.Infrastructure.DynamicValidationHelper
 			if (req == null)
 				return true;
 
-			return req.InputValidationEnabled;
+			return req.ValidateInputWasCalled;
 		}
 
 		[SecuritySafeCritical]
@@ -80,14 +80,14 @@ namespace Microsoft.Web.Infrastructure.DynamicValidationHelper
 				HttpRequest req = context != null ? context.Request : null;
 				if (req == null)
 					return null;
-				return GetUnvalidatedCollection (context, 0) ?? req.FormUnvalidated;
+				return GetUnvalidatedCollection (context, 0) ?? req.Unvalidated.Form;
 			};
 
 			queryStringGetter = () => {
 				HttpRequest req = context != null ? context.Request : null;
 				if (req == null)
 					return null;
-				return GetUnvalidatedCollection (context, 1) ?? req.QueryStringUnvalidated;
+				return GetUnvalidatedCollection (context, 1) ?? req.Unvalidated.QueryString;
 			};
 		}
 

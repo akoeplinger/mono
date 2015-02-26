@@ -131,8 +131,68 @@ namespace Microsoft.Web.Infrastructure.DynamicValidationHelper
 			if (String.IsNullOrEmpty (value))
 				return value;
 
-			HttpRequest.ValidateString (key, value, validationSource);
+			ValidateString (key, value, validationSource);
 			return value;
+		}
+
+		void ValidateString (string key, string value, RequestValidationSource source)
+		{
+			if (String.IsNullOrEmpty (value))
+				return;
+#pragma warning disable 219
+			int ignore;
+#pragma warning restore 219
+			if (IsInvalidString (value, out ignore))
+				ThrowValidationException (source.ToString (), key, value);
+		}
+		bool IsInvalidString (string val)
+		{
+#pragma warning disable 219
+			int validationFailureIndex;
+#pragma warning restore 219
+			return IsInvalidString (val, out validationFailureIndex);
+		}
+
+		bool IsInvalidString (string val, out int validationFailureIndex)
+		{
+			validationFailureIndex = 0;
+
+			int len = val.Length;
+			if (len < 2)
+				return false;
+
+			char current = val [0];
+			for (int idx = 1; idx < len; idx++) {
+				char next = val [idx];
+				// See http://secunia.com/advisories/14325
+				if (current == '<' || current == '\xff1c') {
+					if (next == '!' || next < ' '
+					    || (next >= 'a' && next <= 'z')
+					    || (next >= 'A' && next <= 'Z')) {
+						validationFailureIndex = idx - 1;
+						return true;
+					}
+				} else if (current == '&' && next == '#') {
+					validationFailureIndex = idx - 1;
+					return true;
+				}
+
+				current = next;
+			}
+
+			return false;
+		}
+
+		void ThrowValidationException (string name, string key, string value)
+		{
+			string v = "\"" + value + "\"";
+			if (v.Length > 20)
+				v = v.Substring (0, 16) + "...\"";
+		
+			string msg = String.Format ("A potentially dangerous Request.{0} value was " +
+						    "detected from the client ({1}={2}).", name, key, v);
+		
+			throw new HttpRequestValidationException (msg);
 		}
 	}
 }

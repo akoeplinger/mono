@@ -6,5 +6,7 @@
 ./Microsoft.Web.Infrastructure.DynamicModuleHelper/DynamicModuleUtility.cs
 ./Microsoft.Web.Infrastructure.DynamicValidationHelper/ValidationUtility.cs
 ./Microsoft.Web.Infrastructure.DynamicValidationHelper/LazyWebROCollection.cs
+./Microsoft.Web.Infrastructure.DynamicValidationHelper/WebROCollection.cs
+./Microsoft.Web.Infrastructure.DynamicValidationHelper/SecureHashCodeProvider.cs
 ./Microsoft.Web.Infrastructure/HttpContextHelper.cs
 ./Microsoft.Web.Infrastructure/InfrastructureHelper.cs

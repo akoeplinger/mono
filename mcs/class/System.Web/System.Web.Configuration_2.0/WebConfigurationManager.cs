@@ -35,7 +35,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Reflection;
-//using Mono.Web.Util;
+using Mono.Web.Util;
 using System.Xml;
 using System.Configuration;
 using System.Configuration.Internal;
@@ -108,9 +108,9 @@ namespace System.Web.Configuration {
 				                                   Environment.NewLine, section_cache_size, CACHE_SIZE_OVERRIDING_KEY);
 			sectionCache.EvictionWarning = eviction_warning;
 
-			configFactory = ConfigurationManager.ConfigurationFactory;
-			_Configuration.SaveStart += ConfigurationSaveHandler;
-			_Configuration.SaveEnd += ConfigurationSaveHandler;
+			configFactory = typeof(ConfigurationManager).GetProperty("ConfigurationFactory", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null) as IInternalConfigConfigurationFactory;//ConfigurationManager.ConfigurationFactory;
+			//_Configuration.SaveStart += ConfigurationSaveHandler;
+			//_Configuration.SaveEnd += ConfigurationSaveHandler;
 			
 			// Part of fix for bug #491531
 			Type type = Type.GetType ("System.Configuration.CustomizableFileSettingsProvider, System", false);
@@ -139,7 +139,7 @@ namespace System.Web.Configuration {
 			if (lastWrite == DateTime.MinValue || now.Subtract (lastWrite).TotalMilliseconds >= SAVE_LOCATIONS_CHECK_INTERVAL) {
 				saveLocationsTimer.Dispose ();
 				saveLocationsTimer = null;
-				HttpApplicationFactory.EnableWatcher (VirtualPathUtility.RemoveTrailingSlash (HttpRuntime.AppDomainAppPath), "?eb.?onfig");
+				//HttpApplicationFactory.EnableWatcher (VirtualPathUtility.RemoveTrailingSlash (HttpRuntime.AppDomainAppPath), "?eb.?onfig");
 			} else
 				saveLocationsTimer.Change (SAVE_LOCATIONS_CHECK_INTERVAL, SAVE_LOCATIONS_CHECK_INTERVAL);
 		}
@@ -154,11 +154,11 @@ namespace System.Web.Configuration {
 			}
 			
 			lock (suppressAppReloadLock) {
-				string rootConfigPath = WebConfigurationHost.GetWebConfigFileName (HttpRuntime.AppDomainAppPath);
+				string rootConfigPath = "";//WebConfigurationHost.GetWebConfigFileName (HttpRuntime.AppDomainAppPath);
 				if (String.Compare (args.StreamPath, rootConfigPath, StringComparison.OrdinalIgnoreCase) == 0) {
 					SuppressAppReload (args.Start);
 					if (args.Start) {
-						HttpApplicationFactory.DisableWatcher (VirtualPathUtility.RemoveTrailingSlash (HttpRuntime.AppDomainAppPath), "?eb.?onfig");
+						//HttpApplicationFactory.DisableWatcher (VirtualPathUtility.RemoveTrailingSlash (HttpRuntime.AppDomainAppPath), "?eb.?onfig");
 
 						lock (saveLocationsCacheLock) {
 							if (saveLocationsCache == null)
@@ -334,7 +334,7 @@ namespace System.Web.Configuration {
 			if (String.IsNullOrEmpty (relativePath))
 				return false;
 
-			_Configuration cnew = defaultConfiguration.FindLocationConfiguration (relativePath, defaultConfiguration);
+			_Configuration cnew = defaultConfiguration.GetType ().GetMethod ("FindLocationConfiguration",  BindingFlags.NonPublic | BindingFlags.Instance).Invoke(defaultConfiguration, new object[] { relativePath, defaultConfiguration }) as _Configuration;
 			if (cnew == defaultConfiguration)
 				return false;
 
@@ -348,7 +348,7 @@ namespace System.Web.Configuration {
 				return null;
 			
 			_Configuration c = OpenWebConfiguration (path, null, null, null, null, null, false);
-			string configPath = c.ConfigPath;
+			string configPath = c.GetType ().GetProperty ("ConfigPath").GetValue (c) as string;
 			int baseCacheKey = 0;
 			int cacheKey;
 			bool pathPresent = !String.IsNullOrEmpty (path);
@@ -385,7 +385,7 @@ namespace System.Web.Configuration {
 			if (pathPresent) {
 				string relPath;
 				
-				if (VirtualPathUtility.IsRooted (path)) {
+				if (VirtualPathUtility.IsAbsolute (path) || VirtualPathUtility.IsAppRelative (path)) {
 					if (path [0] == '~')
 						relPath = path.Length > 1 ? path.Substring (2) : String.Empty;
 					else if (path [0] == '/')
@@ -397,10 +397,10 @@ namespace System.Web.Configuration {
 
 				HttpRequest req = context != null ? context.Request : null;
 				if (req != null) {
-					string vdir = VirtualPathUtility.GetDirectory (req.PathNoValidation);
+					string vdir = VirtualPathUtility.GetDirectory (req.Unvalidated.Path);
 					if (vdir != null) {
 						vdir = vdir.TrimEnd (pathTrimChars);
-						if (String.Compare (c.ConfigPath, vdir, StringComparison.Ordinal) != 0 && LookUpLocation (vdir.Trim (pathTrimChars), ref c))
+						if (String.Compare (configPath, vdir, StringComparison.Ordinal) != 0 && LookUpLocation (vdir.Trim (pathTrimChars), ref c))
 							cachePath = path;
 					}
 				}
@@ -418,7 +418,7 @@ namespace System.Web.Configuration {
 			if (section == null)
 				return null;
 
-			object value = SettingsMappingManager.MapSection (section.GetRuntimeObject ());
+			object value = SettingsMappingManager.MapSection (section.GetType ().GetMethod ("GetRuntimeObject", BindingFlags.Instance | BindingFlags.NonPublic).Invoke (section, null));
 			if (cachePath != null)
 				cacheKey = baseCacheKey ^ cachePath.GetHashCode ();
 			else
@@ -437,7 +437,7 @@ namespace System.Web.Configuration {
 			if (!String.IsNullOrEmpty (appRoot) && virtualPath.StartsWith (appRoot, StringComparison.Ordinal)) {
 				if (String.Compare (virtualPath, appRoot, StringComparison.Ordinal) == 0)
 					return HttpRuntime.AppDomainAppPath;
-				return UrlUtils.Combine (HttpRuntime.AppDomainAppPath, virtualPath.Substring (appRoot.Length));
+				return UrlPath.Combine (HttpRuntime.AppDomainAppPath, virtualPath.Substring (appRoot.Length));
 			}
 			
 			return null;
@@ -502,7 +502,7 @@ namespace System.Web.Configuration {
 			if (inAnotherApp || path [path.Length - 1] == '/')
 				dir = path;
 			else {
-			 	dir = VirtualPathUtility.GetDirectory (path, false);
+			 	dir = "";//VirtualPathUtility.GetDirectory (path, false);
 			 	if (dir == null)
 			 		return path;
 			}
@@ -524,8 +524,8 @@ namespace System.Web.Configuration {
 					break;
 				}
 
-				if (WebConfigurationHost.GetWebConfigFileName (physPath) != null)
-					break;
+				//if (WebConfigurationHost.GetWebConfigFileName (physPath) != null)
+				//	break;
 				
 				curPath.Path = GetParentDir (rootPath, curPath.Path);
 				if (curPath.Path == null || curPath.Path == "~") {
@@ -545,7 +545,7 @@ namespace System.Web.Configuration {
 		static string GetCurrentPath (HttpContext ctx)
 		{
 			HttpRequest req = ctx != null ? ctx.Request : null;
-			return req != null ? req.PathNoValidation : HttpRuntime.AppDomainAppVirtualPath;
+			return req != null ? req.Unvalidated.Path : HttpRuntime.AppDomainAppVirtualPath;
 		}
 		
 		internal static bool SuppressAppReload (bool newValue)

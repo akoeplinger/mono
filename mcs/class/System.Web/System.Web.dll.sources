@@ -506,7 +506,12 @@ System.Web.Configuration_2.0/HttpConfigurationSystem.cs
 ../../../external/referencesource/System.Web/Configuration/WebConfigurationHost.cs
 ../../../external/referencesource/System.Web/Configuration/WebConfigurationHostFileChange.cs
 System.Web.Configuration_2.0/WebConfigurationManager.cs
+System.Web.Configuration_2.0/ApplicationSettingsConfigurationFileMap.cs
 System.Web.Configuration_2.0/LruCache.cs
+Mono.Web.Util/SettingsMapping.cs
+Mono.Web.Util/SettingsMappingManager.cs
+Mono.Web.Util/SettingsMappingWhat.cs
+Mono.Web.Util/ISectionSettingsMapper.cs
 ../../../external/referencesource/System.Web/Configuration/WebContext.cs
 ../../../external/referencesource/System.Web/Configuration/WebControlsSection.cs
 ../../../external/referencesource/System.Web/Configuration/WebLevel.cs

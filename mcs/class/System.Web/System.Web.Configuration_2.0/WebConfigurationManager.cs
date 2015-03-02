@@ -264,7 +264,7 @@ namespace System.Web.Configuration {
 			_Configuration conf = null;
 			conf = (_Configuration) configurations [confKey];
 			if (conf == null) {
-				conf = ConfigurationFactory.Create (typeof (WebConfigurationHost), null, path, site, locationSubPath, server, userName, password, inAnotherApp);
+				conf = ConfigurationFactory.Create (typeof (WebConfigurationHost), WebLevel.Path, null, path, site, locationSubPath, server, userName, password, inAnotherApp);
 				configurations [confKey] = conf;
 			}
 			return conf;
@@ -272,22 +272,22 @@ namespace System.Web.Configuration {
 
 		public static _Configuration OpenMappedWebConfiguration (WebConfigurationFileMap fileMap, string path)
 		{
-			return ConfigurationFactory.Create (typeof(WebConfigurationHost), fileMap, path);
+			return ConfigurationFactory.Create (typeof(WebConfigurationHost), WebLevel.Path, fileMap, path, null, null);
 		}
 		
 		public static _Configuration OpenMappedWebConfiguration (WebConfigurationFileMap fileMap, string path, string site)
 		{
-			return ConfigurationFactory.Create (typeof(WebConfigurationHost), fileMap, path, site);
+			return ConfigurationFactory.Create (typeof(WebConfigurationHost), WebLevel.Path, fileMap, path, site, null);
 		}
 		
 		public static _Configuration OpenMappedWebConfiguration (WebConfigurationFileMap fileMap, string path, string site, string locationSubPath)
 		{
-			return ConfigurationFactory.Create (typeof(WebConfigurationHost), fileMap, path, site, locationSubPath);
+			return ConfigurationFactory.Create (typeof(WebConfigurationHost), WebLevel.Path, fileMap, path, site, locationSubPath);
 		}
 		
 		public static _Configuration OpenMappedMachineConfiguration (ConfigurationFileMap fileMap)
 		{
-			return ConfigurationFactory.Create (typeof(WebConfigurationHost), fileMap);
+			return ConfigurationFactory.Create (typeof(WebConfigurationHost), WebLevel.Machine, fileMap, null, null, null);
 		}
 
 		public static _Configuration OpenMappedMachineConfiguration (ConfigurationFileMap fileMap,

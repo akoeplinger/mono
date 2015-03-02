@@ -355,8 +355,14 @@ internal class FileUtil {
         if (String.IsNullOrEmpty(physicalPath))
             return;
 
+#if MONO // TODO: not yet fully implemented
+       if (Directory.Exists (physicalPath)) {
+            exists = true;
+            isDirectory = true;
+       }
+#else
         using (new ApplicationImpersonationContext()) {
-#if !MONO  //TODO: implement
+
             UnsafeNativeMethods.WIN32_FILE_ATTRIBUTE_DATA data;
             bool ok = UnsafeNativeMethods.GetFileAttributesEx(physicalPath, UnsafeNativeMethods.GetFileExInfoStandard, out data);
             if (ok) {
@@ -376,8 +382,8 @@ internal class FileUtil {
                     }
                 }
             }
-#endif
         }
+#endif
     }
 
     //

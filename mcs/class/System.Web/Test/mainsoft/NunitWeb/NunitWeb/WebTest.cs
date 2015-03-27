@@ -506,6 +506,9 @@ namespace MonoTests.SystemWeb.Framework
 				}
 				if (found)
 					continue;
+
+				if (ran.Name.StartsWith("MonoDevelop") || ran.Name.StartsWith("Xwt") || ran.Name.StartsWith("ICSharpCode")|| ran.Name.StartsWith("Mono.TextEditor")|| ran.Name.StartsWith("Mono.Addins")|| ran.Name.StartsWith("IKVM"))
+					continue;
 				Assembly ra = Assembly.Load (ran, null);
 				LoadAssemblyRecursive (ra);
 			}

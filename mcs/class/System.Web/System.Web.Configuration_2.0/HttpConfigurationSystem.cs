@@ -34,6 +34,42 @@ using System.Configuration.Internal;
 
 namespace System.Web.Configuration {
 
+internal class MyRecord : IInternalConfigRecord
+	{
+		public object GetLkgSection (string configKey)
+		{
+			return null;
+		}
+
+		public object GetSection (string configKey)
+		{
+			return null;
+		}
+
+		public void RefreshSection (string configKey)
+		{
+			
+		}
+
+		public void Remove ()
+		{
+			
+		}
+
+		public void ThrowIfInitErrors ()
+		{
+			
+		}
+		string _configPath;
+		public string ConfigPath { get { return _configPath; } internal set { _configPath = value; }}
+
+		public bool HasInitErrors { get { return false; } }
+
+		public string StreamName { get { return null; } }
+
+
+	}
+
 	internal class HttpConfigurationSystem : IInternalConfigSystem
 	{
 		object IInternalConfigSystem.GetSection (string configKey)
@@ -58,7 +94,7 @@ namespace System.Web.Configuration {
 		}
 		
 		        static internal IInternalConfigRecord GetUniqueConfigRecord(string configPath) {
-return null;
+			return new MyRecord(){ConfigPath=configPath};
         }
         
 		internal const string MachineConfigFilename = "machine.config";

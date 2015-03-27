@@ -3,7 +3,7 @@ SUBDIRS =
 include ../../build/rules.make
 
 LIBRARY = System.Web.DynamicData.dll
-LIB_REFS = System System.Core System.ComponentModel.DataAnnotations System.Data System.Data.Linq System.Drawing System.Web System.Web.Extensions System.Web.Abstractions System.Web.Routing
+LIB_REFS = System System.Core System.ComponentModel.DataAnnotations System.Data System.Data.Entity System.Data.Linq System.Drawing System.Web System.Web.Extensions System.Web.Abstractions System.Web.Routing System.Xml System.Xml.Linq
 KEYFILE = ../winfx.pub
 LIB_MCS_FLAGS =
 

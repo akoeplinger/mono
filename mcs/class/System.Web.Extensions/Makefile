@@ -49,12 +49,12 @@ ifdef TESTNAME
 RUN_STANDALONE += --test=$(TESTNAME)
 endif
 
-LIB_REFS = System System.Core System.Drawing System.Data System.Data.Linq System.Xml System.Web System.Web.Services System.Configuration System.EnterpriseServices System.ServiceModel
+LIB_REFS = System System.Core System.Drawing System.Design System.Data System.Data.Linq System.Runtime.Serialization System.Xml System.Web System.Web.Services System.Windows.Forms System.Configuration System.EnterpriseServices System.ServiceModel System.ServiceModel.Activation
 KEYFILE = ../winfx.pub
 LIB_MCS_FLAGS = \
 	-unsafe \
 	-define:NET_3_5	-nowarn:436		\
-	-define:SYSTEM_WEB_EXTENSIONS	\
+	-define:WEB_EXTENSIONS_CODE	\
 	$(OTHER_LIB_MCS_FLAGS) 		\
 	$(RESOURCE_FILES:%=/resource:%)
 

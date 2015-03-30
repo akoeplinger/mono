@@ -167,7 +167,7 @@ internal static class Util {
 
         // Check if a file encoding is specified in the config
         Encoding fileEncoding = null;
-		GlobalizationSection globConfig = new GlobalizationSection (); //RuntimeConfig.GetConfig(configPath).Globalization;
+		GlobalizationSection globConfig = RuntimeConfig.GetConfig(configPath).Globalization;
         fileEncoding = globConfig.FileEncoding;
 
         // If not, use the default encoding
@@ -328,7 +328,11 @@ internal static class Util {
     internal static VirtualPath GetScriptLocation() {
         // prepare script include
         // Dev10 Bug564221: we need to detect if app level web.config overwrites the root web.config
-        string location = (string) RuntimeConfig.GetAppConfig().WebControls["clientScriptsLocation"];
+#if MONO // TODO: remove once configuration works
+        string location = "/web_scripts";
+#else
+        string location = (string) RuntimeConfig.GetAppConfig().WebControls["clientScriptsLocation"] ;
+#endif
         
         // If there is a formatter, as there will be for the default machine.config, insert the assembly name and version.
         if (location.IndexOf("{0}", StringComparison.Ordinal) >= 0) {

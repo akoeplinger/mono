@@ -174,10 +174,10 @@ public class AssemblyBuilder {
             // If we're precompiling the app, never compile in debug mode (VSWhidbey 178377)
             _compilerType.CompilerParameters.IncludeDebugInformation = false;
         }
-        else if (DeploymentSection.RetailInternal) {
+        /*else if (DeploymentSection.RetailInternal) {
             // If we're in retail deployment mode, always turn off debug (DevDiv 36396)
             _compilerType.CompilerParameters.IncludeDebugInformation = false;
-        }
+        }*/
         else if (_compConfig.AssemblyPostProcessorTypeInternal != null) {
             // If an IAssemblyPostProcessor is registered always compile as debug
             _compilerType.CompilerParameters.IncludeDebugInformation = true;

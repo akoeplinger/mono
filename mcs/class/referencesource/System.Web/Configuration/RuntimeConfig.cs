@@ -665,6 +665,9 @@ namespace System.Web.Configuration {
         // ConfigurationPermission.
         //
         private object GetSection(string sectionName, Type type, ResultsIndex index) {
+
+			return Activator.CreateInstance(type); // TODO: quick hack to just return default config
+
             // check the results cache
             object result = _results[(int)index];
             if (result != s_unevaluatedResult) {

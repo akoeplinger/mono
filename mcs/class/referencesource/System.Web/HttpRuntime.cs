@@ -520,7 +520,7 @@ namespace System.Web {
                     // as the permissions set has not yet determined until SetTrustLevel()
                     // is called.
                     
-					//HttpConfigurationSystem.CompleteInit(); //TODO: REENABLE!!
+					HttpConfigurationSystem.CompleteInit();
 
                     //
                     // If an exception occurred loading configuration,
@@ -528,7 +528,7 @@ namespace System.Web {
                     // with the correct trust level set.
                     //
                     if (configInitException != null) {
-						//    throw configInitException;  //TODO: REENABLE!!
+						    throw configInitException;
                     }
 
                     SetThreadPoolLimits();

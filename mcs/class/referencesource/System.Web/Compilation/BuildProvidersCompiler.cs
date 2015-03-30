@@ -53,7 +53,7 @@ internal class BuildProvidersCompiler {
         string outputAssemblyName) {
         _configPath = configPath;
         _supportLocalization = supportLocalization;
-			_compConfig = new CompilationSection ();//MTConfigUtil.GetCompilationConfig(_configPath);
+			_compConfig = MTConfigUtil.GetCompilationConfig(_configPath);
         _referencedAssemblies = BuildManager.GetReferencedAssemblies(CompConfig);
         _outputAssemblyName = outputAssemblyName;
     }
@@ -62,7 +62,7 @@ internal class BuildProvidersCompiler {
         string generatedFilesDir, int index) {
         _configPath = configPath;
         _supportLocalization = supportLocalization;
-			_compConfig = new CompilationSection ();//MTConfigUtil.GetCompilationConfig(_configPath);
+			_compConfig = MTConfigUtil.GetCompilationConfig(_configPath);
         _referencedAssemblies = BuildManager.GetReferencedAssemblies(CompConfig, index);
         _generatedFilesDir = generatedFilesDir;
     }

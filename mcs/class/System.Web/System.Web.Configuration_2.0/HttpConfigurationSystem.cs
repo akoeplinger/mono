@@ -96,6 +96,9 @@ internal class MyRecord : IInternalConfigRecord
 		        static internal IInternalConfigRecord GetUniqueConfigRecord(string configPath) {
 			return new MyRecord(){ConfigPath=configPath};
         }
+
+		static internal void CompleteInit(){
+}
         
 		internal const string MachineConfigFilename = "machine.config";
         internal const string RootWebConfigFilename         = "web.config";

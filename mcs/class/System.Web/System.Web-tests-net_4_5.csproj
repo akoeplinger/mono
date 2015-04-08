@@ -623,9 +623,6 @@
     <Reference Include="mscorlib">
       <HintPath>..\lib\net_4_5\mscorlib.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web">
-      <HintPath>..\lib\net_4_5\System.Web.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml">
       <HintPath>..\lib\net_4_5\System.Xml.dll</HintPath>
     </Reference>
@@ -1294,5 +1291,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="System.Web-net_4_5.csproj">
+      <Project>{B489C3DE-3ED3-4EDC-B42B-82B38E101857}</Project>
+      <Name>System.Web-net_4_5</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

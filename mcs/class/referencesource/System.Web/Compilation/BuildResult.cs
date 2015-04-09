@@ -941,7 +941,7 @@ internal class BuildResultCompiledTemplateType: BuildResultCompiledType {
 
         // Make the hash code depend on the relevant contents of the <pages> config section
 
-			PagesSection pagesConfig = new PagesSection ();//MTConfigUtil.GetPagesConfig(VirtualPath);
+        PagesSection pagesConfig = MTConfigUtil.GetPagesConfig(VirtualPath);
         hashCodeCombiner.AddObject(Util.GetRecompilationHash(pagesConfig));
     }
 }

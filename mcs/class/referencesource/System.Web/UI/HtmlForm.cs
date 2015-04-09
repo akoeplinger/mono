@@ -461,7 +461,7 @@ namespace System.Web.UI.HtmlControls {
 
             // DevDiv Bugs 154630: move custom hidden fields to the begining of the form
             HttpWriter httpWriter = writer.InnerWriter as HttpWriter;
-			if (page != null && httpWriter != null && new PagesSection()/*RuntimeConfig.GetConfig(Context).Pages*/.RenderAllHiddenFieldsAtTopOfForm) {
+            if (page != null && httpWriter != null && RuntimeConfig.GetConfig(Context).Pages.RenderAllHiddenFieldsAtTopOfForm) {
                 // If the response is flushed or cleared during render, we won't be able
                 // to move the hidden fields.  Set HasBeenClearedRecently to false and
                 // then check again when we're ready to move the fields.

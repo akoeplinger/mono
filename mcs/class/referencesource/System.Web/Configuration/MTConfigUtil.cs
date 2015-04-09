@@ -39,7 +39,7 @@ internal class MTConfigUtil {
     // Counterpart for RuntimeConfig.GetAppConfig().Profile;
     static internal ProfileSection GetProfileAppConfig() {
         if (!UseMTConfig) {
-			return new ProfileSection ();//RuntimeConfig.GetAppConfig().Profile;
+			return RuntimeConfig.GetAppConfig().Profile;
         }
         return GetAppConfig<ProfileSection>();
     }
@@ -47,7 +47,7 @@ internal class MTConfigUtil {
     // Counterpart for RuntimeConfig.GetAppConfig().Pages;
     static internal PagesSection GetPagesAppConfig() {
         if (!UseMTConfig) {
-			return new PagesSection ();//RuntimeConfig.GetAppConfig().Pages;
+			return RuntimeConfig.GetAppConfig().Pages;
         }
         return GetAppConfig<PagesSection>();
     }
@@ -55,7 +55,7 @@ internal class MTConfigUtil {
     // Counterpart for RuntimeConfig.GetConfig().Pages;
     static internal PagesSection GetPagesConfig() {
         if (!UseMTConfig) {
-			return new PagesSection ();//Config.GetConfig().Pages;
+			return RuntimeConfig.GetConfig().Pages;
         }
         return GetConfig<PagesSection>();
     }
@@ -63,7 +63,7 @@ internal class MTConfigUtil {
     // Counterpart for RuntimeConfig.GetConfig(string).Pages
     static internal PagesSection GetPagesConfig(string vpath) {
         if (!UseMTConfig) {
-			return new PagesSection ();//RuntimeConfig.GetConfig(vpath).Pages;
+			return RuntimeConfig.GetConfig(vpath).Pages;
         }
         return GetConfig<PagesSection>(vpath);
     }
@@ -79,7 +79,7 @@ internal class MTConfigUtil {
     // Counterpart for RuntimeConfig.GetConfig(HttpContext).Pages
     static internal PagesSection GetPagesConfig(HttpContext context) {
         if (!UseMTConfig) {
-			return new PagesSection ();//RuntimeConfig.GetConfig(context).Pages;
+			return RuntimeConfig.GetConfig(context).Pages;
         }
         return GetConfig<PagesSection>(context);
     }
@@ -87,7 +87,7 @@ internal class MTConfigUtil {
     // Counterpart for RuntimeConfig.GetConfig().Compilation
     static internal CompilationSection GetCompilationConfig() {
         if (!UseMTConfig) {
-			return new CompilationSection ();//RuntimeConfig.GetConfig().Compilation;
+			return RuntimeConfig.GetConfig().Compilation;
         }
         return GetConfig<CompilationSection>();
     }
@@ -95,7 +95,7 @@ internal class MTConfigUtil {
     // Counterpart for RuntimeConfig.GetAppConfig().Compilation
     static internal CompilationSection GetCompilationAppConfig() {
         if (!UseMTConfig) {
-			return new CompilationSection ();//RuntimeConfig.GetAppConfig().Compilation;
+			return RuntimeConfig.GetAppConfig().Compilation;
         }
         return GetAppConfig<CompilationSection>();
     }
@@ -103,7 +103,7 @@ internal class MTConfigUtil {
     // Counterpart for RuntimeConfig.GetConfig(string).Compilation
     static internal CompilationSection GetCompilationConfig(string vpath) {
         if (!UseMTConfig) {
-			return new CompilationSection ();//RuntimeConfig.GetConfig(vpath).Compilation;
+			return RuntimeConfig.GetConfig(vpath).Compilation;
         }
         return GetConfig<CompilationSection>(vpath);
     }
@@ -111,7 +111,7 @@ internal class MTConfigUtil {
     // Counterpart for RuntimeConfig.GetConfig(VirtualPath).Compilation
     static internal CompilationSection GetCompilationConfig(VirtualPath vpath) {
         if (!UseMTConfig) {
-			return new CompilationSection ();//RuntimeConfig.GetConfig(vpath).Compilation;
+			return RuntimeConfig.GetConfig(vpath).Compilation;
         }
         return GetConfig<CompilationSection>(vpath);
     }
@@ -119,7 +119,7 @@ internal class MTConfigUtil {
     // Counterpart for RuntimeConfig.GetConfig(HttpContext).Compilation
     static internal CompilationSection GetCompilationConfig(HttpContext context) {
         if (!UseMTConfig) {
-			return new CompilationSection ();//RuntimeConfig.GetConfig(context).Compilation;
+			return RuntimeConfig.GetConfig(context).Compilation;
         }
         return GetConfig<CompilationSection>(context);
     }

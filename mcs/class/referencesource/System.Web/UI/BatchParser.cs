@@ -38,7 +38,7 @@ internal abstract class DependencyParser : BaseParser {
     internal void Init(VirtualPath virtualPath) {
         CurrentVirtualPath = virtualPath;
         _virtualPath = virtualPath;
-			_pagesConfig = new PagesSection ();// MTConfigUtil.GetPagesConfig(virtualPath);
+			_pagesConfig = MTConfigUtil.GetPagesConfig(virtualPath);
     }
 
     internal ICollection GetVirtualPathDependencies() {

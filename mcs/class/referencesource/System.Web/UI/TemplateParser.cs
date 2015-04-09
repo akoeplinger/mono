@@ -541,8 +541,8 @@ public abstract class TemplateParser : BaseParser, IAssemblyDependencyParser {
 
         // Get the config sections we care about
         if (!FInDesigner) {
-				_compConfig = new CompilationSection ();// MTConfigUtil.GetCompilationConfig(CurrentVirtualPath);
-				_pagesConfig = new PagesSection ();// MTConfigUtil.GetPagesConfig(CurrentVirtualPath);
+				_compConfig = MTConfigUtil.GetCompilationConfig(CurrentVirtualPath);
+				_pagesConfig = MTConfigUtil.GetPagesConfig(CurrentVirtualPath);
         }
 
         // Get default settings from config

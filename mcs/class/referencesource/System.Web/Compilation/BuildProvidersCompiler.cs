@@ -285,7 +285,7 @@ internal class WebDirectoryBatchCompiler {
 
         _utcStart = DateTime.UtcNow;
 
-			_compConfig = new CompilationSection ();//MTConfigUtil.GetCompilationConfig(_vdir.VirtualPath);
+         _compConfig = MTConfigUtil.GetCompilationConfig(_vdir.VirtualPath);
 
         _referencedAssemblies = BuildManager.GetReferencedAssemblies(_compConfig);
     }

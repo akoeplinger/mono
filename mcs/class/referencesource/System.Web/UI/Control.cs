@@ -202,10 +202,10 @@ namespace System.Web.UI {
                         else {
                             HttpContext context = Context;
                             if (context != null) {
-								EffectiveClientIDModeValue = new PagesSection ().ClientIDMode;//RuntimeConfig.GetConfig(context).Pages.ClientIDMode;
+								EffectiveClientIDModeValue = RuntimeConfig.GetConfig(context).Pages.ClientIDMode;
                             }
                             else {
-								EffectiveClientIDModeValue = new PagesSection ().ClientIDMode; //RuntimeConfig.GetConfig().Pages.ClientIDMode;
+								EffectiveClientIDModeValue = RuntimeConfig.GetConfig().Pages.ClientIDMode;
                             }
                         }
                     }
@@ -986,7 +986,7 @@ namespace System.Web.UI {
                 if (_occasionalFields == null ||
                     _occasionalFields.RareFields == null ||
                     _occasionalFields.RareFields.RenderingCompatibility == null) {
-					return new PagesSection().ControlRenderingCompatibilityVersion;//RuntimeConfig.Pages.ControlRenderingCompatibilityVersion;
+                    return RuntimeConfig.Pages.ControlRenderingCompatibilityVersion;
                 }
                 return _occasionalFields.RareFields.RenderingCompatibility;
             }

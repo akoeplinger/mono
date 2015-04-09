@@ -174,6 +174,9 @@ namespace System.Web.Configuration {
 
 #else // !FEATURE_PAL: set dummy config path
             string appPath = null;
+            string appSiteName = null;
+            string appSiteID = null;
+            WebConfigurationFileMap configFileMap = null;
             _ConfigPath = configPath;
 #endif // !FEATURE_PAL
 

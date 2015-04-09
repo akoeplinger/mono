@@ -109,13 +109,13 @@ namespace System.Web.Hosting {
     public interface IAppManagerAppDomainFactory {
 #if !FEATURE_PAL // FEATURE_PAL does not enable COM
         [return: MarshalAs(UnmanagedType.Interface)]
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
+        Object Create([In, MarshalAs(UnmanagedType.BStr)] String appId, 
+                      [In, MarshalAs(UnmanagedType.BStr)] String appPath);
 #else // !FEATURE_PAL
         [SecurityPermission(SecurityAction.LinkDemand, Unrestricted=true)]
         Object Create(String appId, String appPath);
 #endif // !FEATURE_PAL
-        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-        Object Create([In, MarshalAs(UnmanagedType.BStr)] String appId, 
-                      [In, MarshalAs(UnmanagedType.BStr)] String appPath);
 
         [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         void Stop();

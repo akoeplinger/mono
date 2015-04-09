@@ -930,7 +930,7 @@ namespace System.Web {
                         SR.GetString(SR.Invalid_temp_directory, tempDirAttribName),
                         configFileName, configLineNumber);
                 }
-#if FEATURE_PAL
+#if FEATURE_PAL && !MONO
             } else {
                 System.UInt32 length = 0;
                 StringBuilder sb = null;
@@ -972,7 +972,7 @@ namespace System.Web {
                         e,
                         configFileName, configLineNumber);
                 }
-#if !FEATURE_PAL
+#if !FEATURE_PAL || MONO
             }
             else {
                 tempDirectory = Path.Combine(s_installDirectory, codegenDirName);

@@ -287,9 +287,11 @@ namespace System.Web.Configuration {
             File.SetCreationTimeUtc(newFileName, creationTime);
 
             DuplicateTemplateAttributes( oldFileName, newFileName);
+#endif // !FEATURE_PAL
         }
 
         private void DuplicateTemplateAttributes(string oldFileName, string newFileName) {
+#if !FEATURE_PAL // FEATURE_PAL does not enable access control
             FileSecurity fileSecurity;
 
             // Copy Security information

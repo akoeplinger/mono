@@ -2407,17 +2407,34 @@ namespace System.Web {
 #endif
 
 #else // !FEATURE_PAL stubbing
+        internal FileChangesMonitor(FcnMode mode) {
+        }
 
         internal static string[] s_dirsToMonitor = new string[] {
         };
+
+        internal static string GenerateErrorMessage (FileAction action, String fileName = null)
+        {
+            return "";
+        }
 
         internal DateTime StartMonitoringFile(string alias, FileChangeEventHandler callback)
         {
             return DateTime.Now;
         }
-        
+
+        internal void StopMonitoringFile (string alias, object target)
+        {
+        }
+
         internal DateTime StartMonitoringPath(string alias, FileChangeEventHandler callback)
         {
+            return DateTime.Now;
+        }
+
+        internal DateTime StartMonitoringPath(string alias, FileChangeEventHandler callback, out FileAttributesData fad)
+        {
+            fad = null;
             return DateTime.Now;
         }
 

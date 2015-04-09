@@ -132,7 +132,7 @@ namespace System.Web.Configuration {
             new ConfigurationProperty("defaultLanguage", typeof(string), "vb", ConfigurationPropertyOptions.None);
 #else // !FEATURE_PAL
         private static readonly ConfigurationProperty _propDefaultLanguage =
-            new ConfigurationProperty("defaultLanguage", typeof(string),"c#",ConfigurationPropertyFlags.None);
+            new ConfigurationProperty("defaultLanguage", typeof(string),"c#",ConfigurationPropertyOptions.None);
 #endif // !FEATURE_PAL
         private static readonly ConfigurationProperty _propTargetFramework =
             new ConfigurationProperty("targetFramework", typeof(string), null, ConfigurationPropertyOptions.None);

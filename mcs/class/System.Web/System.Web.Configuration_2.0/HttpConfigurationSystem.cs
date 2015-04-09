@@ -31,6 +31,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Configuration.Internal;
+using _Configuration = System.Configuration;
 
 namespace System.Web.Configuration {
 
@@ -41,8 +42,16 @@ internal class MyRecord : IInternalConfigRecord
 			return null;
 		}
 
-		public object GetSection (string configKey)
-		{
+		public object GetSection(string configKey) {
+            if (configKey == "system.web/pages") {
+                var configMap = new _Configuration.ExeConfigurationFileMap();
+                configMap.ExeConfigFilename = HttpConfigurationSystem.RootWebConfigurationFilePath;
+                var config = _Configuration.ConfigurationManager.OpenMappedExeConfiguration(configMap, _Configuration.ConfigurationUserLevel.None);
+
+                return (PagesSection)config.GetSection(configKey);
+            }
+
+
 			return null;
 		}
 

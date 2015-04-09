@@ -233,7 +233,7 @@ NUNIT_APP_CODE_FILES = $(TEST_APP_CODE_FILES)
 NUNIT_APP_GLOBALRESOURCES_FILES = $(TEST_APP_GLOBALRESOURCES_FILES)
 
 OTHER_RES += $(RESOURCE_FILES_2)
-OTHER_LIB_MCS_FLAGS = -d:INSIDE_SYSTEM_WEB -nowarn:618 -r:System.Configuration.dll -r:Mono.Data.Sqlite.dll
+OTHER_LIB_MCS_FLAGS = -d:INSIDE_SYSTEM_WEB -d:FEATURE_PAL -nowarn:618 -r:System.Configuration.dll -r:Mono.Data.Sqlite.dll
 
 ifeq (4, $(FRAMEWORK_VERSION_MAJOR))
 OTHER_LIB_MCS_FLAGS += -r:System.Web.ApplicationServices.dll

@@ -666,7 +666,8 @@ namespace System.Web.Configuration {
         //
         private object GetSection(string sectionName, Type type, ResultsIndex index) {
 
-			return Activator.CreateInstance(type); // TODO: quick hack to just return default config
+            if (sectionName != "system.web/pages")
+                return Activator.CreateInstance(type); // TODO: quick hack to just return default config
 
             // check the results cache
             object result = _results[(int)index];

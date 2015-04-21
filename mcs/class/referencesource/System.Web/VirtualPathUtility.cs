@@ -20,6 +20,33 @@ using System.Security.Permissions;
  */
 public static class VirtualPathUtility {
 
+#if MONO
+        internal static string GetDirectory (string virtualPath, bool normalize) 
+     { 
+         if (normalize) 
+             { // do nothing for now
+}
+
+
+             int vpLen = virtualPath.Length; 
+             if (IsAppRelative (virtualPath) && vpLen < 3) { // "~" or "~/" 
+                 virtualPath = ToAbsolute (virtualPath); 
+                 vpLen = virtualPath.Length; 
+             } 
+              
+             if (vpLen == 1 && virtualPath [0] == '/') // "/" 
+                 return null; 
+ 
+
+             int last = virtualPath.LastIndexOf ('/', vpLen - 2, vpLen - 2); 
+             if (last > 0) 
+                 return virtualPath.Substring (0, last + 1); 
+             else 
+                 return "/"; 
+         } 
+
+#endif
+
     /* Discover virtual path type */
 
     public static bool IsAbsolute(string virtualPath) {

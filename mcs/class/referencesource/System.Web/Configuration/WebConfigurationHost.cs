@@ -69,6 +69,27 @@ namespace System.Web.Configuration {
         private bool            _inited;
 #endif
 
+         internal static string GetWebConfigFileName (string dir) 
+         { 
+             AppDomain domain = AppDomain.CurrentDomain; 
+             
+
+                 Assembly asm = Assembly.GetEntryAssembly () ?? Assembly.GetCallingAssembly (); 
+                 string name = Path.GetFileName (asm.Location); 
+                 string[] fileNames = new string[] {name + ".config", name + ".Config"}; 
+                 string appDir = domain.BaseDirectory; 
+                 string file; 
+ 
+
+                 foreach (string fn in fileNames) { 
+                     file = Path.Combine (appDir, fn); 
+                     if (File.Exists (file)) 
+                         return file; 
+                 } 
+             return null; 
+         } 
+
+
          static WebConfigurationHost() {
             s_slashSplit = new char[PathSeparator];
         }

@@ -41,7 +41,7 @@ namespace System.Web.Configuration
 			HttpRequest req = ctx != null ? ctx.Request : null;
 			
 			if (req != null) {
-				MachineConfigFilename = null;//WebConfigurationHost.GetWebConfigFileName (req.MapPath (WebConfigurationManager.FindWebConfig (req.CurrentExecutionFilePath)));
+				MachineConfigFilename = WebConfigurationHost.GetWebConfigFileName (req.MapPath (WebConfigurationManager.FindWebConfig (req.CurrentExecutionFilePath)));
 			} else
 				MachineConfigFilename = null;
 		}

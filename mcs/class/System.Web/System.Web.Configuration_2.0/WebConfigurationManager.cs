@@ -154,7 +154,7 @@ namespace System.Web.Configuration {
 			}
 			
 			lock (suppressAppReloadLock) {
-				string rootConfigPath = "";//WebConfigurationHost.GetWebConfigFileName (HttpRuntime.AppDomainAppPath);
+				string rootConfigPath = WebConfigurationHost.GetWebConfigFileName (HttpRuntime.AppDomainAppPath);
 				if (String.Compare (args.StreamPath, rootConfigPath, StringComparison.OrdinalIgnoreCase) == 0) {
 					SuppressAppReload (args.Start);
 					if (args.Start) {
@@ -334,7 +334,7 @@ namespace System.Web.Configuration {
 			if (String.IsNullOrEmpty (relativePath))
 				return false;
 
-			_Configuration cnew = defaultConfiguration.GetType ().GetMethod ("FindLocationConfiguration",  BindingFlags.NonPublic | BindingFlags.Instance).Invoke(defaultConfiguration, new object[] { relativePath, defaultConfiguration }) as _Configuration;
+			_Configuration cnew = defaultConfiguration.GetType ().GetMethod ("FindLocationConfiguration", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(defaultConfiguration, new object[] { relativePath, defaultConfiguration }) as _Configuration;
 			if (cnew == defaultConfiguration)
 				return false;
 
@@ -348,7 +348,8 @@ namespace System.Web.Configuration {
 				return null;
 			
 			_Configuration c = OpenWebConfiguration (path, null, null, null, null, null, false);
-			string configPath = c.GetType ().GetProperty ("ConfigPath").GetValue (c) as string;
+
+			string configPath = c.GetType ().GetProperty ("ConfigPath", BindingFlags.NonPublic | BindingFlags.Instance).GetValue (c) as string;
 			int baseCacheKey = 0;
 			int cacheKey;
 			bool pathPresent = !String.IsNullOrEmpty (path);
@@ -482,6 +483,7 @@ namespace System.Web.Configuration {
 			}
 				
 			
+
 			string rootPath = HttpRuntime.AppDomainAppVirtualPath;
 			ConfigPath curPath;
 			curPath = configPaths [path] as ConfigPath;
@@ -502,7 +504,7 @@ namespace System.Web.Configuration {
 			if (inAnotherApp || path [path.Length - 1] == '/')
 				dir = path;
 			else {
-			 	dir = "";//VirtualPathUtility.GetDirectory (path, false);
+			 	dir = VirtualPathUtility.GetDirectory (path, false);
 			 	if (dir == null)
 			 		return path;
 			}
@@ -524,8 +526,8 @@ namespace System.Web.Configuration {
 					break;
 				}
 
-				//if (WebConfigurationHost.GetWebConfigFileName (physPath) != null)
-				//	break;
+				if (WebConfigurationHost.GetWebConfigFileName (physPath) != null)
+					break;
 				
 				curPath.Path = GetParentDir (rootPath, curPath.Path);
 				if (curPath.Path == null || curPath.Path == "~") {

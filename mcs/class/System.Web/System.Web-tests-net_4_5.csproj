@@ -1290,12 +1290,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="System.Web-net_4_5.csproj">
       <Project>{B489C3DE-3ED3-4EDC-B42B-82B38E101857}</Project>
       <Name>System.Web-net_4_5</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

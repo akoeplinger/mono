@@ -35,7 +35,7 @@ using _Configuration = System.Configuration;
 
 namespace System.Web.Configuration {
 
-internal class MyRecord : IInternalConfigRecord
+internal class MonoRecord : IInternalConfigRecord
 	{
 		public object GetLkgSection (string configKey)
 		{
@@ -43,16 +43,15 @@ internal class MyRecord : IInternalConfigRecord
 		}
 
 		public object GetSection(string configKey) {
-            if (configKey == "system.web/pages") {
-                var configMap = new _Configuration.ExeConfigurationFileMap();
-                configMap.ExeConfigFilename = HttpConfigurationSystem.RootWebConfigurationFilePath;
-                var config = _Configuration.ConfigurationManager.OpenMappedExeConfiguration(configMap, _Configuration.ConfigurationUserLevel.None);
 
-                return (PagesSection)config.GetSection(configKey);
-            }
+            //return WebConfigurationManager.GetSection(configKey);  // TODO: this doesn't seem to work
 
+            // HACK: circumvent WebConfigurationManager and read web.config direclty
+            var configMap = new _Configuration.ExeConfigurationFileMap();
+            configMap.ExeConfigFilename = HttpConfigurationSystem.RootWebConfigurationFilePath;
+            var config = _Configuration.ConfigurationManager.OpenMappedExeConfiguration(configMap, _Configuration.ConfigurationUserLevel.None);
 
-			return null;
+            return config.GetSection(configKey);
 		}
 
 		public void RefreshSection (string configKey)
@@ -103,7 +102,7 @@ internal class MyRecord : IInternalConfigRecord
 		}
 		
 		        static internal IInternalConfigRecord GetUniqueConfigRecord(string configPath) {
-			return new MyRecord(){ConfigPath=configPath};
+			return new MonoRecord(){ConfigPath=configPath};
         }
 
 		static internal void CompleteInit(){
@@ -159,6 +158,8 @@ internal class MyRecord : IInternalConfigRecord
             }
         }
         static internal void EnsureInit(IConfigMapPath configMapPath, bool listenToFileChanges, bool initComplete) {
+            WebConfigurationManager.Init();
+            Mono.Web.Util.SettingsMappingManager.Init();
 		}
 		
         static internal void AddFileDependency(String file) {}

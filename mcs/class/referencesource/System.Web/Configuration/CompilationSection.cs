@@ -127,7 +127,7 @@ namespace System.Web.Configuration {
             new ConfigurationProperty("maxBatchGeneratedFileSize", typeof(int), 1000, ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty _propNumRecompilesBeforeAppRestart =
             new ConfigurationProperty("numRecompilesBeforeAppRestart", typeof(int), 15, ConfigurationPropertyOptions.None);
-#if !FEATURE_PAL // FEATURE_PAL does not support VisualBasic
+#if !FEATURE_PAL || MONO // FEATURE_PAL does not support VisualBasic
         private static readonly ConfigurationProperty _propDefaultLanguage =
             new ConfigurationProperty("defaultLanguage", typeof(string), "vb", ConfigurationPropertyOptions.None);
 #else // !FEATURE_PAL

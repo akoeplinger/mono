@@ -67,6 +67,7 @@ namespace MonoTests.System.Web {
 
 		[Test]
 		[Category ("NotDotNet")]
+		[Ignore ("Fails on .NET too.")]
 		[ExpectedException (typeof (HttpRequestValidationException))]
 		public void ValidateInput_XSS_Unicode ()
 		{
@@ -554,9 +555,8 @@ namespace MonoTests.System.Web {
 			NameValueCollection x = c.Request.Headers;
 		}
 		
-		[Test] 
-	[Category ("NotWorking")]
-	public void Test_RequestFields ()
+		[Test]
+		public void Test_RequestFields ()
 		{
 			HttpContext c = Cook (1);
 
@@ -587,7 +587,7 @@ namespace MonoTests.System.Web {
 			Assert.AreEqual ("", x ["k1"], "K6");
 			Assert.AreEqual (null, x ["k2"], "K7");
 			Assert.AreEqual ("   ", x ["k3"], "K8");
-			Assert.AreEqual (4, x.Count, "K9");
+			Assert.AreEqual (3, x.Count, "K9");
 
 			c = Cook (5);
 			Assert.AreEqual ("iso-8859-1", c.Request.ContentEncoding.WebName, "A7");
@@ -879,7 +879,7 @@ namespace MonoTests.System.Web {
 
 		public override string GetUriPath()
 		{
-			return "default.aspx";
+			return "/default.aspx";
 		}
 
 		public override void SendKnownResponseHeader(int index, string value)
@@ -945,7 +945,6 @@ namespace MonoTests.System.Web {
 		HttpContext context = null;
 
 		[SetUp]
-		[Category ("NotDotNet")] // Cannot be runned on .net with no web context
 		public void SetUp()
 		{
 			HttpWorkerRequest workerRequest = new FakeHttpWorkerRequest();
@@ -953,27 +952,23 @@ namespace MonoTests.System.Web {
 		}
 
 		[Test]
-		[Category ("NotDotNet")] // Cannot be runned on .net with no web context
 		public void ContentLength()
 		{
 			Assert.AreEqual(7, context.Request.ContentLength);
 		}
 
 		[Test]
-		[Category ("NotDotNet")] // Cannot be runned on .net with no web context
 		public void Form_Count()
 		{
 			Assert.AreEqual(1, context.Request.Form.Count);
 		}
 
 		[Test]
-		[Category ("NotDotNet")] // Cannot be runned on .net with no web context
 		public void Form_Item()
 		{
 			// I would have expected the extra two characters to be stripped
 			// but Microsoft's CLR keeps them so Mono should, too.
-			//Assert.AreEqual("bar\r\n", context.Request.Form["foo"]);
-			Assert.AreEqual("bar", context.Request.Form["foo"]);
+			Assert.AreEqual("bar\r\n", context.Request.Form["foo"]);
 		}
 	}
 
@@ -1011,7 +1006,6 @@ namespace MonoTests.System.Web {
 		HttpContext context = null;
 
 		[SetUp]
-		[Category ("NotDotNet")] // Cannot be runned on .net with no web context
 		public void SetUp()
 		{
 			HttpWorkerRequest workerRequest = new FakeHttpWorkerRequest();
@@ -1019,14 +1013,12 @@ namespace MonoTests.System.Web {
 		}
 
 		[Test]
-		[Category ("NotDotNet")] // Cannot be runned on .net with no web context
 		public void Form_Count()
 		{
 			Assert.AreEqual(1, context.Request.Form.Count);
 		}
 
 		[Test]
-		[Category ("NotDotNet")] // Cannot be runned on .net with no web context
 		public void Form_Item()
 		{
 			Assert.AreEqual("b\xE1r", context.Request.Form["foo"]);

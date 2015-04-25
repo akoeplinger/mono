@@ -186,7 +186,7 @@ namespace MonoTests.System.Web.UI.WebControls
 
 			s1 = new Unit (".9em");
 			Assert.AreEqual (s1.Type, UnitType.Em, "B1");
-			Assert.AreEqual (0.9d, s1.Value, "B2");
+			Assert.AreEqual (0.9d, s1.Value, 0.0000001, "B2");
 			Assert.AreEqual ("0.9em", s1.ToString (), "B3");
 		}
 

@@ -43,10 +43,10 @@ namespace MonoTests.System.Web.UI
 		}
 		
 		[Test]
+		[ExpectedException (typeof (HttpException))]
 		public void MissingMasterFile ()
 		{
 			string pageHtml = new WebTest ("MissingMasterFile.aspx").Run ();
-			Assert.IsTrue (pageHtml.IndexOf ("[System.Web.Compilation.ParseException]:") != -1, "#A1");
 		}
 	}
 }

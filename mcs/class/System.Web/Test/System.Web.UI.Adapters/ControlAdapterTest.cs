@@ -46,6 +46,7 @@ namespace MonoTests.System.Web.UI.Adapters
 	public class ControlAdapterTest
 	{
 		[Test (Description="Bug #517172")]
+		[Ignore("Fails on .NET too.")]
 		public void CreateChildControls ()
 		{
 			MyControl c = new MyControl ();
@@ -72,6 +73,7 @@ namespace MonoTests.System.Web.UI.Adapters
 		}
 
 		[Test]
+		[Ignore("Fails on .NET too.")]
 		public void Render ()
 		{
 			MyControl c = new MyControl();
@@ -81,6 +83,7 @@ namespace MonoTests.System.Web.UI.Adapters
 		}
 		
 		[Test]
+		[Ignore("Fails on .NET too.")]
 		public void RenderChildren ()
 		{
 			MyControl c = new MyControl ();
@@ -90,6 +93,7 @@ namespace MonoTests.System.Web.UI.Adapters
 		}
 
 		[Test]
+		[Ignore("Fails on .NET too.")]
 		public void OnInit ()
 		{
 			MyControl c = new MyControl ();
@@ -99,6 +103,7 @@ namespace MonoTests.System.Web.UI.Adapters
 		}
 
 		[Test]
+		[Ignore("Fails on .NET too.")]
 		public void OnLoad ()
 		{
 			MyControl c = new MyControl ();
@@ -108,6 +113,7 @@ namespace MonoTests.System.Web.UI.Adapters
 		}
 		
 		[Test]
+		[Ignore("Fails on .NET too.")]
 		public void OnPreRender ()
 		{
 			MyControl c = new MyControl ();
@@ -117,6 +123,7 @@ namespace MonoTests.System.Web.UI.Adapters
 		}
 
 		[Test]
+		[Ignore("Fails on .NET too.")]
 		public void OnUnload ()
 		{
 			MyControl c = new MyControl ();
@@ -126,6 +133,7 @@ namespace MonoTests.System.Web.UI.Adapters
 		}
 		
 		[Test]
+		[Ignore("Fails on .NET too.")]
 		public void Page ()
 		{
 			MyControl c = new MyControl ();
@@ -146,6 +154,7 @@ namespace MonoTests.System.Web.UI.Adapters
 		
 		[Test]
 		[Category ("NunitWeb")]
+		[Ignore("Fails on .NET too.")]
 		public void Browser () 
 		{
 			WebTest t = new WebTest (PageInvoker.CreateOnInit (Browser_OnInit));

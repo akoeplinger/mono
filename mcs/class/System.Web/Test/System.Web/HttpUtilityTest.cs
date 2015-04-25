@@ -175,7 +175,7 @@ namespace MonoTests.System.Web {
 			for (int i = 0; i < len; i++) {
 				c = s [i];
 
-				if (c >= 0 && c <= 31 || c == 34 || c == 39 || c == 60 || c == 62 || c == 92) {
+				if (c >= 0 && c <= 31 || c == 34 || c == 38 || c == 39 || c == 60 || c == 62 || c == 92 || c == 133|| c == 8232 || c == 8233) {
 					needEncode = true;
 					break;
 				}
@@ -190,7 +190,7 @@ namespace MonoTests.System.Web {
 
 			for (int i = 0; i < len; i++) {
 				c = s [i];
-				if (c >= 0 && c <= 7 || c == 11 || c >= 14 && c <= 31 || c == 39 || c == 60 || c == 62)
+				if (c >= 0 && c <= 7 || c == 11 || c >= 14 && c <= 31 || c == 38 || c == 39 || c == 60 || c == 62 || c == 133|| c == 8232 || c == 8233)
 					sb.AppendFormat ("\\u{0:x4}", (int) c);
 				else switch ((int) c) {
 						case 8:

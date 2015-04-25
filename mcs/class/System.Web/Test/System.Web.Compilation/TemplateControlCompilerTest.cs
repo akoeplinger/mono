@@ -98,28 +98,28 @@ namespace MonoTests.System.Web.Compilation {
 		}
 		
 		[Test]
-		[ExpectedException ("System.Web.Compilation.CompilationException")]
+		[ExpectedException (typeof (HttpCompileException))]
 		public void InvalidPropertyBindTest1 ()
 		{
 			new WebTest ("InvalidPropertyBind1.aspx").Run ();
 		}
 
 		[Test]
-		[ExpectedException (typeof (HttpParseException))]
+		[ExpectedException (typeof (HttpException))]
 		public void InvalidPropertyBindTest2 ()
 		{
 			new WebTest ("InvalidPropertyBind2.aspx").Run ();
 		}
 
 		[Test]
-		[ExpectedException ("System.Web.Compilation.CompilationException")]
+		[ExpectedException (typeof (HttpCompileException))]
 		public void InvalidPropertyBindTest3 ()
 		{
 			new WebTest ("InvalidPropertyBind3.aspx").Run ();
 		}
 
 		[Test]
-		[ExpectedException (typeof (HttpParseException))]
+		[ExpectedException (typeof (HttpException))]
 		public void InvalidPropertyBindTest4 ()
 		{
 			new WebTest ("InvalidPropertyBind4.aspx").Run ();
@@ -219,7 +219,7 @@ namespace MonoTests.System.Web.Compilation {
 		{
 			// Just test if it throws an exception
 			string pageHtml = new WebTest ("DuplicateControlsInClientComment.aspx").Run ();
-			Assert.IsTrue (pageHtml.IndexOf ("[System.Web.Compilation.ParseException]:") != -1, "#A1");
+			Assert.IsTrue (pageHtml.IndexOf ("[HttpParseException]:") != -1, "#A1");
 		}
 
 		[Test (Description="Bug #367723")]

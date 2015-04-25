@@ -508,7 +508,7 @@ namespace MonoTests.System.Web {
 
 			UnknownResponseHeader unknown;
 
-			Assert.AreEqual (2, f.UnknownResponseHeaders.Count, "#C1");
+			Assert.AreEqual (3, f.UnknownResponseHeaders.Count, "#C1");
 
 			unknown = (UnknownResponseHeader) f.UnknownResponseHeaders ["Content-Disposition"];
 			Assert.AreEqual ("Content-Disposition", unknown.Name, "#C4");
@@ -524,6 +524,10 @@ namespace MonoTests.System.Web {
 			unknown = (UnknownResponseHeader) al [1];
 			Assert.AreEqual ("My-Custom-Header", unknown.Name, "#C9");
 			Assert.AreEqual ("always", unknown.Value, "#C10");
+
+			unknown = (UnknownResponseHeader) f.UnknownResponseHeaders ["X-AspNet-Version"];
+			Assert.AreEqual ("X-AspNet-Version", unknown.Name, "#C11");
+			Assert.AreEqual (Environment.Version.ToString (3), unknown.Value, "#C12");
 		}
 
 		[Test] // pull #866
@@ -573,7 +577,6 @@ namespace MonoTests.System.Web {
 		}
 
 		[Test] // bug #485557
-		[Category ("NotWorking")] // bug #488702
 		public void ClearHeaders ()
 		{
 			FakeHttpWorkerRequest2 f;
@@ -908,6 +911,7 @@ namespace MonoTests.System.Web {
 		}
 
 		[Test]
+		[Ignore ("Fails on .NET too.")]
 		public void Write_Count_Overflow ()
 		{
 			byte [] buffer;
@@ -940,6 +944,7 @@ namespace MonoTests.System.Web {
 		}
 
 		[Test]
+		[Ignore ("Fails on .NET too.")]
 		public void Write_Offset_Overflow ()
 		{
 			byte [] buffer = new byte [] { 0x0a, 0x1f, 0x2d };

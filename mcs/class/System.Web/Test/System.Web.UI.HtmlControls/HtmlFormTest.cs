@@ -264,13 +264,12 @@ namespace MonoTests.System.Web.UI.HtmlControls {
 		}
 
 		[Test]
-		[Category ("NotWorking")]
 		public void RenderChildren ()
 		{
 			Page p = new Page();
 			FormPoker form = new FormPoker ();
 			form.Page = p;
-			HtmlDiff.AssertAreEqual ("<div>\r\n<input type=\"hidden\" name=\"__VIEWSTATE\" id=\"\r\n__VIEWSTATE\" value=\"\" />\r\n</div>", form.RenderChildren ().Trim (), "A1");
+			HtmlDiff.AssertAreEqual ("<div class=\"aspNetHidden\">\r\n<input type=\"hidden\" name=\"__VIEWSTATE\" id=\"\r\n__VIEWSTATE\" value=\"\" />\r\n</div>", form.RenderChildren ().Trim (), "A1");
 		}
 
 		[Test]

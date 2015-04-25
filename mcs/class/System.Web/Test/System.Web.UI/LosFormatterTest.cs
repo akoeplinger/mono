@@ -201,6 +201,7 @@ namespace MonoTests.System.Web.UI
 
 		[Test]
 		[Category ("NotDotNet")] // MS throws NullReferenceException
+		[Ignore ("Fails on .NET too.")]
 		public void Serialize_Output_Null ()
 		{
 			LosFormatter lf = new LosFormatter ();

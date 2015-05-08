@@ -940,6 +940,11 @@ namespace MonoTests.System.Web {
 			{
 				return Encoding.ASCII.GetBytes(data);
 			}
+
+		    public override string GetUriPath()
+		    {
+		        return "/default.aspx";
+		    }
 		}
 
 		HttpContext context = null;

@@ -82,7 +82,13 @@ internal class MonoRecord : IInternalConfigRecord
 	{
 		object IInternalConfigSystem.GetSection (string configKey)
 		{
-			return WebConfigurationManager.GetSection (configKey);
+			//return WebConfigurationManager.GetSection (configKey);
+
+var configMap = new _Configuration.ExeConfigurationFileMap();
+            configMap.ExeConfigFilename = HttpConfigurationSystem.RootWebConfigurationFilePath;
+            var config = _Configuration.ConfigurationManager.OpenMappedExeConfiguration(configMap, _Configuration.ConfigurationUserLevel.None);
+
+            return config.GetSection(configKey);
 		}
 
 		void IInternalConfigSystem.RefreshConfig (string sectionName)

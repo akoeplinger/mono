@@ -714,7 +714,7 @@ public class AssemblyBuilder {
     
         foreach (var x in _initialReferencedAssemblies) {
             var name = ((Assembly)x).ManifestModule.Name;
-            if (name == "System.dll" || name == "System.Core.dll" || name.Contains("nunit"))
+            if (name == "System.dll" || name == "System.Core.dll"  || name == "System.Xml.dll" || name.Contains("nunit"))
                 _remove.Add((Assembly) x);
         }
         foreach (var x in _remove) {

@@ -1783,6 +1783,10 @@
     <Compile Include="ReferenceSources\SR.cs" />
     <Compile Include="System.Web.Caching\CacheExpires.cs" />
     <Compile Include="System.Web.Caching\CacheUsage.cs" />
+    <Compile Include="System.Web.Configuration_2.0\ApplicationSettingsConfigurationFileMap.cs" />
+    <Compile Include="System.Web.Configuration_2.0\HttpConfigurationSystem.cs" />
+    <Compile Include="System.Web.Configuration_2.0\LruCache.cs" />
+    <Compile Include="System.Web.Configuration_2.0\WebConfigurationManager.cs" />
     <Compile Include="System.Web.RegularExpressions\AspCodeRegex.cs" />
     <Compile Include="System.Web.RegularExpressions\AspEncodedExprRegex.cs" />
     <Compile Include="System.Web.RegularExpressions\AspExprRegex.cs" />
@@ -1814,12 +1818,6 @@
     <Compile Include="System.Web\CapabilitiesLoader.cs" />
     <Compile Include="System.Web\GlobalPerfCounter.cs" />
     <Compile Include="System.Web\StateServicePerfCounter.cs" />
-    <Compile Include="System.Web.Configuration_2.0\ApplicationSettingsConfigurationFileMap.cs" />
-    <Compile Include="System.Web.Configuration_2.0\HttpConfigurationSystem.cs" />
-    <Compile Include="System.Web.Configuration_2.0\LruCache.cs" />
-    <Compile Include="System.Web.Configuration_2.0\WebConfigurationHost.cs" />
-    <Compile Include="System.Web.Configuration_2.0\WebConfigurationManager.cs" />
-    <Compile Include="System.Web.Configuration_2.0\UrlUtils.cs" />
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -1840,7 +1838,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-    <Folder Include="System.Web.Configuration_2.0\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\TranslationResources.resources">

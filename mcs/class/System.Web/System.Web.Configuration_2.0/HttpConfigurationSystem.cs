@@ -36,15 +36,15 @@ using _Configuration = System.Configuration;
 namespace System.Web.Configuration {
 
 internal class MonoRecord : IInternalConfigRecord
-    {
-        public object GetLkgSection (string configKey)
-        {
-            return null;
-        }
+	{
+		public object GetLkgSection (string configKey)
+		{
+			return null;
+		}
 
-        public object GetSection(string configKey) {
+		public object GetSection(string configKey) {
 
-return WebConfigurationManager.GetSection (configKey);  // TODO: this doesn't seem to work
+            //return WebConfigurationManager.GetSection(configKey);  // TODO: this doesn't seem to work
 
             // HACK: circumvent WebConfigurationManager and read web.config direclty
             var configMap = new _Configuration.ExeConfigurationFileMap();
@@ -52,37 +52,43 @@ return WebConfigurationManager.GetSection (configKey);  // TODO: this doesn't se
             var config = _Configuration.ConfigurationManager.OpenMappedExeConfiguration(configMap, _Configuration.ConfigurationUserLevel.None);
 
             return config.GetSection(configKey);
-        }
+		}
 
-        public void RefreshSection (string configKey)
-        {
-            
-        }
+		public void RefreshSection (string configKey)
+		{
+			
+		}
 
-        public void Remove ()
-        {
-            
-        }
+		public void Remove ()
+		{
+			
+		}
 
-        public void ThrowIfInitErrors ()
-        {
-            
-        }
-        string _configPath;
-        public string ConfigPath { get { return _configPath; } internal set { _configPath = value; }}
+		public void ThrowIfInitErrors ()
+		{
+			
+		}
+		string _configPath;
+		public string ConfigPath { get { return _configPath; } internal set { _configPath = value; }}
 
-        public bool HasInitErrors { get { return false; } }
+		public bool HasInitErrors { get { return false; } }
 
-        public string StreamName { get { return null; } }
+		public string StreamName { get { return null; } }
 
 
-    }
+	}
 
 	internal class HttpConfigurationSystem : IInternalConfigSystem
 	{
 		object IInternalConfigSystem.GetSection (string configKey)
 		{
-			return WebConfigurationManager.GetSection (configKey);
+			//return WebConfigurationManager.GetSection (configKey);
+
+var configMap = new _Configuration.ExeConfigurationFileMap();
+            configMap.ExeConfigFilename = HttpConfigurationSystem.RootWebConfigurationFilePath;
+            var config = _Configuration.ConfigurationManager.OpenMappedExeConfiguration(configMap, _Configuration.ConfigurationUserLevel.None);
+
+            return config.GetSection(configKey);
 		}
 
 		void IInternalConfigSystem.RefreshConfig (string sectionName)
@@ -97,16 +103,18 @@ return WebConfigurationManager.GetSection (configKey);  // TODO: this doesn't se
                 return true;
             }
         }
-        internal static bool UseHttpConfigurationSystem {
-            get { return true; }
+		internal static bool UseHttpConfigurationSystem {
+			get { return true; }
+		}
+		
+		        static internal IInternalConfigRecord GetUniqueConfigRecord(string configPath) {
+			return new MonoRecord(){ConfigPath=configPath};
         }
-                static internal IInternalConfigRecord GetUniqueConfigRecord(string configPath) {
-            return new MonoRecord(){ConfigPath=configPath};
-        }
-        static internal void CompleteInit(){
-}
 
-        internal const string MachineConfigFilename = "machine.config";
+		static internal void CompleteInit(){
+}
+        
+		internal const string MachineConfigFilename = "machine.config";
         internal const string RootWebConfigFilename         = "web.config";
         internal const string WebConfigFileName             = "web.config";
 
@@ -155,12 +163,11 @@ return WebConfigurationManager.GetSection (configKey);  // TODO: this doesn't se
                 return s_MsCorLibDirectory;
             }
         }
-
         static internal void EnsureInit(IConfigMapPath configMapPath, bool listenToFileChanges, bool initComplete) {
             WebConfigurationManager.Init();
             Mono.Web.Util.SettingsMappingManager.Init();
-        }
-        
+		}
+		
         static internal void AddFileDependency(String file) {}
 	}
 }

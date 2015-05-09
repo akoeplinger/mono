@@ -139,11 +139,11 @@ namespace System.Web.Configuration {
 			if (lastWrite == DateTime.MinValue || now.Subtract (lastWrite).TotalMilliseconds >= SAVE_LOCATIONS_CHECK_INTERVAL) {
 				saveLocationsTimer.Dispose ();
 				saveLocationsTimer = null;
-				//HttpApplicationFactory.EnableWatcher (VirtualPathUtility.RemoveTrailingSlash (HttpRuntime.AppDomainAppPath), "?eb.?onfig");
+				//REVTODO: HttpApplicationFactory.EnableWatcher (VirtualPathUtility.RemoveTrailingSlash (HttpRuntime.AppDomainAppPath), "?eb.?onfig");
 			} else
 				saveLocationsTimer.Change (SAVE_LOCATIONS_CHECK_INTERVAL, SAVE_LOCATIONS_CHECK_INTERVAL);
 		}
-		
+
 		static void ConfigurationSaveHandler (_Configuration sender, ConfigurationSaveEventArgs args)
 		{
 			try {
@@ -158,7 +158,7 @@ namespace System.Web.Configuration {
 				if (String.Compare (args.StreamPath, rootConfigPath, StringComparison.OrdinalIgnoreCase) == 0) {
 					SuppressAppReload (args.Start);
 					if (args.Start) {
-						//HttpApplicationFactory.DisableWatcher (VirtualPathUtility.RemoveTrailingSlash (HttpRuntime.AppDomainAppPath), "?eb.?onfig");
+						//REVTODO: HttpApplicationFactory.DisableWatcher (VirtualPathUtility.RemoveTrailingSlash (HttpRuntime.AppDomainAppPath), "?eb.?onfig");
 
 						lock (saveLocationsCacheLock) {
 							if (saveLocationsCache == null)
@@ -178,7 +178,7 @@ namespace System.Web.Configuration {
 				}
 			}
 		}
-		
+
 		public static _Configuration OpenMachineConfiguration ()
 		{
 			return ConfigurationManager.OpenMachineConfiguration ();
@@ -264,7 +264,7 @@ namespace System.Web.Configuration {
 			_Configuration conf = null;
 			conf = (_Configuration) configurations [confKey];
 			if (conf == null) {
-				conf = ConfigurationFactory.Create (typeof (WebConfigurationHost), WebLevel.Path, null, path, site, locationSubPath, server, userName, password, inAnotherApp);
+				conf = ConfigurationFactory.Create (typeof (WebConfigurationHost), null, path, site, locationSubPath, server, userName, password, inAnotherApp);
 				configurations [confKey] = conf;
 			}
 			return conf;
@@ -272,22 +272,22 @@ namespace System.Web.Configuration {
 
 		public static _Configuration OpenMappedWebConfiguration (WebConfigurationFileMap fileMap, string path)
 		{
-			return ConfigurationFactory.Create (typeof(WebConfigurationHost), WebLevel.Path, fileMap, path, null, null);
+			return ConfigurationFactory.Create (typeof(WebConfigurationHost), fileMap, path);
 		}
 		
 		public static _Configuration OpenMappedWebConfiguration (WebConfigurationFileMap fileMap, string path, string site)
 		{
-			return ConfigurationFactory.Create (typeof(WebConfigurationHost), WebLevel.Path, fileMap, path, site, null);
+			return ConfigurationFactory.Create (typeof(WebConfigurationHost), fileMap, path, site);
 		}
 		
 		public static _Configuration OpenMappedWebConfiguration (WebConfigurationFileMap fileMap, string path, string site, string locationSubPath)
 		{
-			return ConfigurationFactory.Create (typeof(WebConfigurationHost), WebLevel.Path, fileMap, path, site, locationSubPath);
+			return ConfigurationFactory.Create (typeof(WebConfigurationHost), fileMap, path, site, locationSubPath);
 		}
 		
 		public static _Configuration OpenMappedMachineConfiguration (ConfigurationFileMap fileMap)
 		{
-			return ConfigurationFactory.Create (typeof(WebConfigurationHost), WebLevel.Machine, fileMap, null, null, null);
+			return ConfigurationFactory.Create (typeof(WebConfigurationHost), fileMap);
 		}
 
 		public static _Configuration OpenMappedMachineConfiguration (ConfigurationFileMap fileMap,
@@ -483,7 +483,6 @@ namespace System.Web.Configuration {
 			}
 				
 			
-
 			string rootPath = HttpRuntime.AppDomainAppVirtualPath;
 			ConfigPath curPath;
 			curPath = configPaths [path] as ConfigPath;
@@ -495,7 +494,16 @@ namespace System.Web.Configuration {
 			HttpContext ctx = HttpContext.Current;
 			HttpRequest req = ctx != null ? ctx.Request : null;
 			string physPath = req != null ? VirtualPathUtility.AppendTrailingSlash (MapPath (req, path)) : null;
-			string appDomainPath = HttpRuntime.AppDomainAppPath;
+
+
+string appDomainPath = "";
+try{
+appDomainPath = HttpRuntime.AppDomainAppPath;
+
+}catch{   //TODO: hack, this fails under unit tests when no httpruntime was initialized
+appDomainPath = AppDomain.CurrentDomain.BaseDirectory;
+    }
+
 			
 			if (physPath != null && appDomainPath != null && !physPath.StartsWith (appDomainPath, StringComparison.Ordinal))
 				inAnotherApp = true;

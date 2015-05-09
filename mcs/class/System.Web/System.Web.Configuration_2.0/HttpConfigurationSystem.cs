@@ -42,16 +42,18 @@ internal class MonoRecord : IInternalConfigRecord
 			return null;
 		}
 
+_Configuration.Configuration _config;
+
 		public object GetSection(string configKey) {
 
-            //return WebConfigurationManager.GetSection(configKey);  // TODO: this doesn't seem to work
-
             // HACK: circumvent WebConfigurationManager and read web.config direclty
-            var configMap = new _Configuration.ExeConfigurationFileMap();
-            configMap.ExeConfigFilename = HttpConfigurationSystem.RootWebConfigurationFilePath;
-            var config = _Configuration.ConfigurationManager.OpenMappedExeConfiguration(configMap, _Configuration.ConfigurationUserLevel.None);
+            if (_config == null) {
+                var configMap = new _Configuration.ExeConfigurationFileMap();
+                configMap.ExeConfigFilename = HttpConfigurationSystem.RootWebConfigurationFilePath;
+                _config = _Configuration.ConfigurationManager.OpenMappedExeConfiguration(configMap, _Configuration.ConfigurationUserLevel.None);
+            }
 
-            return config.GetSection(configKey);
+            return _config.GetSection(configKey);
 		}
 
 		public void RefreshSection (string configKey)
@@ -80,15 +82,17 @@ internal class MonoRecord : IInternalConfigRecord
 
 	internal class HttpConfigurationSystem : IInternalConfigSystem
 	{
-		object IInternalConfigSystem.GetSection (string configKey)
-		{
-			//return WebConfigurationManager.GetSection (configKey);
 
-var configMap = new _Configuration.ExeConfigurationFileMap();
-            configMap.ExeConfigFilename = HttpConfigurationSystem.RootWebConfigurationFilePath;
-            var config = _Configuration.ConfigurationManager.OpenMappedExeConfiguration(configMap, _Configuration.ConfigurationUserLevel.None);
+_Configuration.Configuration _config;
 
-            return config.GetSection(configKey);
+		object IInternalConfigSystem.GetSection(string configKey) {
+            // HACK: circumvent WebConfigurationManager and read web.config direclty
+            if (_config == null) {
+                var configMap = new _Configuration.ExeConfigurationFileMap();
+                configMap.ExeConfigFilename = HttpConfigurationSystem.RootWebConfigurationFilePath;
+                _config = _Configuration.ConfigurationManager.OpenMappedExeConfiguration(configMap, _Configuration.ConfigurationUserLevel.None);
+            }
+            return _config.GetSection(configKey);
 		}
 
 		void IInternalConfigSystem.RefreshConfig (string sectionName)

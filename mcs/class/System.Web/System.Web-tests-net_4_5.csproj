@@ -655,6 +655,7 @@
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+      <Package>nunit</Package>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -1279,15 +1280,6 @@
     <EmbeddedResource Include="Test\mainsoft\NunitWebResources\App_Code\CustomCheckBoxColumn.cs">
       <LogicalName>App_Code/CustomCheckBoxColumn.cs</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Test\mainsoft\NunitWebResources\App_GlobalResources\Common.resx">
-      <LogicalName>App_GlobalResources/Common.resx</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Test\mainsoft\NunitWebResources\App_GlobalResources\Common.fr-FR.resx">
-      <LogicalName>App_GlobalResources/Common.fr-FR.resx</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Test\mainsoft\NunitWebResources\App_GlobalResources\Resource1.resx">
-      <LogicalName>App_GlobalResources/Resource1.resx</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="System.Web-net_4_5.csproj">
@@ -1297,5 +1289,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Test\mainsoft\NunitWebResources\App_GlobalResources\Common.resx">
+      <LogicalName>App_GlobalResources/Common.resx</LogicalName>
+    </Content>
+    <Content Include="Test\mainsoft\NunitWebResources\App_GlobalResources\Common.fr-FR.resx">
+      <LogicalName>App_GlobalResources/Common.fr-FR.resx</LogicalName>
+    </Content>
+    <Content Include="Test\mainsoft\NunitWebResources\App_GlobalResources\Resource1.resx">
+      <LogicalName>App_GlobalResources/Resource1.resx</LogicalName>
+    </Content>
   </ItemGroup>
 </Project>

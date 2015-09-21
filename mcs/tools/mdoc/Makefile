@@ -29,6 +29,12 @@ MSCORLIB = -r:$(topdir)/class/lib/$(PROFILE)/mscorlib.dll
 
 MDOC_TEST_FILES = \
 	Test/CLILibraryTypes.dtd				  \
+	Test/DocTest-enumerations.cs                              \
+	Test/DocTest-addNonGeneric.cs                             \
+	Test/DocTest-DropNS-classic.cs                            \
+	Test/DocTest-DropNS-classic-secondary.cs                  \
+	Test/DocTest-DropNS-unified.cs                            \
+	Test/DocTest-InternalInterface.cs                         \
 	Test/DocTest-v1.cs                                        \
 	Test/DocTest-v2.patch                                     \
 	Test/msxdoc-expected.importslashdoc.xml                   \
@@ -66,6 +72,7 @@ dist-local: dist-default dist-tests
 
 dist-tests:
 	find Test/en.expected* -name '*.xml'     > .files
+	find Test/en.expected* -name '*.xml.remove' >> .files
 	find Test/html.expected* -name '*.html' >> .files
 	tar cTf .files - | (cd $(distdir); tar xf -)
 	rm .files ; \

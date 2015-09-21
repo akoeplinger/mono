@@ -9,7 +9,7 @@ PROGRAM = mono-shlib-cop.exe
 
 TEST_INPUT = test.dll
 
-EXTRA_DISTFILES = test.cs
+EXTRA_DISTFILES = test.cs test.dll.config test.dll.out
 
 include ../../build/executable.make
 

@@ -20,17 +20,20 @@ EXTRA_DIST = \
 	deploy			\
 	docs.make		\
 	embedded-api		\
+	exceptions		\
 	exdoc			\
 	file-share-modes	\
 	gc-issues		\
 	gc-variables-in-c	\
 	glossary.txt		\
+	historic-mono-branches.txt	\
 	ignore			\
 	internal-calls		\
 	ir-desc			\
 	jit-imt			\
 	jit-thoughts		\
 	jit-trampolines		\
+	magic.diff			\
 	mini-doc.txt		\
 	mono-api-metadata.html	\
 	mono-file-formats.config\
@@ -48,7 +51,8 @@ EXTRA_DIST = \
 	threading		\
 	toc.xml			\
 	TODO			\
-	unmanaged-calls	
+	unmanaged-calls	\
+	wapi
 
 -include $(mcs_topdir)/build/config.make
 
@@ -61,6 +65,7 @@ dist-hook:
 	cp sources/*  $(distdir)/sources
 	cp svgs/*     $(distdir)/svgs
 	cp HtmlAgilityPack/*     $(distdir)/HtmlAgilityPack
+	cp $(ASSEMBLED_DOCS) $(distdir)/
 
 clean-local:
 	-rm -Rf html

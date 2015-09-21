@@ -21,3 +21,9 @@ RESX_RESOURCE_STRING = \
 	../../../external/corefx/src/System.IO.Compression.ZipFile/src/Resources/Strings.resx
 
 include ../../build/library.make
+
+EXTRA_DISTFILES = \
+	foo/bar.txt				\
+	foo/foo.txt				\
+	foo/foobar/bar.txt		\
+	foo/foobar/foo.txt		\

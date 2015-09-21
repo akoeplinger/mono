@@ -21,3 +21,5 @@ test-local:
 
 run-test:
 	$(MAKE) -C Test/standalone
+
+EXTRA_DISTFILES = Test/App.config Test/appSettings.config

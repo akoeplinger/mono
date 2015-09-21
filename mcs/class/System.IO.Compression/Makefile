@@ -17,3 +17,5 @@ RESX_RESOURCE_STRING = \
 EXTRA_DISTFILES = $(TEST_RESOURCE_FILES)
 
 include ../../build/library.make
+
+EXTRA_DISTFILES = archive.zip

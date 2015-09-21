@@ -96,3 +96,5 @@ ifeq ($(AOT_SUPPORTED), 1)
 	@$(MONO) --aot=msym-dir=$(MSYM_DIR) $(OUT_DIR)/$(TEST_EXE) > /dev/null
 	$(CHECK_DIFF)
 endif
+
+EXTRA_DISTFILES = Test/StackTraceDumper.cs Test/symbolicate.expected

@@ -135,4 +135,18 @@ DISTFILES =	\
 	../../../external/binary-reference-assemblies/Makefile	\
 	Makefile
 
+uninstall-local:
+        $(MKINSTALLDIRS) $(PROFILE_DIR)/2.0-api
+        $(MKINSTALLDIRS) $(PROFILE_DIR)/3.5-api
+        $(MKINSTALLDIRS) $(PROFILE_DIR)/4.0-api
+        $(MKINSTALLDIRS) $(PROFILE_DIR)/4.5-api
+        $(MKINSTALLDIRS) $(PROFILE_DIR)/4.5.1-api
+        $(MKINSTALLDIRS) $(PROFILE_DIR)/4.5.2-api
+        $(MKINSTALLDIRS) $(PROFILE_DIR)/4.6-api
+        $(MKINSTALLDIRS) $(PROFILE_DIR)/4.6.1-api
+        $(MKINSTALLDIRS) $(PROFILE_DIR)/4.6.2-api
+        $(MKINSTALLDIRS) $(PROFILE_DIR)/4.7-api
+        $(MKINSTALLDIRS) $(PROFILE_DIR)/4.7.1-api
+        $(MKINSTALLDIRS) $(PROFILE_DIR)/4.7.2-api
+
 dist-local: dist-default

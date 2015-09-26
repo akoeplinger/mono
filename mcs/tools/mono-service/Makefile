@@ -36,4 +36,4 @@ install-extras: $(gacutil)
 	$(GACUTIL) /i $(the_lib) /f $(gacdir_flag) /root $(GACROOT)
 
 uninstall-extras: $(gacutil)
-	-$(GACUTIL) /u $(the_lib:.exe=) $(gacdir_flag) /root $(GACROOT)
+	-$(GACUTIL) /us $(the_lib) $(gacdir_flag) /root $(GACROOT)

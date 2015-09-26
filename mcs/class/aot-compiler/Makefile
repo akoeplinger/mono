@@ -104,6 +104,9 @@ install-local:
 	$(MKINSTALLDIRS) $(DESTDIR)$(LIBRARY_INSTALL_DIR)
 	$(INSTALL_LIB) $(IMAGES) $(DESTDIR)$(LIBRARY_INSTALL_DIR)
 
+uninstall-local:
+	(cd $(DESTDIR)$(LIBRARY_INSTALL_DIR) && rm -rf $(notdir $(IMAGES)))
+
 endif
 
 endif

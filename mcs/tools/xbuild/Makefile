@@ -15,6 +15,7 @@ XBUILD_DIR=.
 include $(XBUILD_DIR)/xbuild_test.make
 
 install-local: install-extras
+uninstall-local: uninstall-extras
 
 PORTABLE_TARGETS_SRC:=data/Portable/Targets
 PCL5_FX_SRC:=data/Portable/Frameworks/v5.0
@@ -35,9 +36,11 @@ endif
 
 #install files into xbuild's versioned locations
 install-versioned-files: install-bin-data install-nuget-imports
+uninstall-versioned-files: uninstall-bin-data uninstall-nuget-imports
 
 #install files that are only installed once across all xbuild versions
 install-global-files: install-frameworks install-web-targets install-pcl-targets install-pcl5-framework install-nuget-targets install-msbuild-specific-files
+uninstall-versioned-files: uninstall-frameworks uninstall-web-targets uninstall-pcl-targets uninstall-pcl5-framework uninstall-nuget-targets uninstall-msbuild-specific-files
 
 install-bin-data:
 	$(MKINSTALLDIRS) $(DESTDIR)$(XBUILD_BIN_DIR)/MSBuild
@@ -53,6 +56,18 @@ endif
 	$(INSTALL_DATA) data/MSBuild/Microsoft.Build.CommonTypes.xsd $(DESTDIR)$(XBUILD_BIN_DIR)/MSBuild
 	$(INSTALL_DATA) data/MSBuild/Microsoft.Build.Core.xsd $(DESTDIR)$(XBUILD_BIN_DIR)/MSBuild
 	sed -e 's/@ASM_VERSION@/$(XBUILD_ASSEMBLY_VERSION)/g' data/xbuild.exe.config.in > $(DESTDIR)$(XBUILD_BIN_DIR)/xbuild.exe.config
+
+uninstall-bin-data:
+	rm -f $(DESTDIR)$(XBUILD_BIN_DIR)/xbuild.rsp
+	rm -f $(DESTDIR)$(XBUILD_BIN_DIR)/Microsoft.Common.tasks
+	rm -f $(DESTDIR)$(XBUILD_BIN_DIR)/Microsoft.Common.targets
+	rm -f $(DESTDIR)$(XBUILD_BIN_DIR)/../Microsoft.Common.props
+	rm -f $(DESTDIR)$(XBUILD_BIN_DIR)/Microsoft.CSharp.targets
+	rm -f $(DESTDIR)$(XBUILD_BIN_DIR)/Microsoft.Build.xsd
+	rm -f $(DESTDIR)$(XBUILD_BIN_DIR)/Microsoft.VisualBasic.targets
+	rm -f $(DESTDIR)$(XBUILD_BIN_DIR)/MSBuild/Microsoft.Build.CommonTypes.xsd
+	rm -f $(DESTDIR)$(XBUILD_BIN_DIR)/MSBuild/Microsoft.Build.Core.xsd
+	rm -f $(DESTDIR)$(XBUILD_BIN_DIR)/xbuild.exe.config
 
 install-frameworks:
 	$(MKINSTALLDIRS) $(DESTDIR)$(NETFRAMEWORK_DIR)/v$(FRAMEWORK_VERSION)/RedistList
@@ -84,6 +99,22 @@ install-frameworks:
 	$(MKINSTALLDIRS) $(DESTDIR)$(NETFRAMEWORK_DIR)/v4.7.2/RedistList
 	$(INSTALL_DATA) frameworks/net_4.7.2.xml $(DESTDIR)$(NETFRAMEWORK_DIR)/v4.7.2/RedistList/FrameworkList.xml
 
+uninstall-frameworks:
+	rm -f $(DESTDIR)$(NETFRAMEWORK_DIR)/v$(FRAMEWORK_VERSION)/RedistList/FrameworkList.xml
+	rm -f $(DESTDIR)$(NETFRAMEWORK_DIR)/v2.0/RedistList/FrameworkList.xml
+	rm -f $(DESTDIR)$(NETFRAMEWORK_DIR)/v3.0/RedistList/FrameworkList.xml
+	rm -f $(DESTDIR)$(NETFRAMEWORK_DIR)/v3.5/RedistList/FrameworkList.xml
+	rm -f $(DESTDIR)$(NETFRAMEWORK_DIR)/v4.0/RedistList/FrameworkList.xml
+	rm -f $(DESTDIR)$(NETFRAMEWORK_DIR)/v4.0/Profile/Client/RedistList/FrameworkList.xml
+	rm -f $(DESTDIR)$(NETFRAMEWORK_DIR)/v4.5.1/RedistList/FrameworkList.xml
+	rm -f $(DESTDIR)$(NETFRAMEWORK_DIR)/v4.5.2/RedistList/FrameworkList.xml
+	rm -f $(DESTDIR)$(NETFRAMEWORK_DIR)/v4.6/RedistList/FrameworkList.xml
+	rm -f $(DESTDIR)$(NETFRAMEWORK_DIR)/v4.6.1/RedistList/FrameworkList.xml
+	rm -f $(DESTDIR)$(NETFRAMEWORK_DIR)/v4.6.2/RedistList/FrameworkList.xml
+	rm -f $(DESTDIR)$(NETFRAMEWORK_DIR)/v4.7/RedistList/FrameworkList.xml
+	rm -f $(DESTDIR)$(NETFRAMEWORK_DIR)/v4.7.1/RedistList/FrameworkList.xml
+	rm -f $(DESTDIR)$(NETFRAMEWORK_DIR)/v4.7.2/RedistList/FrameworkList.xml
+
 install-pcl-targets:
 	$(MKINSTALLDIRS) $(DESTDIR)$(PORTABLE_TARGETS_DIR)
 	$(INSTALL_DATA) $(PORTABLE_TARGETS_SRC)/Microsoft.Portable.Core.props $(DESTDIR)$(PORTABLE_TARGETS_DIR)/Microsoft.Portable.Core.props
@@ -96,10 +127,25 @@ install-pcl-targets:
 		$(INSTALL_DATA) $(PORTABLE_TARGETS_SRC)/$$VERSION/Microsoft.Portable.VisualBasic.targets $(DESTDIR)$(PORTABLE_TARGETS_DIR)/$$VERSION/Microsoft.Portable.VisualBasic.targets; \
 	done
 
+uninstall-pcl-targets:
+	rm -f $(DESTDIR)$(PORTABLE_TARGETS_DIR)/Microsoft.Portable.Core.targets
+	rm -f $(DESTDIR)$(PORTABLE_TARGETS_DIR)/Microsoft.Portable.Core.props
+
+	for VERSION in v4.0 v4.5 v4.6 v5.0; do \
+		rm -f $(DESTDIR)$(PORTABLE_TARGETS_DIR)/$$VERSION/Microsoft.Portable.Common.targets; \
+		rm -f $(DESTDIR)$(PORTABLE_TARGETS_DIR)/$$VERSION/Microsoft.Portable.CSharp.targets; \
+		rm -f $(DESTDIR)$(PORTABLE_TARGETS_DIR)/$$VERSION/Microsoft.Portable.VisualBasic.targets; \
+	done
+
 install-web-targets:
 	for VERSION in v9.0 v10.0 v11.0 v12.0 v14.0 v15.0; do \
 		$(MKINSTALLDIRS) $(DESTDIR)$(VS_TARGETS_DIR)/$$VERSION/WebApplications; \
 		$(INSTALL_DATA) targets/Microsoft.WebApplication.targets $(DESTDIR)$(VS_TARGETS_DIR)/$$VERSION/WebApplications; \
+	done
+
+uninstall-web-targets:
+	for VERSION in v9.0 v10.0 v11.0 v12.0 v14.0 v15.0; do \
+		rm -f $(DESTDIR)$(VS_TARGETS_DIR)/$$VERSION/WebApplications/Microsoft.WebApplication.targets; \
 	done
 
 NUGET_BUILDTASKS_REPO_DIR=$(topdir)/../external/nuget-buildtasks
@@ -113,6 +159,12 @@ install-nuget-targets:
 	$(INSTALL_DATA) $(NUGET_BUILDTASKS_REPO_DIR)/src/Microsoft.NuGet.Build.Tasks/ImportBeforeAfter/Microsoft.NuGet.ImportBefore.props $(DESTDIR)$(MSBUILD_EXTENSIONS_15_DIR)/Imports/Microsoft.Common.props/ImportBefore
 	$(INSTALL_DATA) $(NUGET_BUILDTASKS_REPO_DIR)/src/Microsoft.NuGet.Build.Tasks/ImportBeforeAfter/Microsoft.NuGet.ImportAfter.targets $(DESTDIR)$(MSBUILD_EXTENSIONS_15_DIR)/Microsoft.Common.targets/ImportAfter
 
+uninstall-nuget-targets:
+	rm -f $(DESTDIR)$(NUGET_BUILDTASKS_TARGETS_DIR)/Microsoft.NuGet.targets
+	rm -f $(DESTDIR)$(NUGET_BUILDTASKS_TARGETS_DIR)/Microsoft.NuGet.props
+	rm -f $(DESTDIR)$(MSBUILD_EXTENSIONS_15_DIR)/Imports/Microsoft.Common.props/ImportBefore/Microsoft.NuGet.ImportBefore.props
+	rm -f $(DESTDIR)$(MSBUILD_EXTENSIONS_15_DIR)/Microsoft.Common.targets/ImportAfter/Microsoft.NuGet.ImportAfter.targets
+
 install-nuget-imports:
 ifeq (14.0, $(XBUILD_VERSION))
 	$(MKINSTALLDIRS) $(DESTDIR)$(XBUILD_BIN_DIR)/../Imports/Microsoft.Common.props/ImportBefore
@@ -120,6 +172,10 @@ ifeq (14.0, $(XBUILD_VERSION))
 	$(INSTALL_DATA) $(NUGET_BUILDTASKS_REPO_DIR)/src/Microsoft.NuGet.Build.Tasks/ImportBeforeAfter/Microsoft.NuGet.ImportBefore.props $(DESTDIR)$(XBUILD_BIN_DIR)/../Imports/Microsoft.Common.props/ImportBefore
 	$(INSTALL_DATA) $(NUGET_BUILDTASKS_REPO_DIR)/src/Microsoft.NuGet.Build.Tasks/ImportBeforeAfter/Microsoft.NuGet.ImportAfter.targets $(DESTDIR)$(XBUILD_BIN_DIR)/../Microsoft.Common.targets/ImportAfter
 endif
+
+uninstall-nuget-imports:
+	rm -f $(DESTDIR)$(XBUILD_BIN_DIR)/../Imports/Microsoft.Common.props/ImportBefore/Microsoft.NuGet.ImportBefore.props
+	rm -f $(DESTDIR)$(XBUILD_BIN_DIR)/../Microsoft.Common.targets/ImportAfter/Microsoft.NuGet.ImportAfter.targets
 
 # The .NETPortable,Version=v5.0 framework contains no assemblies, and essentially just fills the requirement
 # for a framework moniker. When using it, assemblies are provided by NuGet packages such as .NETStandard.Library
@@ -132,9 +188,19 @@ install-pcl5-framework:
 	$(INSTALL_DATA) "$(PCL5_FX_SRC)/ASP.NET Core 1.0.xml" "$(DESTDIR)$(PCL5_FX_DIR)/SupportedFrameworks/ASP.NET Core 1.0.xml"
 	$(INSTALL_DATA) "$(PCL5_FX_SRC)/Windows Universal 10.0.xml" "$(DESTDIR)$(PCL5_FX_DIR)/SupportedFrameworks/Windows Universal 10.0.xml"
 
+uninstall-pcl5-framework:
+	rm -f $(DESTDIR)$(PCL5_FX_DIR)/RedistList/FrameworkList.xml
+
+	rm -f "$(DESTDIR)$(PCL5_FX_DIR)/SupportedFrameworks/.NET Framework 4.6.xml"
+	rm -f "$(DESTDIR)$(PCL5_FX_DIR)/SupportedFrameworks/ASP.NET Core 1.0.xml"
+	rm -f "$(DESTDIR)$(PCL5_FX_DIR)/SupportedFrameworks/Windows Universal 10.0.xml"
+
 install-msbuild-specific-files:
 	$(MKINSTALLDIRS) $(DESTDIR)$(mono_libdir)/mono/xbuild
 	$(INSTALL_DATA) $(DENIED_ASSEMBLY_LIST_SRC) $(DESTDIR)$(mono_libdir)/mono/xbuild
+
+uninstall-msbuild-specific-files:
+	rm -f $(DESTDIR)$(mono_libdir)/mono/xbuild/$(notdir $(DENIED_ASSEMBLY_LIST_SRC))
 
 EXTRA_DISTFILES = \
 	data/xbuild.rsp \

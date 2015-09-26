@@ -37,7 +37,7 @@ install-source:
 	$(INSTALL) -m 644 $(mono_options_DATA) $(mono_sourcelibs_DIR)
 
 uninstall-source:
-	-rm -f $(mono_options_DIR)/Options.cs
+	-rm -f $(mono_sourcelibs_DIR)/Options.cs
 
 fixup-docs:
 	for f in `find Documentation/en -name \*.xml` ; do \

@@ -19,7 +19,11 @@ include ../../build/executable.make
 
 install-local: install-source
 
+uninstall-local: uninstall-source
+
 install-source:
 	-$(MKINSTALLDIRS) $(mono_sourcelibs_DIR)
 	$(INSTALL) -m 644 getline.cs $(mono_sourcelibs_DIR)
 
+uninstall-source:
+	-rm -f $(mono_sourcelibs_DIR)/getline.cs

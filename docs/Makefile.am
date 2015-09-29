@@ -62,9 +62,9 @@ dist-hook:
 	$(mkdir_p)  $(distdir)/sources
 	$(mkdir_p)  $(distdir)/svgs
 	$(mkdir_p)  $(distdir)/HtmlAgilityPack
-	cp sources/*  $(distdir)/sources
-	cp svgs/*     $(distdir)/svgs
-	cp HtmlAgilityPack/*     $(distdir)/HtmlAgilityPack
+	cp $(srcdir)/sources/*  $(distdir)/sources
+	cp $(srcdir)/svgs/*     $(distdir)/svgs
+	cp $(srcdir)/HtmlAgilityPack/*     $(distdir)/HtmlAgilityPack
 	cp $(ASSEMBLED_DOCS) $(distdir)/
 
 clean-local:

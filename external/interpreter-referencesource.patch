@@ -1,0 +1,41 @@
+diff --git a/System.Data.Entity/System/Data/Common/CommandTrees/ExpressionBuilder/DbExpressionBuilder.cs b/System.Data.Entity/System/Data/Common/CommandTrees/ExpressionBuilder/DbExpressionBuilder.cs
+index 018822d..a2274a7 100644
+--- a/System.Data.Entity/System/Data/Common/CommandTrees/ExpressionBuilder/DbExpressionBuilder.cs
++++ b/System.Data.Entity/System/Data/Common/CommandTrees/ExpressionBuilder/DbExpressionBuilder.cs
+@@ -1751,13 +1751,6 @@ namespace System.Data.Common.CommandTrees.ExpressionBuilder
+             ParameterInfo[] methodParams = method.GetParameters();
+             int start;
+             int paramCount;
+-            if (method.IsStatic && typeof(System.Runtime.CompilerServices.Closure) == methodParams[0].ParameterType)
+-            {
+-                // Static lambda method has additional first closure parameter
+-                start = 1;
+-                paramCount = methodParams.Length - 1;
+-            }
+-            else
+             {
+                 // Otherwise, method parameters align directly with arguments
+                 start = 0;
+diff --git a/System.Data.Entity/System/Data/Common/Utils/MetadataHelper.cs b/System.Data.Entity/System/Data/Common/Utils/MetadataHelper.cs
+index 1ab0fb9..8d62e83 100644
+--- a/System.Data.Entity/System/Data/Common/Utils/MetadataHelper.cs
++++ b/System.Data.Entity/System/Data/Common/Utils/MetadataHelper.cs
+@@ -854,17 +854,10 @@ namespace System.Data.Common.Utils
+         internal static SHA256 CreateSHA256HashAlgorithm()
+         {
+             SHA256 sha256HashAlgorith;
+-            try
+-            {
+-                // use the FIPS compliant SHA256 implementation
+-                sha256HashAlgorith = new SHA256CryptoServiceProvider();
+-            }
+-            catch (PlatformNotSupportedException)
+-            {
++
+                 // the FIPS compliant (and faster) algorith was not available, create the managed version
+                 // this will throw if FIPS only is enforced
+                 sha256HashAlgorith = new SHA256Managed();
+-            }
+ 
+             return sha256HashAlgorith;
+         }

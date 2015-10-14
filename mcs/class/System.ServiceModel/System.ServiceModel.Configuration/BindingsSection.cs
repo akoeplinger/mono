@@ -106,12 +106,6 @@ namespace System.ServiceModel.Configuration
 			get { return (NetMsmqBindingCollectionElement) this ["netMsmqBinding"]; }
 		}
 
-		[ConfigurationProperty ("netNamedPipeBinding",
-			 Options = ConfigurationPropertyOptions.None)]
-		public NetNamedPipeBindingCollectionElement NetNamedPipeBinding {
-			get { return (NetNamedPipeBindingCollectionElement) this ["netNamedPipeBinding"]; }
-		}
-
 		[ConfigurationProperty ("netPeerTcpBinding",
 			 Options = ConfigurationPropertyOptions.None)]
 		public NetPeerTcpBindingCollectionElement NetPeerTcpBinding {

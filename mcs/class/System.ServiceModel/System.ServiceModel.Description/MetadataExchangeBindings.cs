@@ -48,14 +48,6 @@ namespace System.ServiceModel.Description
 			return b;
 		}
 
-		public static Binding CreateMexNamedPipeBinding ()
-		{
-			return new CustomBinding (
-				"MetadataExchangeNamedPipeBinding",
-				"http://schemas.microsoft.com/ws/2005/02/mex/bindings",
-				new NamedPipeTransportBindingElement ());
-		}
-
 		public static Binding CreateMexTcpBinding ()
 		{
 			return new CustomBinding (

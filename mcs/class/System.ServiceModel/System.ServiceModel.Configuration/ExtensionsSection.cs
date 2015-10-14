@@ -110,11 +110,9 @@ namespace System.ServiceModel.Configuration
 			BindingExtensions.Add (new ExtensionElement ("customBinding", typeof (CustomBindingCollectionElement).AssemblyQualifiedName));
 			BindingExtensions.Add (new ExtensionElement ("mexHttpBinding", typeof (MexHttpBindingCollectionElement).AssemblyQualifiedName));
 			BindingExtensions.Add (new ExtensionElement ("mexHttpsBinding", typeof (MexHttpsBindingCollectionElement).AssemblyQualifiedName));
-			BindingExtensions.Add (new ExtensionElement ("mexNamedPipeBinding", typeof (MexNamedPipeBindingCollectionElement).AssemblyQualifiedName));
 			BindingExtensions.Add (new ExtensionElement ("mexTcpBinding", typeof (MexTcpBindingCollectionElement).AssemblyQualifiedName));
 			BindingExtensions.Add (new ExtensionElement ("msmqIntegrationBinding", typeof (MsmqIntegrationBindingCollectionElement).AssemblyQualifiedName));
 			BindingExtensions.Add (new ExtensionElement ("netMsmqBinding", typeof (NetMsmqBindingCollectionElement).AssemblyQualifiedName));
-			BindingExtensions.Add (new ExtensionElement ("netNamedPipeBinding", typeof (NetNamedPipeBindingCollectionElement).AssemblyQualifiedName));
 			BindingExtensions.Add (new ExtensionElement ("netPeerTcpBinding", typeof (NetPeerTcpBindingCollectionElement).AssemblyQualifiedName));
 			BindingExtensions.Add (new ExtensionElement ("netTcpBinding", typeof (NetTcpBindingCollectionElement).AssemblyQualifiedName));
 			BindingExtensions.Add (new ExtensionElement ("ws2007FederationHttpBinding", typeof (WS2007FederationHttpBindingCollectionElement).AssemblyQualifiedName));
@@ -132,7 +130,6 @@ namespace System.ServiceModel.Configuration
 			BindingElementExtensions.Add (new ExtensionElement ("msmqIntegration", typeof (MsmqIntegrationElement).AssemblyQualifiedName));
 			BindingElementExtensions.Add (new ExtensionElement ("msmqTransport", typeof (MsmqTransportElement).AssemblyQualifiedName));
 			BindingElementExtensions.Add (new ExtensionElement ("mtomMessageEncoding", typeof (MtomMessageEncodingElement).AssemblyQualifiedName));
-			BindingElementExtensions.Add (new ExtensionElement ("namedPipeTransport", typeof (NamedPipeTransportElement).AssemblyQualifiedName));
 			BindingElementExtensions.Add (new ExtensionElement ("oneWay", typeof (OneWayElement).AssemblyQualifiedName));
 			BindingElementExtensions.Add (new ExtensionElement ("peerTransport", typeof (PeerTransportElement).AssemblyQualifiedName));
 			BindingElementExtensions.Add (new ExtensionElement ("pnrpPeerResolver", typeof (PnrpPeerResolverElement).AssemblyQualifiedName));

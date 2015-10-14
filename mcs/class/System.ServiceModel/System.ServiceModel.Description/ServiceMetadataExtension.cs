@@ -115,9 +115,6 @@ namespace System.ServiceModel.Description
 				case "net.tcp":
 					binding = MetadataExchangeBindings.CreateMexTcpBinding ();
 					break;
-				case "net.pipe":
-					binding = MetadataExchangeBindings.CreateMexNamedPipeBinding ();
-					break;
 				}
 			}
 

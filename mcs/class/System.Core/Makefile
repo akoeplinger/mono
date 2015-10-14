@@ -19,7 +19,6 @@ endif
 
 system_core_plain_libdir = $(the_libdir_base)plaincore
 
-ifdef MOBILE_STATIC
 extra_test_flags := -exclude:NotWorkingInterpreter
 system_core_library_deps = $(the_libdir_base)Mono.Dynamic.Interpreter.dll $(system_core_plain_libdir)/System.Core.dll
 LIB_MCS_FLAGS += -d:FEATURE_CORE_DLR
@@ -29,14 +28,8 @@ LIB_REFS += Mono.Dynamic.Interpreter
 LIB_MCS_FLAGS += -d:MONO_INTERPRETER
 endif
 
-endif
-
 ifeq (monotouch_runtime, $(PROFILE))
 LIB_MCS_FLAGS += -d:FULL_AOT_RUNTIME
-endif
-
-ifeq (4, $(FRAMEWORK_VERSION_MAJOR))
-LIB_MCS_FLAGS += -d:FEATURE_CORE_DLR,FEATURE_REFEMIT,FEATURE_PDBEMIT
 endif
 
 ifneq (basic, $(PROFILE))

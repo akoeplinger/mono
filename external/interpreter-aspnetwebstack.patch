@@ -1,0 +1,32 @@
+diff --git a/src/System.Web.WebPages/Helpers/CryptoUtil.cs b/src/System.Web.WebPages/Helpers/CryptoUtil.cs
+index a29aa38..67d9c94 100644
+--- a/src/System.Web.WebPages/Helpers/CryptoUtil.cs
++++ b/src/System.Web.WebPages/Helpers/CryptoUtil.cs
+@@ -59,27 +59,9 @@ private static Func<SHA256> GetSHA256Factory()
+             // performant on 4.0 and below. The following list is optimized for speed
+             // given our scenarios.
+ 
+-            if (!CryptoConfig.AllowOnlyFipsAlgorithms)
+-            {
+                 // This provider is not FIPS-compliant, so we can't use it if FIPS compliance
+                 // is mandatory.
+                 return () => new SHA256Managed();
+-            }
+-
+-            try
+-            {
+-                using (SHA256Cng sha256 = new SHA256Cng())
+-                {
+-                    return () => new SHA256Cng();
+-                }
+-            }
+-            catch (PlatformNotSupportedException)
+-            {
+-                // CNG not supported (perhaps because we're not on Windows Vista or above); move on
+-            }
+-
+-            // If all else fails, fall back to CAPI.
+-            return () => new SHA256CryptoServiceProvider();
+         }
+     }
+ }

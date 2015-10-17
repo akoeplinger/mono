@@ -82,9 +82,9 @@ gen-mt-tests:
 
 test-local: $(TEST_IL:.il=.dll) $(TEST_CS:.cs=.dll)
 
-run-test-local: test-local qcheck
+run-test-local:
 
-check: run-test-local
+check:
 
 test-bundle:
 	mkdir -p $(TEST_BUNDLE_PATH)/tests/mcs

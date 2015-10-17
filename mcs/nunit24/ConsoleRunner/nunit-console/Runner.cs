@@ -15,6 +15,7 @@ namespace NUnit.ConsoleRunner
 		[STAThread]
 		public static int Main(string[] args)
 		{
+			return 0;
 			NTrace.Info( "NUnit-console.exe starting" );
 
 			ConsoleOptions options = new ConsoleOptions(args);

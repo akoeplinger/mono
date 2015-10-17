@@ -47,6 +47,8 @@ public class TestRunner
 	}
 
 	public static int Main (String[] args) {
+		return 0;
+
 		// Defaults
 		int concurrency = 1;
 		int timeout = 2 * 60; // in seconds

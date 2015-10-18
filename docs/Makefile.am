@@ -65,7 +65,7 @@ dist-hook:
 	cp $(srcdir)/sources/*  $(distdir)/sources
 	cp $(srcdir)/svgs/*     $(distdir)/svgs
 	cp $(srcdir)/HtmlAgilityPack/*     $(distdir)/HtmlAgilityPack
-	cp $(ASSEMBLED_DOCS) $(distdir)/
+	cp $(addprefix $(srcdir)/,$(ASSEMBLED_DOCS)) $(distdir)/
 
 clean-local:
 	-rm -Rf html

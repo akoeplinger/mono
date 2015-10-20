@@ -180,3 +180,5 @@ EXTRA_DIST = \
 	$(PLOG_TESTS_SRC) \
 	ptestrunner.pl \
 	$(suppression_DATA)
+
+CLEANFILES = *.dll *.exe *.mdb *.mlpd TestResults_*.xml

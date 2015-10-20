@@ -999,7 +999,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 
 BUILT_SOURCES = version.h $(arch_built)
 
-CLEANFILES= $(BUILT_SOURCES) *.exe *.dll
+CLEANFILES= $(BUILT_SOURCES) *.exe *.dll iltests.il TestResults_*.xml
 EXTRA_DIST = TestDriver.cs \
 	TestHelpers.cs \
 	genmdesc.py				\

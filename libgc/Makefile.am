@@ -188,3 +188,5 @@ EXTRA_DIST += configure.host
 test:
 
 test-bundle:
+
+DISTCLEANFILES = doltcompile doltlibtool

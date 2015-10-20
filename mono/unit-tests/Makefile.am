@@ -129,3 +129,5 @@ clean-local:
 
 endif !HOST_WIN32
 endif !CROSS_COMPILE
+
+CLEANFILES = TestResult-*.xml

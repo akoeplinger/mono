@@ -144,7 +144,7 @@ scripts_nunit = nunit-console$(SCRIPT_SUFFIX) nunit-console2$(SCRIPT_SUFFIX) nun
 scripts_rpmhelpers = mono-find-provides mono-find-requires
 scripts_mono_configuration_crypto = mono-configuration-crypto$(SCRIPT_SUFFIX)
 
-CLEANFILES = $(scripts_mono_configuration_crypto) $(scripts_4_0_umask) $(scripts_2_0) $(scripts_defaults) $(scripts_4_0) mono-service mono-service2 nunit-console nunit-console2 nunit-console4 mono-find-provides mono-find-requires mod $(MDOC_SUBCOMMANDS)
+CLEANFILES = $(scripts_mono_configuration_crypto) $(scripts_4_0_umask) $(scripts_2_0) $(scripts_defaults) $(scripts_4_0) mono-service mono-service2 nunit-console nunit-console2 nunit-console4 mono-find-provides mono-find-requires mod $(MDOC_SUBCOMMANDS) xbuild peverify dmcs mcs
 DISTCLEANFILES = $(pkgconfig_DATA) $(scripts_rpmhelpers)
 
 EXTRA_DIST =			\

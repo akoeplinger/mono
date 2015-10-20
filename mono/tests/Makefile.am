@@ -3113,6 +3113,6 @@ Mono.Runtime.Testing.dll: weakattribute.cs
 weak-fields.exe: weak-fields.cs Mono.Runtime.Testing.dll
 	$(MCS) -r:Mono.Runtime.Testing.dll -r:$(CLASS)/System.dll -r:$(CLASS)/System.Xml.dll -r:$(CLASS)/System.Core.dll -r:TestDriver.dll $(TEST_DRIVER_HARD_KILL_FEATURE) -out:$@ $<
 
-CLEANFILES = $(TESTS_REGULAR) $(TESTS_STRESS) $(TESTSAOT_CS) $(TESTSAOT_IL) $(TESTSAOT_BENCH) $(TESTSAOT_STRESS) *.dll *.stdout *.aotlog *.exe stest.dat LeafAssembly.dll MidAssembly.dll appdomain-marshalbyref-assemblyload2/*.dll 
+CLEANFILES = $(TESTS_REGULAR) $(TESTS_STRESS) $(TESTSAOT_CS) $(TESTSAOT_IL) $(TESTSAOT_BENCH) $(TESTSAOT_STRESS) *.dll *.stdout *.aotlog *.exe *.pdb stest.dat LeafAssembly.dll MidAssembly.dll appdomain-marshalbyref-assemblyload2/*.dll
 CLEANFILES += $(TESTS_TAILCALL_COMPILE) $(TESTSAOT_TAILCALL)
 CLEANFILES += $(BUILT_SOURCES)

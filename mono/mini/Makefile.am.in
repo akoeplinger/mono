@@ -302,6 +302,19 @@ monow_SOURCES = $(mono_sgen_SOURCES)
 endif
 endif
 
+genmdesc_SOURCES = \
+	mini.h		\
+	seq-points.h	\
+	genmdesc.c	\
+	helpers.c	\
+	opcodes.c
+
+# Don't link this against libmonoruntime to speed up rebuilds
+genmdesc_LDADD = \
+	$(monodir)/mono/utils/libmonoutils.la -lm	\
+	$(GLIB_LIBS)					\
+	$(LIBICONV)
+
 wasm_sources = \
 	mini-wasm.c		\
 	mini-wasm.h		\

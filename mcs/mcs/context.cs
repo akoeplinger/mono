@@ -254,6 +254,8 @@ namespace Mono.CSharp
 		//
 		public Expression CurrentInitializerVariable;
 
+		public Expression CurrentInvocationExpression;
+
 		public Block CurrentBlock;
 
 		public readonly IMemberContext MemberContext;

@@ -7089,6 +7089,8 @@ namespace Mono.CSharp
 			if (member_expr == null)
 				return null;
 
+			ec.CurrentInvocationExpression = member_expr;
+
 			//
 			// Next, evaluate all the expressions in the argument list
 			//

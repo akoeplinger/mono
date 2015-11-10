@@ -6407,9 +6407,16 @@ namespace Mono.CSharp {
 
 			if ((right_side == EmptyExpression.UnaryAddress || right_side == EmptyExpression.OutAccess) &&
 					(spec.Modifiers & Modifiers.VOLATILE) != 0) {
-				ec.Report.Warning (420, 1, loc,
-					"`{0}': A volatile field references will not be treated as volatile",
-					spec.GetSignatureForError ());
+				// this warning shouldn't be raised when using Interlocked.* APIs
+				var memberExpr = ec.CurrentInvocationExpression as MemberExpr;
+				var isInterlocked = memberExpr != null && memberExpr.InstanceExpression != null &&
+					memberExpr.InstanceExpression.Type == ec.Module.PredefinedTypes.Interlocked.Resolve ();
+
+				if (!isInterlocked) {
+					ec.Report.Warning (420, 1, loc,
+						"`{0}': A volatile field references will not be treated as volatile",
+						spec.GetSignatureForError ());
+				}
 			}
 
 			if (spec.IsReadOnly) {

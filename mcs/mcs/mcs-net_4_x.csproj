@@ -3,35 +3,30 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{322A755A-ED38-4295-979D-E49EBAFA2852}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <NoWarn>1699</NoWarn>
     <OutputPath>bin\Debug\mcs-net_4_x</OutputPath>
-    <NoStdLib>True</NoStdLib>
     <NoConfig>True</NoConfig>
-    
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>
-    </RootNamespace>
     <AssemblyName>mcs</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <StartupObject>Mono.CSharp.Driver</StartupObject>
   </PropertyGroup>
-  
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <NoWarn>1699</NoWarn>
     <Optimize>false</Optimize>
     <DefineConstants>TRACE;STATIC;NO_SYMBOL_WRITER;NO_AUTHENTICODE;NET_4_0;NET_4_5;NET_4_6;MONO;DISABLE_CAS_USE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Commandlineparameters>-t:library test.cs</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <NoWarn>1699</NoWarn>
     <Optimize>true</Optimize>
     <DefineConstants>STATIC;NO_SYMBOL_WRITER;NO_AUTHENTICODE;NET_4_0;NET_4_5;NET_4_6;MONO;DISABLE_CAS_USE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -109,7 +104,9 @@
     <Compile Include="support.cs" />
     <Compile Include="typemanager.cs" />
     <Compile Include="typespec.cs" />
-    <Compile Include="visit.cs" />  </ItemGroup>
+    <Compile Include="visit.cs" />
+    <Compile Include="cs-parser.cs" />
+  </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -119,41 +116,24 @@
   -->
   <PropertyGroup>
     <PreBuildEvent Condition=" '$(OS)' != 'Windows_NT' ">
-$(ProjectDir)\..\jay\jay -ct &lt; $(ProjectDir)\..\jay\skeleton.cs $(ProjectDir)\cs-parser.jay > $(ProjectDir)\cs-parser.cs
+$(ProjectDir)\..\jay\jay -ct &lt; $(ProjectDir)\..\jay\skeleton.cs $(ProjectDir)\cs-parser.jay &gt; $(ProjectDir)\cs-parser.cs
 
     </PreBuildEvent>
     <PreBuildEvent Condition=" '$(OS)' == 'Windows_NT' ">
-$(ProjectDir)\..\jay\jay.exe -ct &lt; $(ProjectDir)\..\jay\skeleton.cs $(ProjectDir)\cs-parser.jay > $(ProjectDir)\cs-parser.cs
+$(ProjectDir)\..\jay\jay.exe -ct &lt; $(ProjectDir)\..\jay\skeleton.cs $(ProjectDir)\cs-parser.jay &gt; $(ProjectDir)\cs-parser.cs
 
     </PreBuildEvent>
-
     <PostBuildEvent Condition=" '$(OS)' != 'Windows_NT' ">
-
     </PostBuildEvent>
     <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT' ">
-
     </PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../class/corlib/corlib-net_4_x.csproj">
-      <Project>{2CA6026B-2DC8-4C4C-A12C-1E8234049DB7}</Project>
-      <Name>corlib-net_4_x</Name>
-    </ProjectReference>
-    <ProjectReference Include="../class/System/System-net_4_x.csproj">
-      <Project>{2762E921-91A8-4C87-91E9-BA628013F753}</Project>
-      <Name>System-net_4_x</Name>
-    </ProjectReference>
-    <ProjectReference Include="../class/System.Core/System.Core-net_4_x.csproj">
-      <Project>{359142A1-D80F-401E-AA64-7167C9317649}</Project>
-      <Name>System.Core-net_4_x</Name>
-    </ProjectReference>
-    <ProjectReference Include="../class/System.XML/System.Xml-net_4_x.csproj">
-      <Project>{87FD2F0F-5222-4AE6-BD63-2D4975E11E5B}</Project>
-      <Name>System.Xml-net_4_x</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System" />
+  </ItemGroup>
 </Project>
-

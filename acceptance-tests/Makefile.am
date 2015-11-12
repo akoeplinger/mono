@@ -5200,6 +5200,28 @@ test-runner.exe: $(top_srcdir)/mono/tests/test-runner.cs
 GCStressTests.exe: $(CORECLR_STRESSTEST_RUNNER_CS_SRC)
 	$(MCS) -out:$@ -debug -d:PROJECTK_BUILD $(CORECLR_STRESSTEST_RUNNER_CS_SRC)
 
+CORECLR_STRUCTABI_CS_SRC=$(CORECLR_PATH)/tests/src/JIT/Directed/StructABI/StructABI.cs
+if PLATFORM_DARWIN
+CORECLR_STRUCTABI_CS_SRC+=$(CORECLR_PATH)/tests/src/JIT/Directed/StructABI/StructABI.OSX.cs
+CORECLR_STRUCTABI_NATIVE_LIBNAME=$(CORECLR_PATH)/tests/src/JIT/Directed/StructABI/libStructABILib.dylib
+endif
+if PLATFORM_LINUX
+CORECLR_STRUCTABI_CS_SRC+=$(CORECLR_PATH)/tests/src/JIT/Directed/StructABI/StructABI.Unix.cs
+CORECLR_STRUCTABI_NATIVE_LIBNAME=$(CORECLR_PATH)/tests/src/JIT/Directed/StructABI/libStructABILib.so
+endif
+if TARGET_WIN32
+CORECLR_STRUCTABI_CS_SRC+=$(CORECLR_PATH)/tests/src/JIT/Directed/StructABI/StructABI.Windows.cs
+CORECLR_STRUCTABI_NATIVE_LIBNAME=$(CORECLR_PATH)/tests/src/JIT/Directed/StructABI/libStructABILib.dll
+endif
+
+$(CORECLR_PATH)/tests/src/JIT/Directed/StructABI/StructABI.exe: $(CORECLR_STRUCTABI_NATIVE_LIBNAME) $(CORECLR_STRUCTABI_CS_SRC)
+	$(MCS) -out:$@ -debug -unsafe $(CORECLR_STRUCTABI_CS_SRC)
+
+$(CORECLR_STRUCTABI_NATIVE_LIBNAME): $(CORECLR_PATH)/tests/src/JIT/Directed/StructABI/StructABI.c
+	$(CC) -shared -fPIC -fvisibility=hidden $< -o $@
+
+CORECLR_TESTSI_CS+=$(CORECLR_PATH)/tests/src/JIT/Directed/StructABI/StructABI.exe
+
 CLEANFILES = *.dll *.exe *.mdb $(CORECLR_STRESSTESTSI_CS) GCStressTests.exe coreclr-testlibrary.dll
 
 clean-local:

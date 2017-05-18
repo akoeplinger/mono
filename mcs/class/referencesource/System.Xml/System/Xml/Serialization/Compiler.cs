@@ -164,8 +164,25 @@ namespace System.Xml.Serialization {
         internal Assembly Compile(Assembly parent, string ns, XmlSerializerCompilerParameters xmlParameters, Evidence evidence) {
             CodeDomProvider codeProvider = new Microsoft.CSharp.CSharpCodeProvider();
             CompilerParameters parameters = xmlParameters.CodeDomParameters;
+#if MONO
+            foreach (var import in Imports)
+            {
+                var importFileName = Path.GetFileName(import);
+                bool alreadyReferenced = false;
+                foreach (var referenced in parameters.ReferencedAssemblies)
+                {
+                    if (Path.GetFileName(referenced) == importFileName)
+                    {
+                        alreadyReferenced = true;
+                        break;
+                    }
+                }
+                if (!alreadyReferenced)
+                    parameters.ReferencedAssemblies.Add(import);
+            }
+#else
             parameters.ReferencedAssemblies.AddRange(Imports);
-            
+#endif
             if (debugEnabled) {
                 parameters.GenerateInMemory = false;
                 parameters.IncludeDebugInformation = true;

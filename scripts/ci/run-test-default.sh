@@ -102,6 +102,7 @@ then ${TESTCMD} --label=ms-test-suite --timeout=30m make -w -C acceptance-tests 
 else ${TESTCMD} --label=ms-test-suite --skip;
 fi
 if [[ ${label} == 'ubuntu-1404-amd64' ]]; then
+    make -w -C mcs -j4 net47-net4x-api-diff || true
     source ${MONO_REPO_ROOT}/scripts/ci/util.sh
     if ${TESTCMD} --label=apidiff --timeout=15m --fatal make -w -C mcs -j4 mono-api-diff
     then report_github_status "success" "API Diff" "No public API changes found." || true

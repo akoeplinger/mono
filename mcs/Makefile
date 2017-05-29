@@ -141,31 +141,47 @@ distcheck: dist-tarball
 
 MONO_API_SNAPSHOT_PATH := $(topdir)../external/api-snapshot/
 GENAPI := $(MONO_API_SNAPSHOT_PATH)tools/genapi/GenAPI.exe
-MONO_API_SNAPSHOT_PROFILE_PATH := $(MONO_API_SNAPSHOT_PATH)profiles/$(PROFILE)/
-MONO_API_ASSEMBLIES_IGNORED := $(addprefix $(topdir)class/lib/$(PROFILE)/, Mono.CSharp.dll SystemWebTestShim.dll standalone-runner-support.dll nunit.core.dll nunit.core.extensions.dll nunit.core.interfaces.dll nunit.framework.dll nunit.framework.extensions.dll nunit.mocks.dll nunit.util.dll nunit-console-runner.dll nunitlite.dll)
-MONO_API_ASSEMBLIES := $(filter-out $(MONO_API_ASSEMBLIES_IGNORED), $(wildcard $(topdir)class/lib/$(PROFILE)/*.dll)) $(wildcard $(topdir)class/lib/$(PROFILE)/Facades/*.dll)
-MONO_API_ASSEMBLIES_CS := $(MONO_API_ASSEMBLIES:$(topdir)class/lib/$(PROFILE)/%.dll=$(MONO_API_SNAPSHOT_PROFILE_PATH)%.cs)
+MONO_API_SNAPSHOT_OUT_PATH ?= $(MONO_API_SNAPSHOT_PATH)profiles/$(PROFILE)/
+MONO_API_SNAPSHOT_REF_PATH ?= $(topdir)class/lib/$(PROFILE)/
+MONO_API_ASSEMBLIES_IGNORED := $(addprefix $(MONO_API_SNAPSHOT_REF_PATH), Mono.CSharp.dll SystemWebTestShim.dll standalone-runner-support.dll nunit.core.dll nunit.core.extensions.dll nunit.core.interfaces.dll nunit.framework.dll nunit.framework.extensions.dll nunit.mocks.dll nunit.util.dll nunit-console-runner.dll nunitlite.dll $(MONO_API_ASSEMBLIES_IGNORED_ADDITIONAL))
+MONO_API_ASSEMBLIES := $(filter-out $(MONO_API_ASSEMBLIES_IGNORED), $(wildcard $(MONO_API_SNAPSHOT_REF_PATH)*.dll)) $(wildcard $(MONO_API_SNAPSHOT_REF_PATH)Facades/*.dll)
+MONO_API_ASSEMBLIES_CS := $(MONO_API_ASSEMBLIES:$(MONO_API_SNAPSHOT_REF_PATH)%.dll=$(MONO_API_SNAPSHOT_OUT_PATH)%.cs)
 
-$(MONO_API_SNAPSHOT_PROFILE_PATH)%.cs: $(topdir)class/lib/$(PROFILE)/%.dll $(GENAPI) $(MONO_API_SNAPSHOT_PATH)profiles/license-header.txt
+$(MONO_API_SNAPSHOT_OUT_PATH)%.cs: $(MONO_API_SNAPSHOT_REF_PATH)%.dll $(GENAPI) $(MONO_API_SNAPSHOT_PATH)profiles/license-header.txt
 	@mkdir -p $(dir $@)
-	$(Q) MONO_PATH=$(topdir)class/lib/$(BUILD_TOOLS_PROFILE) $(RUNTIME) $(GENAPI) -libPath:$(topdir)class/lib/$(PROFILE),$(topdir)class/lib/$(PROFILE)/Facades -out:$(dir $@) -headerFile:$(MONO_API_SNAPSHOT_PATH)profiles/license-header.txt -assemblyAttributes -typeForwardedTo -assemblyVersion -assembly:$< || echo "Couldn't process assembly." > $@
+	$(Q) MONO_PATH=$(topdir)class/lib/$(BUILD_TOOLS_PROFILE) $(RUNTIME) $(GENAPI) -libPath:$(MONO_API_SNAPSHOT_REF_PATH),$(MONO_API_SNAPSHOT_REF_PATH)/Facades -out:$(dir $@) -headerFile:$(MONO_API_SNAPSHOT_PATH)profiles/license-header.txt $(GENAPI_ADDITIONAL_ARGS) -assembly:$< || echo "Couldn't process assembly." > $@
 
 mono-api-current: $(MONO_API_ASSEMBLIES_CS)
 
 mono-api-current-clean:
-	$(Q) rm -rf "$(MONO_API_SNAPSHOT_PROFILE_PATH)"
+	$(Q) rm -rf "$(MONO_API_SNAPSHOT_OUT_PATH)"
 
 mono-api-diff:
 	@echo "Regenerating API snapshot..."
 	$(Q) $(MAKE) mono-api-current-clean PROFILE=net_4_x
 	$(Q) $(MAKE) mono-api-current-clean PROFILE=monotouch
 	$(Q) $(MAKE) mono-api-current-clean PROFILE=monodroid
-	$(Q) $(MAKE) mono-api-current PROFILE=net_4_x
-	$(Q) $(MAKE) mono-api-current PROFILE=monotouch
-	$(Q) $(MAKE) mono-api-current PROFILE=monodroid
+	$(Q) $(MAKE) mono-api-current PROFILE=net_4_x   GENAPI_ADDITIONAL_ARGS="-assemblyAttributes -typeForwardedTo -assemblyVersion"
+	$(Q) $(MAKE) mono-api-current PROFILE=monotouch GENAPI_ADDITIONAL_ARGS="-assemblyAttributes -typeForwardedTo -assemblyVersion"
+	$(Q) $(MAKE) mono-api-current PROFILE=monodroid GENAPI_ADDITIONAL_ARGS="-assemblyAttributes -typeForwardedTo -assemblyVersion"
 	@echo "Checking public API differences..."
 	$(Q) cd $(MONO_API_SNAPSHOT_PATH); git add -A .
 	$(Q) cd $(MONO_API_SNAPSHOT_PATH); git diff --no-renames HEAD > $(abspath $(topdir))/temp.patch
 	@mkdir -p apidiff
 	$(Q) sed -e "/@diffdata@/r temp.patch" -e "/@diffdata@/d" -e "s/@title@/Public API Diff/g" -e "s/@description@/If the changes are intentional, run <code>make -C mcs mono-api-diff<\/code> locally and commit changes in external\/api-snapshot./g" diff.html.in > apidiff/index.html
 	$(Q) if [ -s temp.patch ]; then echo "Error: Found public API differences, see mcs/apidiff/index.html. If the changes are intentional, please go to external/api-snapshot and commit them."; rm -f temp.patch; exit 1; else echo "No differences found."; rm -f temp.patch; fi
+
+apidiff/net47-ref/mscorlib.dll:
+	@mkdir -p apidiff
+	curl -L -o apidiff/net47.zip https://dotnet.myget.org/F/dotnet-core/api/v2/package/Microsoft.TargetingPack.NETFramework.v4.7/1.0.1 && unzip -j apidiff/net47.zip "lib/net47/*" -d apidiff/net47-ref && rm apidiff/net47.zip
+
+net47-net4x-api-diff: apidiff/net47-ref/mscorlib.dll
+	@echo "Regenerating .NET 4.7 and Mono net_4_x snapshots..."
+	$(Q) rm -rf apidiff/net4x/ apidiff/net47/
+	$(Q) $(MAKE) mono-api-current PROFILE=net_4_x MONO_API_SNAPSHOT_OUT_PATH=apidiff/net4x/ MONO_API_ASSEMBLIES_IGNORED_ADDITIONAL="Accessibility.dll System.EnterpriseServices.Thunk.dll System.EnterpriseServices.Wrapper.dll" GENAPI_ADDITIONAL_ARGS="-excludeAttributesList:attrExcl.txt -excludeApiList:apiExcl.txt"
+	$(Q) $(MAKE) mono-api-current MONO_API_SNAPSHOT_OUT_PATH=apidiff/net47/ MONO_API_SNAPSHOT_REF_PATH=apidiff/net47-ref/ MONO_API_ASSEMBLIES_IGNORED_ADDITIONAL="Accessibility.dll System.EnterpriseServices.Thunk.dll System.EnterpriseServices.Wrapper.dll" GENAPI_ADDITIONAL_ARGS="-excludeAttributesList:attrExcl.txt -excludeApiList:apiExcl.txt"
+	@echo "Computing public API differences..."
+	$(Q) diff -u apidiff/net47/ apidiff/net4x/ | sed "s/net4x/net47/g" > temp.patch
+	@mkdir -p apidiff
+	$(Q) sed -e "/@diffdata@/r temp.patch" -e "/@diffdata@/d" -e "s/@title@/.NET 4.7 vs. Mono net_4_x API Diff/g" -e "s/@description@/These are the differences from .NET 4.7./g" diff.html.in > apidiff/net47_net4x.html
+	rm -f temp.patch

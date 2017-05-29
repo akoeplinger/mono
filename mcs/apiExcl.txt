@@ -1,0 +1,12 @@
+T:System.MonoDocumentationNoteAttribute
+T:System.MonoExtensionAttribute
+T:System.MonoInternalNoteAttribute
+T:System.MonoLimitationAttribute
+T:System.MonoNotSupportedAttribute
+T:System.MonoTODOAttribute
+T:System.Data.Entity.Strings
+T:DbLinq.Util.BaseLock
+T:DbLinq.Util.Locks
+T:DbLinq.Util.ReadLock
+T:DbLinq.Util.ReadOnlyLock
+T:DbLinq.Util.WriteLock

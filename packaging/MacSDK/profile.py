@@ -3,14 +3,22 @@ import os
 import re
 import shutil
 import string
-import sys
 import tempfile
 import subprocess
 import stat
+import glob
 
 from bockbuild.darwinprofile import DarwinProfile
-from bockbuild.util.util import *
-from glob import glob
+from bockbuild.util.util import error
+from bockbuild.util.util import warn
+from bockbuild.util.util import trace
+from bockbuild.util.util import verbose
+from bockbuild.util.util import title
+from bockbuild.util.util import backtick
+from bockbuild.util.util import run_shell
+from bockbuild.util.util import replace_in_file
+from bockbuild.util.util import assert_exists
+from bockbuild.util.util import git_shortid
 
 class MonoReleaseProfile(DarwinProfile):
     description = 'The Mono Framework for MacOS'
@@ -63,13 +71,13 @@ class MonoReleaseProfile(DarwinProfile):
         'nuget'
     ]
 
-    def attach (self, bockbuild):
+    def attach(self, bockbuild):
         self.min_version = 7
-        DarwinProfile.attach (self, bockbuild)
+        DarwinProfile.attach(self, bockbuild)
 
         # quick disk space check (http://stackoverflow.com/questions/787776/)
-        s = os.statvfs(bockbuild.root)
-        free_space = (s.f_bavail * s.f_frsize) / (1024 * 1024 * 1024)  # in GB
+        space = os.statvfs(bockbuild.root)
+        free_space = (space.f_bavail * space.f_frsize) / (1024 * 1024 * 1024)  # in GB
 
         if free_space < 10:
             error('Low disk space (less than 10GB), aborting')
@@ -125,8 +133,8 @@ class MonoReleaseProfile(DarwinProfile):
 
         self.dont_optimize = ['pixman']
 
-        for p in self.release_packages.values():
-            if p.name in self.dont_optimize:
+        for val in self.release_packages.values():
+            if val.name in self.dont_optimize:
                 continue
             self.gcc_flags.extend(['-O2'])
 
@@ -219,7 +227,7 @@ class MonoReleaseProfile(DarwinProfile):
             '@@PACKAGES@@': packages_list,
             '@@DEP_PACKAGES@@': deps_list
         }
-        for dirpath, d, files in os.walk(tmpdir):
+        for dirpath, _, files in os.walk(tmpdir):
             for name in files:
                 if not name.startswith('.'):
                     replace_in_file(os.path.join(dirpath, name), parameter_map)
@@ -295,7 +303,7 @@ class MonoReleaseProfile(DarwinProfile):
         elif arch == "darwin-universal":
             arch_str = "universal"
         else:
-            error ("Unknown architecture")
+            error("Unknown architecture")
 
         if self.bockbuild.cmd_options.release_build:
             info = (pkg_type, self.FULL_VERSION, arch_str)
@@ -323,10 +331,10 @@ class MonoReleaseProfile(DarwinProfile):
             return line
 
     def fix_dllmap(self, config, matcher):
-        handle, temp = tempfile.mkstemp()
-        with open(config) as c:
+        _, temp = tempfile.mkstemp()
+        with open(config) as config_file:
             with open(temp, "w") as output:
-                for line in c:
+                for line in config_file:
                     output.write(self.fix_line(line, matcher))
         os.rename(temp, config)
         os.system('chmod a+r %s' % config)
@@ -345,13 +353,13 @@ class MonoReleaseProfile(DarwinProfile):
         ]
         gac = os.path.join(bockbuild.package_root, "lib", "mono", "gac")
         confs = [glob.glob(os.path.join(gac, x, "*", "*.dll.config")) for x in libs]
-        for c in itertools.chain(*confs):
+        for conf in itertools.chain(*confs):
             count = count + 1
-            self.fix_dllmap(c, lambda line: "dllmap" in line)
+            self.fix_dllmap(conf, lambda line: "dllmap" in line)
         print count
 
-    def verify(self, f):
-        result = " ".join(backtick("otool -L " + f))
+    def verify(self, file_path):
+        result = " ".join(backtick("otool -L " + file_path))
         regex = os.path.join(self.MONO_ROOT, "Versions", r"(\d+\.\d+\.\d+)")
 
         match = re.search(regex, result)
@@ -360,16 +368,16 @@ class MonoReleaseProfile(DarwinProfile):
         token = match.group(1)
         trace(token)
         if self.RELEASE_VERSION not in token:
-            raise Exception("%s references Mono %s\n%s" % (f, token, text))
+            raise Exception("%s references Mono %s\n%s" % (file_path, token, text))
 
     def verify_binaries(self):
         bindir = os.path.join(bockbuild.package_root, "bin")
-        for path, dirs, files in os.walk(bindir):
+        for path, _, files in os.walk(bindir):
             for name in files:
-                f = os.path.join(path, name)
-                file_type = backtick('file "%s"' % f)
+                file_path = os.path.join(path, name)
+                file_type = backtick('file "%s"' % file_path)
                 if "Mach-O executable" in "".join(file_type):
-                    self.verify(f)
+                    self.verify(file_path)
 
     def shell(self):
         envscript = '''#!/bin/sh
@@ -389,8 +397,8 @@ class MonoReleaseProfile(DarwinProfile):
 
         path = os.path.join(self.root, self.profile_name + '.sh')
 
-        with open(path, 'w') as f:
-            f.write(envscript)
+        with open(path, 'w') as envfile:
+            envfile.write(envscript)
 
         os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
 

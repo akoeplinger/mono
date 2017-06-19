@@ -2,6 +2,7 @@ import glob
 import os
 import shutil
 
+from bockbuild.package import Package
 
 class PCLReferenceAssembliesPackage(Package):
 
@@ -29,8 +30,8 @@ class PCLReferenceAssembliesPackage(Package):
 
         self.sh("rsync -abv -q %s/* %s" % (self.workspace, dest))
 
-        for f in glob.glob("%s/*/Profile/*/SupportedFrameworks" % dest):
-            self.write_xml(f)
+        for pclfile in glob.glob("%s/*/Profile/*/SupportedFrameworks" % dest):
+            self.write_xml(pclfile)
 
     def write_xml(self, directory):
         # print "Writing iOS/Android/Mac listings for " + directory
@@ -49,9 +50,9 @@ class PCLReferenceAssembliesPackage(Package):
             """<Framework Identifier="Xamarin.WatchOS" MinimumVersion="1.0" Profile="*" DisplayName="Xamarin.WatchOS"/>""",
         }
         for filename, content in data.iteritems():
-            f = open(filename, "w")
-            f.write(content + "\n")
-            f.close()
+            pclfile = open(filename, "w")
+            pclfile.write(content + "\n")
+            pclfile.close()
 
 
 PCLReferenceAssembliesPackage()

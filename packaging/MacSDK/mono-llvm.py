@@ -1,7 +1,7 @@
-import os
+from bockbuild.package import Package
+from bockbuild.package import GitHubPackage
 
-
-class MonoLlvmPackage (GitHubPackage):
+class MonoLlvmPackage(GitHubPackage):
 
     def __init__(self):
         GitHubPackage.__init__(self, 'mono', 'llvm', '3.0',
@@ -10,7 +10,7 @@ class MonoLlvmPackage (GitHubPackage):
                                    '--enable-optimized',
                                    '--enable-assertions=no',
                                    '--enable-targets="x86,x86_64"']
-                               )
+                              )
 
         # This package would like to be lipoed.
         self.needs_lipo = True

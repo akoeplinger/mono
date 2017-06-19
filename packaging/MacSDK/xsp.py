@@ -1,4 +1,12 @@
-class XspPackage (GitHubTarballPackage):
+import os
+
+from bockbuild.package import Package
+from bockbuild.package import GitHubTarballPackage
+from bockbuild.util.util import unprotect_dir
+from bockbuild.util.util import iterate_dir
+from bockbuild.util.util import error
+
+class XspPackage(GitHubTarballPackage):
 
     def __init__(self):
         GitHubTarballPackage.__init__(self, 'mono', 'xsp', '4.4',

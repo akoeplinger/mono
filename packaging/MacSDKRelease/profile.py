@@ -1,23 +1,18 @@
-import itertools
 import os
-import re
 import shutil
-import string
-import sys
-import tempfile
-import traceback
 
-from glob import glob
-
-from MacSDK import profile
-from bockbuild.util.util import *
+from bockbuild.util.util import error
+from bockbuild.util.util import warn
+from bockbuild.util.util import info
+from bockbuild.util.util import backtick
+from bockbuild.util.util import run_shell
 
 
 class MonoXamarinPackageProfile(MonoReleaseProfile):
     description = 'The Mono Framework for MacOS (official release)'
 
-    def setup (self):
-        MonoReleaseProfile.setup (self)
+    def setup(self):
+        MonoReleaseProfile.setup(self)
         bockbuild.packages_to_build.extend(['mono-extensions'])
         if bockbuild.cmd_options.release_build:
             self.setup_codesign()

@@ -1,3 +1,6 @@
+from bockbuild.package import Package
+from bockbuild.package import GitHubTarballPackage
+
 class FsharpPackage(GitHubTarballPackage):
 
     def __init__(self):
@@ -23,8 +26,8 @@ class FsharpPackage(GitHubTarballPackage):
     def prep(self):
         Package.prep(self)
 
-        for p in range(1, len(self.sources)):
-            self.sh('patch -p1 < "%{local_sources[' + str(p) + ']}"')
+        for patch in range(1, len(self.sources)):
+            self.sh('patch -p1 < "%{local_sources[' + str(patch) + ']}"')
 
     def build(self):
         self.sh('autoreconf')

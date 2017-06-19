@@ -1,6 +1,6 @@
 import os
-import string
 
+from bockbuild.package import GitHubTarballPackage
 
 class IronLanguagesPackage(GitHubTarballPackage):
 

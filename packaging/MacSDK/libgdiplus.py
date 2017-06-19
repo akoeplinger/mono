@@ -1,3 +1,5 @@
+from bockbuild.package import GitHubTarballPackage
+
 GitHubTarballPackage(
     'mono',
     'libgdiplus',

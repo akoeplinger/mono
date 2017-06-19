@@ -1,11 +1,14 @@
-import fileinput
+import os
+import shutil
 
+from bockbuild.package import Package
+from bockbuild.util.util import ensure_dir
 
-class NuGetBinary (Package):
+class NuGetBinary(Package):
 
     def __init__(self):
         Package.__init__(self, name='NuGet', version='4.3.0-preview1', sources=[
-                         'https://dist.nuget.org/win-x86-commandline/v%{version}/nuget.exe'])
+            'https://dist.nuget.org/win-x86-commandline/v%{version}/nuget.exe'])
 
     def build(self):
         pass

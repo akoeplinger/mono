@@ -1,8 +1,10 @@
 import os
 import re
+import glob
 
 from bockbuild.package import Package
-from bockbuild.util.util import *
+from bockbuild.util.util import ensure_dir
+from bockbuild.util.util import replace_in_file
 
 
 class MonoMasterPackage(Package):
@@ -17,7 +19,7 @@ class MonoMasterPackage(Package):
                              '--enable-nls=no',
                              '--with-ikvm=yes'
                          ]
-                         )
+                        )
         self.source_dir_name = 'mono'
         # This package would like to be lipoed.
         self.needs_lipo = True
@@ -54,13 +56,13 @@ class MonoMasterPackage(Package):
         Package.configure(self)
 
         if self.custom_version_str is not None:
-            replace_in_file(os.path.join (self.workspace, 'config.h'), {self.version : self.custom_version_str})
+            replace_in_file(os.path.join(self.workspace, 'config.h'), {self.version : self.custom_version_str})
         Package.make(self)
 
     def prep(self):
         Package.prep(self)
-        for p in range(1, len(self.local_sources)):
-            self.sh('patch -p1 < "%{local_sources[' + str(p) + ']}"')
+        for patch in range(1, len(self.local_sources)):
+            self.sh('patch -p1 < "%{local_sources[' + str(patch) + ']}"')
 
     def arch_build(self, arch):
         if arch == 'darwin-64':  # 64-bit build pass

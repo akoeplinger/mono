@@ -1,5 +1,6 @@
+from bockbuild.package import GitHubTarballPackage
 
-class MonoBasicPackage (GitHubTarballPackage):
+class MonoBasicPackage(GitHubTarballPackage):
 
     def __init__(self):
         GitHubTarballPackage.__init__(self, 'mono', 'mono-basic', '4.6', 'c93133db1d511f994918391f429fee29b9250004',

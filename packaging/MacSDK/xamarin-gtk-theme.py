@@ -1,4 +1,6 @@
-class XamarinGtkThemePackage (Package):
+from bockbuild.package import Package
+
+class XamarinGtkThemePackage(Package):
 
     def __init__(self):
         Package.__init__(self, 'xamarin-gtk-theme',
@@ -9,7 +11,7 @@ class XamarinGtkThemePackage (Package):
     def build(self):
         try:
             self.sh('./autogen.sh --prefix=%{staged_prefix}')
-        except:
+        except: # pylint: disable=bare-except
             pass
         finally:
             #self.sh ('intltoolize --force --copy --debug')

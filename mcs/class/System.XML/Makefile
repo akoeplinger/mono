@@ -17,10 +17,10 @@ TXT_RESOURCE_STRINGS = \
 	../referencesource/System.Xml/System.Xml.txt \
 	../referencesource/System.Data.SqlXml/System.Xml.Utils.txt
 
-LIB_MCS_FLAGS = -nowarn:219,414,649,1717 -unsafe -d:ASYNC
+LIB_MCS_FLAGS = -nowarn:219,414,0612,0642,649,1717 -unsafe -d:ASYNC -d:DISABLE_CAS_USE -d:MONO_HYBRID_SYSTEM_XML
 
 ifeq (2.1, $(FRAMEWORK_VERSION))
-LIB_MCS_FLAGS += -d:AGCLR -d:DISABLE_XSLT_COMPILER -d:DISABLE_XSLT_SCRIPT,MONO_HYBRID_SYSTEM_XML -d:DISABLE_CAS_USE
+LIB_MCS_FLAGS += -d:AGCLR -d:DISABLE_XSLT_COMPILER -d:DISABLE_XSLT_SCRIPT
 endif
 
 TEST_LIB_REFS = System.Data System.Core

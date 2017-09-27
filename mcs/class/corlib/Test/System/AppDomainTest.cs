@@ -2839,6 +2839,7 @@ namespace MonoTests.System
 				Assert.IsTrue (cdt.AssertLoad (aname.FullName), "#C2");
 			} finally {
 				AppDomain.Unload (ad);
+				File.Delete (Path.Combine (tempDir, "bug79715.dll"));
 			}
 		}
 		
@@ -2999,6 +3000,8 @@ namespace MonoTests.System
 			Assembly.ReflectionOnlyLoadFrom (assemblyFile);
 			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies ())
 				Assert.IsTrue (assembly.GetName ().Name != "bug499013");
+
+			File.Delete (assemblyFile);
 		}
 
 		[Test]
@@ -3133,6 +3136,7 @@ namespace MonoTests.System
 			var codeBaseFromShadowCopy = tester.LoadAndGetName ("TestAssembly");
 			var expected = Assembly.LoadFrom (Path.Combine (tempDir, "TestAssembly.dll"));
 			Assert.AreEqual (expected.GetName ().CodeBase, codeBaseFromShadowCopy);
+			File.Delete (assemblyFile);
 		}
 
 		private static AppDomain CreateTestDomain (string baseDirectory, bool assemblyResolver)

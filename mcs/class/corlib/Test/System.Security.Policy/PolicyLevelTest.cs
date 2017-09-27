@@ -351,15 +351,20 @@ namespace MonoTests.System.Security.Policy {
 		public void Recover_LoadPolicyLevelFromFile ()
 		{
 			string temp = Path.GetTempFileName ();
-			using (FileStream fs = File.OpenWrite (temp)) {
-				// that way we're sure that no back exists
-				byte[] data = Encoding.UTF8.GetBytes (minimal);
-				fs.Write (data, 0, data.Length);
-				fs.Close ();
+			try {
+				using (FileStream fs = File.OpenWrite (temp)) {
+					// that way we're sure that no back exists
+					byte[] data = Encoding.UTF8.GetBytes (minimal);
+					fs.Write (data, 0, data.Length);
+					fs.Close ();
+				}
+				PolicyLevel pl = SecurityManager.LoadPolicyLevelFromFile (temp, PolicyLevelType.User);
+				pl.Recover ();
+				// can't recover if no backup exists
 			}
-			PolicyLevel pl = SecurityManager.LoadPolicyLevelFromFile (temp, PolicyLevelType.User);
-			pl.Recover ();
-			// can't recover if no backup exists
+			finally {
+				File.Delete (temp);
+			}
 		}
 
 		[Test]

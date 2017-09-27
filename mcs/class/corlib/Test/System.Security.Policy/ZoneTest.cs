@@ -206,6 +206,7 @@ namespace MonoTests.System.Security.Policy {
 				z = Zone.CreateFromUrl (url);
 				Assert.AreEqual (SecurityZone.MyComputer, z.SecurityZone, url);
 			}
+			File.Delete (myComputerUrls[0]);
 		}
 
 		string[] intranetUrls = {

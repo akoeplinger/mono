@@ -883,12 +883,14 @@ namespace System.Web {
                 StringBuilder   buf = new StringBuilder (_maxMachineNameLength);
                 int             len = _maxMachineNameLength;
 
-#if !MONO
+#if MONO
+                _machineName = Environment.MachineName;
+#else
                 if (UnsafeNativeMethods.GetComputerName (buf, ref len) == 0)
                     throw new HttpException (SR.GetString(SR.Get_computer_name_failed));
-#endif
 
                 _machineName = buf.ToString();
+#endif
             }
             return _machineName;
         }

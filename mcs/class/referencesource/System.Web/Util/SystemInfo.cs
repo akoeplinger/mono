@@ -10,7 +10,9 @@ namespace System.Web.Util {
         static int  _trueNumberOfProcessors;
 
         static internal int GetNumProcessCPUs() {
-#if !MONO
+#if MONO // TODO: implement
+            return 1;
+#else
             if (_trueNumberOfProcessors == 0) {
                 UnsafeNativeMethods.SYSTEM_INFO si;
                 UnsafeNativeMethods.GetSystemInfo(out si);
@@ -57,8 +59,6 @@ namespace System.Web.Util {
 
             Debug.Assert(_trueNumberOfProcessors > 0);
             return _trueNumberOfProcessors;
-#else
-            return 1;
 #endif
         }
     }

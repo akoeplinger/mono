@@ -54,11 +54,6 @@ namespace System.Web.Configuration {
         }
 
         HealthMonitoringSectionHelper() {
-
-			#if MONO
-			_enabled = false;
-			return;
-#endif
             // Handle config exceptions so we can still log messages to the event log.
             try {
                 _section = RuntimeConfig.GetAppConfig().HealthMonitoring;

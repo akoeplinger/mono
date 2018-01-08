@@ -157,12 +157,10 @@ namespace System.Web.Configuration {
         // Note: this API will return null if the section isn't found.
         //
         internal static HttpBrowserCapabilities GetBrowserCapabilities(HttpRequest request) {
-
 #if MONO
             string ua = GetUserAgentForDetection(request);
             return GetHttpBrowserCapabilitiesFromBrowscapini(ua);
-#endif
-
+#else
             HttpCapabilitiesBase capabilities = null;
 
             // Get the config evaluator from the cached config object.
@@ -181,6 +179,7 @@ namespace System.Web.Configuration {
             }
 
             return (HttpBrowserCapabilities) capabilities;
+#endif
         }
 
         /*

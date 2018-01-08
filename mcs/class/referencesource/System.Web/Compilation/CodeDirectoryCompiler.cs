@@ -173,15 +173,19 @@ internal class CodeDirectoryCompiler {
             Debug.Assert(result == null);
             Debug.Assert(resultAssembly == null);
 
-#if !MONO
             // If there is already a loaded module with the same path, try to wait for it to be unloaded.
             // Otherwise, we would end up loading this old assembly instead of the new one (VSWhidbey 554697)
             DateTime waitLimit = DateTime.UtcNow.AddMilliseconds(3000);
             for (;;) {
 
+#if MONO  // TODO: see if we can do something similar
+                IntPtr hModule = IntPtr.Zero;
+#else
                 IntPtr hModule = UnsafeNativeMethods.GetModuleHandle(results.PathToAssembly);
+#endif
                 if (hModule == IntPtr.Zero)
                     break;
+
 
                 Debug.Trace("CodeDirectoryCompiler", results.PathToAssembly + " is already loaded. Waiting a bit");
 
@@ -193,7 +197,7 @@ internal class CodeDirectoryCompiler {
                     throw new HttpException(SR.GetString(SR.Assembly_already_loaded, results.PathToAssembly));
                 }
             }
-#endif
+
             resultAssembly = results.CompiledAssembly;
         }
 

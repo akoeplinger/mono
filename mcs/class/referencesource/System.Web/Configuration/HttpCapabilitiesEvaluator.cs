@@ -95,12 +95,12 @@ namespace System.Web.Configuration {
             }
         }
 
-		public HttpCapabilitiesDefaultProvider() : this(null /*RuntimeConfig.GetAppConfig().BrowserCaps*/){
-			#if !MONO
+       public HttpCapabilitiesDefaultProvider() : this(RuntimeConfig.GetAppConfig().BrowserCaps){
+
             if (RuntimeConfig.GetAppConfig().BrowserCaps != null) {
                 _userAgentCacheKeyLength = RuntimeConfig.GetAppConfig().BrowserCaps.UserAgentCacheKeyLength;
             }
-			#endif
+
             if (_userAgentCacheKeyLength == 0) {
                 _userAgentCacheKeyLength = _defaultUserAgentCacheKeyLength;
             }

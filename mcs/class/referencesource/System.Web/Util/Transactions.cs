@@ -90,10 +90,10 @@ public class Transactions {
 
         int rc;
         try {
-#if !MONO
-            rc = UnsafeNativeMethods.TransactManagedCallback(execCallback, (int)mode);
-#else
+#if MONO
             rc = 0;
+#else
+            rc = UnsafeNativeMethods.TransactManagedCallback(execCallback, (int)mode);
 #endif
         }
         finally {

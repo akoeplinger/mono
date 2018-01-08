@@ -48,6 +48,9 @@ namespace System.Web.Configuration {
         }
 
         internal static bool UseMetabase {
+#if MONO
+            get { return false; }
+#else
             [RegistryPermissionAttribute(SecurityAction.Assert, Read = "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\InetStp")]
             get {
                 if (IISExpressVersion != null) {
@@ -68,6 +71,7 @@ namespace System.Web.Configuration {
 
                 return s_iisMajorVersion <= 6;
             }
+#endif
         }
 
         static internal IServerConfig GetInstance() {

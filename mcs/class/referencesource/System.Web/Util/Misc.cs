@@ -49,10 +49,10 @@ namespace System.Web.Util {
                 if (appId == null) {
                     appId = appDomain.FriendlyName;
                 }
-#if !MONO
-                string pid = SafeNativeMethods.GetCurrentProcessId().ToString(CultureInfo.InstalledUICulture);
+#if MONO
+                string pid = System.Diagnostics.Process.GetCurrentProcess().Id.ToString();
 #else
-                string pid = "";
+                string pid = SafeNativeMethods.GetCurrentProcessId().ToString(CultureInfo.InstalledUICulture);
 #endif
                 string description = SR.GetString(SR.Unhandled_Exception, CultureInfo.InstalledUICulture);
                 Misc.ReportUnhandledException(exception, new string[5] {description, APPLICATION_ID, appId, PROCESS_ID, pid});

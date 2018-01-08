@@ -12,7 +12,7 @@ namespace System.Web.Configuration {
     using System.Collections;
     using System.Collections.Specialized;
     using System.IO;
-#if !FEATURE_PAL && !MONO
+#if !FEATURE_PAL
     using System.ServiceProcess;
 #endif // !FEATURE_PAL
     using System.Linq;
@@ -245,7 +245,7 @@ namespace System.Web.Configuration {
         }
 
         private void RestartW3SVCIfNecessary() {
-#if !FEATURE_PAL && !MONO
+#if !FEATURE_PAL
             try {
                 // Dev10 bug 734918
                 // We should not fail when the w3svc service is not installed.

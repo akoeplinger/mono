@@ -976,6 +976,7 @@ namespace System.Web.Hosting {
                         skipAdditionalConfigChecks = true;
                     }
                     else {
+#if !MONO
                         //Hosted by IIS, we already have an IISMap.
                         if (appHost is ISAPIApplicationHost) {
                             string cacheKey = System.Web.Caching.CacheInternal.PrefixMapPath + siteID + virtualPath.VirtualPathString;
@@ -986,19 +987,26 @@ namespace System.Web.Hosting {
                         else {
                             appConfig = GetAppConfigGeneric(appHost, siteID, appSegment, virtualPath, physicalPath);
                         }
+#else
+                    throw new InvalidOperationException ("shouldn't be reached");
+#endif
                     }
 
+#if MONO // TODO: Mono web config system isn't initalized at this point so we can't access it
+                    HttpRuntimeSection httpRuntimeSection = new HttpRuntimeSection();
+#else
                     HttpRuntimeSection httpRuntimeSection = (HttpRuntimeSection)appConfig.GetSection("system.web/httpRuntime");
-                    //if (httpRuntimeSection == null) {
-                     //   throw new ConfigurationErrorsException(SR.GetString(SR.Config_section_not_present, "httpRuntime"));
-                    //}
+#endif
+                    if (httpRuntimeSection == null) {
+                        throw new ConfigurationErrorsException(SR.GetString(SR.Config_section_not_present, "httpRuntime"));
+                    }
 
                     // DevDiv #403846 - Change certain config defaults if <httpRuntime targetFramework="4.5" /> exists in config.
                     // We store this information in the AppDomain data because certain configuration sections (like <compilation>)
                     // are loaded before config is "baked" in the child AppDomain, and if we make <compilation> and other sections
                     // dependent on <httpRuntime> which may not have been loaded yet, we risk introducing ----s. Putting this value
                     // in the AppDomain data guarantees that it is available before the first call to the config system.
-                    FrameworkName targetFrameworkName = null; //	httpRuntimeSection.GetTargetFrameworkName();
+                    FrameworkName targetFrameworkName = httpRuntimeSection.GetTargetFrameworkName();
                     if (targetFrameworkName != null) {
                         appDomainAdditionalData[System.Web.Util.BinaryCompatibility.TargetFrameworkKey] = targetFrameworkName;
                     }

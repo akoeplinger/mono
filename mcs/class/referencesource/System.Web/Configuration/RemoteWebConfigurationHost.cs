@@ -477,7 +477,7 @@ namespace System.Web.Configuration {
 #endif
         internal static IRemoteWebConfigurationHostServer CreateRemoteObject(string server, string username, string domain, string password) {
 
-#if !FEATURE_PAL && !MONO // FEATURE_PAL has no COM objects
+#if !FEATURE_PAL // FEATURE_PAL has no COM objects
             try {
                 if (string.IsNullOrEmpty(username))
                     return CreateRemoteObjectUsingGetTypeFromCLSID(server);

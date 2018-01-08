@@ -202,14 +202,15 @@ namespace System.Web.Security {
             byte []           pBin = new byte[4];
             long []           pDates = new long[2];
 
-#if !MONO
+#if MONO
+            int iRet;
+            throw new NotImplementedException();
+#else
             int iRet = UnsafeNativeMethods.CookieAuthParseTicket(bBlob, ticketLength,
                                                                    name, iSize,
                                                                    data, iSize,
                                                                    path, iSize,
                                                                    pBin, pDates);
-#else
-            int iRet = 0;
 #endif
 
             if (iRet != 0)
@@ -846,13 +847,14 @@ namespace System.Web.Security {
             pDates[0] = ticket.IssueDate.ToFileTime();
             pDates[1] = ticket.Expiration.ToFileTime();
 
-#if !MONO
+#if MONO
+            int iRet;
+            throw new NotImplementedException();
+#else
             int iRet = UnsafeNativeMethods.CookieAuthConstructTicket(
                         bData, bData.Length,
                         ticket.Name, ticket.UserData, ticket.CookiePath,
                         pBin, pDates);
-#else
-            int iRet = 0;
 #endif
 
             if (iRet < 0)

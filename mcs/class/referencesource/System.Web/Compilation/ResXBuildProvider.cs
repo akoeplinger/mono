@@ -15,7 +15,8 @@ using System.Web.Hosting;
 internal sealed class ResXBuildProvider : BaseResourcesBuildProvider {
 
     protected override IResourceReader GetResourceReader(Stream inputStream) {
-#if !FEATURE_PAL // FEATURE_PAL 
+#if !FEATURE_PAL || MONO // FEATURE_PAL 
+        return new ResourceReader(inputStream); // TODO: HACK, we seem to be getting the compiled resx on Mono, not sure why
         ResXResourceReader reader = new ResXResourceReader(inputStream);
 
         // Give the BasePath to the reader so it can resolve relative references (VSWhidbey 208154)

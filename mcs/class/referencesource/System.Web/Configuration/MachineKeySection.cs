@@ -661,7 +661,7 @@ namespace System.Web.Configuration
             int bytesWritten = 0;
             byte[] iv = new byte[ivLength];
 
-#if !MONO
+#if !MONO // TODO: find a replacement
             // get SHA1 hash of the buffer and copy to the IV.
             // if hash length is less than IV length, re-hash the hash and
             // append until IV is full.
@@ -698,7 +698,7 @@ namespace System.Web.Configuration
             if (validationKey.Length > _AutoGenValidationKeySize)
             {
                 key = new byte[_HashSize];
-#if !MONO
+#if !MONO // TODO: find a replacement
                 int hr = UnsafeNativeMethods.GetSHA1Hash(validationKey, validationKey.Length, key, key.Length);
                 Marshal.ThrowExceptionForHR(hr);
 #endif
@@ -726,7 +726,7 @@ namespace System.Web.Configuration
             if (length < 0 || buf == null || (start + length) > buf.Length)
                 throw new ArgumentException(SR.GetString(SR.InvalidArgumentValue, "length"));
             byte[] hash = new byte[_HashSize];
-#if !MONO
+#if !MONO // TODO: find a replacement
             int hr = UnsafeNativeMethods.GetHMACSHA1Hash(buf, start, length,
                                                          modifier, (modifier == null) ? 0 : modifier.Length,
                                                          s_inner, s_inner.Length, s_outer, s_outer.Length,
@@ -1234,7 +1234,7 @@ namespace System.Web.Configuration
                 return hashAlgo.ComputeHash(bAll);
             } else {
                 byte[] newHash = new byte[MD5_HASH_SIZE];
-#if !MONO
+#if !MONO // TODO: find a replacement
                 int hr = UnsafeNativeMethods.GetSHA1Hash(bAll, bAll.Length, newHash, newHash.Length);
                 Marshal.ThrowExceptionForHR(hr);
 #endif

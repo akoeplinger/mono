@@ -943,7 +943,7 @@ internal class StandardDiskBuildResultCache: DiskBuildResultCache {
         // Clean up the fusion shadow copy cache
 
         AppDomainSetup appDomainSetup = Thread.GetDomain().SetupInformation;
-#if !MONO
+#if !MONO  // TODO: find a replacement for this
         UnsafeNativeMethods.DeleteShadowCache(appDomainSetup.CachePath,
             appDomainSetup.ApplicationName);
 #endif

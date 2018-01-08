@@ -664,7 +664,7 @@ internal static class UrlPath {
     internal static bool PathIsDriveRoot(string path) {
         if (path != null) {
             int l = path.Length;
-#if MONO
+#if MONO  // TODO: this only true on unix, implement runtime detection
             if (l == 1 && path[1] == '/') {
                 return true;
             }

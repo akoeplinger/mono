@@ -708,21 +708,19 @@ public class AssemblyBuilder {
                 _initialReferencedAssemblies.Add(assembly);
             }
         }
-			#if MONO //TODO: this can probably be removed when the normal separate AppDomain is used
-			Assembly _remove = null;
-			foreach (var x in _initialReferencedAssemblies) {
-				if (((Assembly)x).ManifestModule.Name == "System.dll")
-			_remove =(Assembly) x;
-			}
-			if (_remove != null)
-				_initialReferencedAssemblies.Remove (_remove);
 
-
-
-			// gross hack
-			_initialReferencedAssemblies.Add(Assembly.LoadFile("/home/alexander/dev/mono/mcs/class/lib/net_4_5/System.Web_test_net_4_5.dll"));
-
-			#endif
+#if MONO //TODO: HACK, this can probably be removed when the normal separate AppDomain is used
+        List<Assembly> _remove = new List<Assembly>();
+    
+        foreach (var x in _initialReferencedAssemblies) {
+            var name = ((Assembly)x).ManifestModule.Name;
+            if (name == "System.dll" || name == "System.Core.dll" || name.Contains("nunit"))
+                _remove.Add((Assembly) x);
+        }
+        foreach (var x in _remove) {
+            _initialReferencedAssemblies.Remove (x);
+        }
+#endif
 
         // Add all the referenced assemblies to the compilParams
         Util.AddAssembliesToStringCollection(_initialReferencedAssemblies, compilParams.ReferencedAssemblies);
@@ -782,7 +780,6 @@ public class AssemblyBuilder {
     // Command line string for My.* support
     private const string MySupport = @"/define:_MYTYPE=\""Web\""";
 
-#if !MONO
     private static void AddVBMyFlags(CompilerParameters compilParams) {
 
         // Prepend it to the compilerOptions
@@ -791,7 +788,6 @@ public class AssemblyBuilder {
         else
             compilParams.CompilerOptions = MySupport + " " + compilParams.CompilerOptions;
     }
-#endif
 
     [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands", Justification = "Warnings was about use of CompilerParameters.CoreAssemblyFileName which was not set by user supplied string - so okay.")]
     internal static void FixUpCompilerParameters(CompilationSection compilationSection, Type codeDomProviderType, CompilerParameters compilParams) {
@@ -832,10 +828,8 @@ public class AssemblyBuilder {
             // namespace imports.
             AddVBGlobalNamespaceImports(compilParams);
 
-#if !MONO
             // Add any command line flags needed to support the My.* feature
             AddVBMyFlags(compilParams);
-#endif
 
             // Ignore vb warning that complains about assemblyKeyName (Dev10 662544)
             // but only for target 3.5 and above (715329)

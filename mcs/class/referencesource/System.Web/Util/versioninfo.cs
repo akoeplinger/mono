@@ -34,7 +34,7 @@ namespace System.Web.Util {
 
         [FileIOPermission(SecurityAction.Assert, Unrestricted = true)]
         internal static string GetFileVersion(String filename) {
-#if !FEATURE_PAL // FEATURE_PAL does not fully support FileVersionInfo
+#if !FEATURE_PAL || MONO // FEATURE_PAL does not fully support FileVersionInfo
             try {
                 FileVersionInfo ver = FileVersionInfo.GetVersionInfo(filename);
                 return string.Format(CultureInfo.InvariantCulture, "{0}.{1}.{2}.{3}",
@@ -51,7 +51,7 @@ namespace System.Web.Util {
         }
 
         internal static string GetLoadedModuleFileName(string module) {
-#if !FEATURE_PAL && !MONO // FEATURE_PAL does not fully support FileVersionInfo
+#if !FEATURE_PAL // FEATURE_PAL does not fully support FileVersionInfo
             IntPtr h = UnsafeNativeMethods.GetModuleHandle(module);
             if (h == IntPtr.Zero)
                 return null;

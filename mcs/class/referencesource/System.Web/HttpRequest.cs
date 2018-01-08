@@ -2599,10 +2599,6 @@ namespace System.Web {
 
         internal void ValidateInputIfRequiredByConfig() {
 
-			#if MONO
-			return;
-			#endif
-
             // Do we need to enable request validation?
             RuntimeConfig config = RuntimeConfig.GetConfig(Context);
             HttpRuntimeSection runtimeSection = config.HttpRuntime;

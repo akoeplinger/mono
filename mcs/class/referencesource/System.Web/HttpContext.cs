@@ -715,9 +715,6 @@ namespace System.Web {
 
         public AsyncPreloadModeFlags AsyncPreloadMode {
             get {
-#if MONO
-                return AsyncPreloadModeFlags.None;
-#endif
                 if (!_asyncPreloadModeFlagsSet) {
                     _asyncPreloadModeFlags = RuntimeConfig.GetConfig(this).HttpRuntime.AsyncPreloadMode;
                     _asyncPreloadModeFlagsSet = true;
@@ -1709,13 +1706,9 @@ namespace System.Web {
             // Calls to Volatile.* are atomic, even for 64-bit fields.
             long ticks = Volatile.Read(ref _timeoutTicks);
             if (ticks == -1) {
-#if MONO
-                ticks = TimeSpan.FromSeconds(110).Ticks;
-#else
                 // Only go to config if the value hasn't yet been initialized.
                 HttpRuntimeSection cfg = RuntimeConfig.GetConfig(this).HttpRuntime;
                 ticks = cfg.ExecutionTimeout.Ticks;
-#endif
 
                 // If another thread already came in and initialized _timeoutTicks,
                 // return that value instead of the value we just read from config.
@@ -1932,7 +1925,7 @@ namespace System.Web {
 #endif
 
         internal void SendEmptyResponse() {
-#if !FEATURE_PAL && !MONO // FEATURE_PAL does not enable IIS-based hosting features
+#if !FEATURE_PAL // FEATURE_PAL does not enable IIS-based hosting features
             if (_wr != null  && (_wr is System.Web.Hosting.ISAPIWorkerRequest))
                 ((System.Web.Hosting.ISAPIWorkerRequest) _wr).SendEmptyResponse();
 #endif // !FEATURE_PAL

@@ -37,7 +37,7 @@ namespace System.Web.Hosting {
         /// </devdoc>
         [SecurityPermission(SecurityAction.Demand, Unrestricted=true)]
         public static Object CreateApplicationHost(Type hostType, String virtualDir, String physicalDir) {
-#if !FEATURE_PAL && !MONO // FEATURE_PAL does not require PlatformID.Win32NT
+#if !FEATURE_PAL // FEATURE_PAL does not require PlatformID.Win32NT
             if (Environment.OSVersion.Platform != PlatformID.Win32NT)
                 throw new PlatformNotSupportedException(SR.GetString(SR.RequiresNT));
 #else // !FEATURE_PAL

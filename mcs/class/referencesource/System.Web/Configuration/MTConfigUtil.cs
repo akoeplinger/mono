@@ -196,7 +196,7 @@ internal class MTConfigUtil {
     static private string MachineConfigPath {
         get {
             if (s_machineConfigPath == null) {
-#if !MONO || MSBUILD_DEP
+#if !MONO || MSBUILD_DEP // TODO: verify this works with backslash
                 s_machineConfigPath = ToolLocationHelper.GetPathToDotNetFrameworkFile(@"config\machine.config", TargetDotNetFrameworkVersion.Version20);
 #endif
                 if (string.IsNullOrEmpty(s_machineConfigPath)) {

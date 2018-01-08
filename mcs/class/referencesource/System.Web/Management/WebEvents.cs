@@ -2082,7 +2082,7 @@ namespace System.Web.Management {
 
                 if (!s_getCurrentProcFailed) {
                     Process process = Process.GetCurrentProcess();
-#if !FEATURE_PAL // FEATURE_PAL does not support these Process properties
+#if !FEATURE_PAL || MONO // FEATURE_PAL does not support these Process properties
 
                     s_threadCount = process.Threads.Count;
                     s_workingSet = (long)process.WorkingSet64;

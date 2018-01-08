@@ -298,10 +298,10 @@ internal static class Util {
         string dummyFile = Path.Combine(dir, "~AspAccessCheck_" +
             HostingEnvironment.AppDomainUniqueInteger.ToString(
                 "x", CultureInfo.InvariantCulture) + 
-#if !MONO
-                SafeNativeMethods.GetCurrentThreadId()
-#else
+#if MONO
                 System.Threading.Thread.CurrentThread.ManagedThreadId
+#else
+                SafeNativeMethods.GetCurrentThreadId()
 #endif                
                 + ".tmp");
         FileStream fs = null;

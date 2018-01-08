@@ -392,9 +392,14 @@ namespace System.Web.Configuration {
         [ConfigurationProperty("assemblies")]
         public AssemblyCollection Assemblies {
             get {
+#if MONO  // TODO: not really sure why this is necessary
+                EnsureReferenceSet();
+#else
                 if (_isRuntimeObject || BuildManagerHost.InClientBuildManager) {
                     EnsureReferenceSet();
                 }
+#endif
+
                 return GetAssembliesCollection();
             }
         }

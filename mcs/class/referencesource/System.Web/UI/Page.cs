@@ -4627,13 +4627,11 @@ window.onload = WebForm_RestoreScrollPosition;
             if (includeStagesBeforeAsyncPoint) {
                 // For ASPCOMPAT need to call OnPageStart for each Session object
 
-#if !FEATURE_PAL // FEATURE_PAL does not enable COM
+#if !FEATURE_PAL || MONO // FEATURE_PAL does not enable COM
                 if (IsInAspCompatMode)
                     AspCompatApplicationStep.OnPageStartSessionObjects();
 #else // !FEATURE_PAL
-#if !MONO
-				throw new NotImplementedException ("ROTORTODO");
-#endif
+                throw new NotImplementedException ("ROTORTODO");
 #endif // !FEATURE_PAL
 
                 // Is it a GET, POST or initial request?
@@ -4925,13 +4923,11 @@ window.onload = WebForm_RestoreScrollPosition;
             if (includeStagesBeforeAsyncPoint) {
                 // For ASPCOMPAT need to call OnPageStart for each Session object
 
-#if !FEATURE_PAL // FEATURE_PAL does not enable COM
+#if !FEATURE_PAL || MONO // FEATURE_PAL does not enable COM
                 if (IsInAspCompatMode)
                     AspCompatApplicationStep.OnPageStartSessionObjects();
 #else // !FEATURE_PAL
-#if !MONO
-				throw new NotImplementedException ("ROTORTODO");
-#endif
+                throw new NotImplementedException ("ROTORTODO");
 #endif // !FEATURE_PAL
 
                 // Is it a GET, POST or initial request?

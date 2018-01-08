@@ -246,7 +246,7 @@ namespace System.Web.Management {
                 }
             }
 
-#if !FEATURE_PAL && !MONO // FEATURE_PAL does not enable IIS-based hosting features
+#if !FEATURE_PAL // FEATURE_PAL does not enable IIS-based hosting features
             hr = UnsafeNativeMethods.RaiseEventlogEvent((int)eventType, (string[])dataFields.ToArray(typeof(string)), dataFields.Count);
             if (hr != 0) {
                 throw new HttpException(SR.GetString(SR.Event_log_provider_error, "0x" + hr.ToString("X8", CultureInfo.InstalledUICulture)));

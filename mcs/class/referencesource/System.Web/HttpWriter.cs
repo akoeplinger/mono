@@ -89,15 +89,13 @@ namespace System.Web {
     internal sealed class HttpResponseBufferElement : HttpBaseMemoryResponseBufferElement, IHttpResponseElement {
         private byte[] _data;
 
-		#if MONO
-		internal HttpResponseBufferElement() {
-		_free=_size=1024*10;
-		_data = new byte[_size];
-		_recycle=false;
-		}
-		#endif
-
-
+#if MONO
+        internal HttpResponseBufferElement() {
+            _free = _size = 1024 * 10;
+            _data = new byte[_size];
+            _recycle = false;
+        }
+#endif
 
         /*
          * Constructor that accepts the data buffer and holds on to it
@@ -176,7 +174,7 @@ namespace System.Web {
         }
     }
 
-#if !FEATURE_PAL && !MONO // FEATURE_PAL does not enable IIS-based hosting features
+#if !FEATURE_PAL // FEATURE_PAL does not enable IIS-based hosting features
     /*
      * Unmanaged memory response buffer
      */

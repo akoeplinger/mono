@@ -89,7 +89,7 @@ namespace System.Web.Compilation {
         /// Finds out what the known framework names and also the latest one
         /// </summary>
         private static void InitializeKnownAndLatestFrameworkNames() {
-#if !MONO
+#if !MONO  // TODO: find a replacement
             IList<string> names = ToolLocationHelper.GetSupportedTargetFrameworks();
             Version latestVersion = null;
             s_knownFrameworkNames = new List<FrameworkName>();

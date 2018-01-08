@@ -136,7 +136,7 @@ namespace System.Web {
 
             // load webengine.dll if it is not loaded already
 
-#if !FEATURE_PAL && !MONO // FEATURE_PAL does not enable IIS-based hosting features
+#if !FEATURE_PAL // FEATURE_PAL does not enable IIS-based hosting features
 
             installDir = RuntimeEnvironment.GetRuntimeDirectory();
 
@@ -285,7 +285,7 @@ namespace System.Web {
         private static bool _enablePrefetchOptimization;
 
 
-		internal static void RefreshData(){
+		internal static void RefreshData(){  // TODO: investigate why this is necessary
 			_theRuntime._appDomainAppId = GetAppDomainString(".appId");
 			_theRuntime._appDomainAppPath = GetAppDomainString(".appPath");
 			_theRuntime._appDomainAppVPath = VirtualPath.CreateNonRelativeTrailingSlash (GetAppDomainString(".appVPath"));
@@ -306,7 +306,7 @@ namespace System.Web {
          */
         private void Init() {
             try {
-#if !FEATURE_PAL && !MONO
+#if !FEATURE_PAL
                 if (Environment.OSVersion.Platform != PlatformID.Win32NT)
                     throw new PlatformNotSupportedException(SR.GetString(SR.RequiresNT));
 #else // !FEATURE_PAL
@@ -528,7 +528,7 @@ namespace System.Web {
                     // with the correct trust level set.
                     //
                     if (configInitException != null) {
-						    throw configInitException;
+                        throw configInitException;
                     }
 
                     SetThreadPoolLimits();
@@ -538,12 +538,12 @@ namespace System.Web {
                     // Initialize the build manager
                     BuildManager.InitializeBuildManager();
 
-#if !MONO
                     if(compilationSection != null && compilationSection.ProfileGuidedOptimizations == ProfileGuidedOptimizationsFlags.All) {
+#if !MONO
                         ProfileOptimization.SetProfileRoot(_codegenDir);
                         ProfileOptimization.StartProfile(profileFileName);
-                    }
 #endif
+                    }
 
                     // Determine apartment threading setting
                     InitApartmentThreading();
@@ -551,13 +551,12 @@ namespace System.Web {
                     // Init debugging
                     InitDebuggingSupport();
 
-					_processRequestInApplicationTrust = true; //trustSection.ProcessRequestInApplicationTrust;
+                    _processRequestInApplicationTrust = trustSection.ProcessRequestInApplicationTrust;
 
                     // Init AppDomain Resource Perf Counters
                     AppDomainResourcePerfCounters.Init();
 
-
-                  //  RelaxMapPathIfRequired();
+                    RelaxMapPathIfRequired();
                 }
                 catch (Exception e) {
                     _hostingInitFailed = true;
@@ -986,7 +985,7 @@ namespace System.Web {
                 // Don't do this if we are not in a CBM scenario and we're in a service (!UserInteractive), 
                 // as TEMP could point to unwanted places.
 
-				#if !MONO
+#if !MONO
 #if !FEATURE_PAL // always fail here
                 if ((!BuildManagerHost.InClientBuildManager) && (!Environment.UserInteractive))
 #endif // !FEATURE_PAL
@@ -994,7 +993,7 @@ namespace System.Web {
                     throw new HttpException(SR.GetString(SR.No_codegen_access,
                         System.Web.UI.Util.GetCurrentAccountName(), tempDirectory));
                 }
-				#endif
+#endif
 
                 tempDirectory = Path.GetTempPath();
                 Debug.Assert(System.Web.UI.Util.HasWriteAccessToDirectory(tempDirectory));
@@ -1160,9 +1159,6 @@ namespace System.Web {
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         private void PreloadAssembliesFromBin() {
             bool appClientImpersonationEnabled = false;
-			#if MONO
-			return;
-			#endif
             if (!_isOnUNCShare) {
                 // if not on UNC share check if config has impersonation enabled (without userName)
                 IdentitySection c = RuntimeConfig.GetAppConfig().Identity;
@@ -1332,7 +1328,7 @@ namespace System.Web {
         }
 
         private void InitializeHealthMonitoring() {
-#if !FEATURE_PAL && !MONO // FEATURE_PAL does not enable IIS-based hosting features
+#if !FEATURE_PAL // FEATURE_PAL does not enable IIS-based hosting features
             ProcessModelSection pmConfig = RuntimeConfig.GetMachineConfig().ProcessModel;
             int deadLockInterval = (int)pmConfig.ResponseDeadlockInterval.TotalSeconds;
             int requestQueueLimit = pmConfig.RequestQueueLimit;
@@ -1376,7 +1372,7 @@ namespace System.Web {
         }
 
         private static void SetAutogenKeys() {
-#if !FEATURE_PAL && !MONO // FEATURE_PAL does not enable cryptography
+#if !FEATURE_PAL // FEATURE_PAL does not enable cryptography
             byte[] bKeysRandom = new byte[s_autogenKeys.Length];
             byte[] bKeysStored = new byte[s_autogenKeys.Length];
             bool fGetStoredKeys = false;
@@ -2045,9 +2041,7 @@ namespace System.Web {
 
 #if !FEATURE_PAL // FEATURE_PAL does not enable IIS-based hosting features
             // double check for pending async io
-#if !MONO
             System.Web.Hosting.ISAPIWorkerRequestInProcForIIS6.WaitForPendingAsyncIo();
-#endif
             // stop sqlcachedependency polling
             SqlCacheDependencyManager.Dispose((drainTimeoutSec * 1000) / 2);
 #endif // !FEATURE_PAL

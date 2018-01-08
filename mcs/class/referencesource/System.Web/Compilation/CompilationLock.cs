@@ -41,7 +41,7 @@ internal sealed class CompilationMutex : IDisposable {
 
     internal CompilationMutex(String name, String comment) {
 
-#if !FEATURE_PAL && !MONO // No unmanaged aspnet_isapi mutex in Coriolis
+#if !FEATURE_PAL // No unmanaged aspnet_isapi mutex in Coriolis
 
         // Attempt to get the mutex string from the registry (VSWhidbey 415795)
         string mutexRandomName = (string) Misc.GetAspNetRegValue("CompilationMutexName",
@@ -86,7 +86,7 @@ internal sealed class CompilationMutex : IDisposable {
 
     internal /*public*/ void Close() {
 
-#if !FEATURE_PAL && !MONO // No unmanaged aspnet_isapi mutex in Coriolis
+#if !FEATURE_PAL // No unmanaged aspnet_isapi mutex in Coriolis
 
         if (_mutexHandle.Handle != IntPtr.Zero) {
             UnsafeNativeMethods.InstrumentedMutexDelete(_mutexHandle);
@@ -98,7 +98,7 @@ internal sealed class CompilationMutex : IDisposable {
     [ResourceExposure(ResourceScope.None)]
     internal /*public*/ void WaitOne() {
 
-#if !FEATURE_PAL && !MONO // No unmanaged aspnet_isapi mutex in Coriolis
+#if !FEATURE_PAL // No unmanaged aspnet_isapi mutex in Coriolis
 
         if (_mutexHandle.Handle == IntPtr.Zero)
             throw new InvalidOperationException(SR.GetString(SR.CompilationMutex_Null));
@@ -133,7 +133,7 @@ internal sealed class CompilationMutex : IDisposable {
 
     internal /*public*/ void ReleaseMutex() {
 
-#if !FEATURE_PAL && !MONO // No unmanaged aspnet_isapi mutex in Coriolis
+#if !FEATURE_PAL // No unmanaged aspnet_isapi mutex in Coriolis
         if (_mutexHandle.Handle == IntPtr.Zero)
             throw new InvalidOperationException(SR.GetString(SR.CompilationMutex_Null));
 

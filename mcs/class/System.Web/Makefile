@@ -254,8 +254,8 @@ LIB_MCS_FLAGS = \
 RESOURCE_STRINGS = ../../../external/referencesource/System.Web/System.Web.txt
 
 ifneq (plainweb/,$(intermediate))
-LIB_REFS += System.Web.Services plaindesign/System.Design
-LIB_MCS_FLAGS += -define:WEBSERVICES_DEP -r:System.Web.Services.dll -define:DESIGN_DEP -r:System.Design.dll -define:CACHE_DEP -r:System.Runtime.Caching.dll -define:MSBUILD_DEP -r:Microsoft.Build.Framework.dll -r:Microsoft.Build.Tasks.v4.0.dll -r:Microsoft.Build.Utilities.v4.0.dll
+LIB_REFS += System.Web.Services plaindesign/System.Design System.Runtime.Caching Microsoft.Build.Framework Microsoft.Build.Tasks.v4.0 Microsoft.Build.Utilities.v4.0
+LIB_MCS_FLAGS += -define:WEBSERVICES_DEP -define:DESIGN_DEP -define:CACHE_DEP -define:MSBUILD_DEP
 
 endif
 

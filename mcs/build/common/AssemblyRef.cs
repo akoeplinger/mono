@@ -19,7 +19,12 @@ static class AssemblyRef
 	public const string SystemData = Consts.AssemblySystem_Data;
 	public const string SystemDesign = Consts.AssemblySystem_Design;
 	public const string SystemDrawing = Consts.AssemblySystem_Drawing;
+	public const string SystemDrawingDesign =  "System.Drawing.Design, Version=" + Consts.FxVersion + ", Culture=neutral, PublicKeyToken=31bf3856ad364e35";
 	public const string SystemWeb = Consts.AssemblySystem_Web;
+	public const string SystemWebDynamicData = "System.Web.DynamicData, Version=" + Consts.FxVersion + ", Culture=neutral, PublicKeyToken=31bf3856ad364e35";
+	public const string SystemWebDynamicDataDesign = "System.Web.DynamicData.Design, Version=" + Consts.FxVersion + ", Culture=neutral, PublicKeyToken=31bf3856ad364e35";
 	public const string SystemWebExtensions =  "System.Web.Extensions, Version=" + Consts.FxVersion + ", Culture=neutral, PublicKeyToken=31bf3856ad364e35";
+	public const string SystemWebMobile =  "System.Web.Mobile, Version=" + Consts.FxVersion + ", Culture=neutral, PublicKeyToken=31bf3856ad364e35"; 
+	public const string MicrosoftVisualStudioWeb = "Microsoft.VisualStudio.Web, Version=" + Consts.FxVersion + ", Culture=neutral, PublicKeyToken=31bf3856ad364e35";
 	public const string SystemWindowsForms = Consts.AssemblySystem_Windows_Forms;
 }

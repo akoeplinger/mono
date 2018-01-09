@@ -3,6 +3,7 @@ Assembly/AssemblyInfo.cs
 ../../build/common/Locale.cs
 ../../build/common/MonoTODOAttribute.cs
 ../../build/common/SR.cs
+../../build/common/AssemblyRef.cs
 
 ReferenceSources/ApplicationServicesStrings.cs
 
@@ -25,3 +26,4 @@ ReferenceSources/ApplicationServicesStrings.cs
 
 ../referencesource/System.Web.ApplicationServices/Hosting/ICustomLoaderHelperFunctions.cs
 
+../referencesource/System.Web.ApplicationServices/Configuration/MembershipPasswordCompatibilityMode.cs

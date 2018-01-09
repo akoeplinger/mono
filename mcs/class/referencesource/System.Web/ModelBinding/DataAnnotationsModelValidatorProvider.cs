@@ -7,7 +7,9 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+#if !MONO
 using System.Web.Globalization;
+#endif
 
     // A factory for validators based on ValidationAttribute
     public delegate ModelValidator DataAnnotationsModelValidationFactory(ModelMetadata metadata, ModelBindingExecutionContext context, ValidationAttribute attribute);

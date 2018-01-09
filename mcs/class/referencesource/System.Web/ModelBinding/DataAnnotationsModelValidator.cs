@@ -3,7 +3,9 @@
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.Threading;
+#if !MONO
     using System.Web.Globalization;
+#endif
 
     public class DataAnnotationsModelValidator : ModelValidator {        
         public DataAnnotationsModelValidator(ModelMetadata metadata, ModelBindingExecutionContext context, ValidationAttribute attribute)

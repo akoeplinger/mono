@@ -4,7 +4,9 @@
     using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
     using System.Linq;
+#if !MONO
     using System.Web.Globalization;
+#endif
 
     public class DataAnnotationsModelMetadataProvider : AssociatedMetadataProvider {
 

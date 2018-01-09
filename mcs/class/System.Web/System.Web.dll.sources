@@ -21,6 +21,11 @@ Assembly/AssemblyInfo.cs
 
 ReferenceSources/SR.cs
 ReferenceSources/DataProtector.cs
+ReferenceSources/ApplicationMonitors.cs
+ReferenceSources/ICacheDependencyChanged.cs
+ReferenceSources/ISessionStateModule.cs
+ReferenceSources/CacheStoreProvider.cs
+ReferenceSources/CacheInsertOptions.cs
 
 System.Web/AppPerfCounter.cs
 System.Web/CapabilitiesLoader.cs
@@ -123,6 +128,7 @@ System.Web.RegularExpressions/WebResourceRegex.cs
 ../referencesource/System.Web/IPrincipalContainer.cs
 ../referencesource/System.Web/IRequestCompletedNotifier.cs
 ../referencesource/System.Web/ISubscriptionToken.cs
+../referencesource/System.Web/ITlsTokenBindingInfo.cs
 ../referencesource/System.Web/LegacyAspNetSynchronizationContext.cs
 ../referencesource/System.Web/MimeMapping.cs
 ../referencesource/System.Web/ModuleConfigurationInfo.cs

@@ -14,8 +14,6 @@ glib-sharp
 gnome-sharp
 gnome-vfs-sharp
 gtk-sharp
-Mainsoft.Configuration
-Mainsoft.Web
 Managed.Windows.Forms
 MicrosoftAjaxLibrary
 Microsoft.Build
@@ -81,9 +79,6 @@ System.Dynamic
 System.EnterpriseServices
 System.IdentityModel
 System.IdentityModel.Selectors
-System.Interactive
-System.Interactive.Async
-System.Interactive.Providers
 System.IO.Compression
 System.IO.Compression.FileSystem
 System.Json

@@ -401,10 +401,7 @@ DISTFILES = \
 	Open.snk		\
 	LICENSE 		\
 	README			\
-	doc/API-notes		\
-	doc/NUnitGuidelines	\
 	doc/TemplateTest.cs	\
-	notes/BitVecto32.txt	\
 	MicrosoftAjaxLibrary/License.htm	\
 	test-helpers/NetworkHelpers.cs	\
 	test-helpers/SocketResponder.cs	\

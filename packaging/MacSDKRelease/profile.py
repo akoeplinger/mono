@@ -23,7 +23,7 @@ class MonoXamarinPackageProfile(MonoReleaseProfile):
     def setup_release(self):
         MonoReleaseProfile.setup_release(self)
         self.release_packages['mono'].configure_flags.extend(
-            ['--enable-extension-module=xamarin --enable-native-types --enable-pecrypt'])
+            ['--enable-extension-module=xamarin --enable-pecrypt'])
         info('Xamarin extensions enabled')
 
     def run_pkgbuild(self, working_dir, package_type):

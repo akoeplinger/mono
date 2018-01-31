@@ -560,6 +560,7 @@ namespace MonoTests.SystemWeb.Framework
 			Directory.CreateDirectory (tmpFile);
 			binDir = Path.Combine (baseDir, "bin");
 			Directory.CreateDirectory (binDir);
+			AppDomain.CurrentDomain.ProcessExit += (s, e) => { try { Directory.Delete (baseDir, true); } catch {} };
 		}
 
 		public static void CopyResources ()

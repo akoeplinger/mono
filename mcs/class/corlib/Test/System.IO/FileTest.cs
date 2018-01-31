@@ -960,6 +960,9 @@ namespace MonoTests.System.IO
 					Assert.IsNotNull (ex.Message, "#B4");
 				}
 			}
+
+			File.Delete (sourceFile);
+			File.Delete (destFile);
 		}
 
 		[Test]
@@ -2661,6 +2664,7 @@ namespace MonoTests.System.IO
 						Assert.Fail ("Move with ({0}) and  ({1}) did fail", acc, share);
 				}
 			}
+			File.Delete (file + ".old");
 		}
 
 		[Test]

@@ -684,6 +684,9 @@ namespace System.Security.Cryptography.X509Certificates {
 					case "2.5.29.19": // X509BasicConstraintsExtension
 						// we processed this extension
 						break;
+					case "2.5.29.37": // X509EnhancedKeyUsageExtension
+						// TODO: we ignore this extension
+						break;
 					default:
 						// note: Under Windows XP MS implementation seems to ignore 
 						// certificate with unknown critical extensions.

@@ -243,8 +243,17 @@ namespace System.Security.Cryptography.Pkcs {
 			}
 
 			SignerInfo si = new SignerInfo (sd.SignerInfo.HashName, x509, type, o, sd.SignerInfo.Version);
-			// si.AuthenticatedAttributes
-			// si.UnauthenticatedAttributes
+
+			foreach (ASN1 attr in sd.SignerInfo.UnauthenticatedAttributes) {
+				string unauthOid = ASN1Convert.ToOid (attr[0]);
+				si.UnsignedAttributes.Add (new AsnEncodedData (unauthOid, attr[1].Value));
+			}
+
+			foreach (ASN1 attr in sd.SignerInfo.AuthenticatedAttributes) {
+				string authOid = ASN1Convert.ToOid (attr[0]);
+				si.SignedAttributes.Add (new AsnEncodedData (authOid, attr[1].Value));
+			}
+
 			_info.Add (si);
 
 			ASN1 content = sd.ContentInfo.Content;

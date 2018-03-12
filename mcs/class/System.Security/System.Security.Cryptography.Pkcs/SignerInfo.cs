@@ -43,7 +43,7 @@ namespace System.Security.Cryptography.Pkcs {
 		private CryptographicAttributeObjectCollection _unsigned;
 		private int _version;
 
-		// only accessible from SignedPkcs7.SignerInfos
+		// only accessible from SignedCms.SignerInfos
 		internal SignerInfo (string hashName, X509Certificate2 certificate, SubjectIdentifierType type, object o, int version)
 		{
 			_digest = new Oid (CryptoConfig.MapNameToOID (hashName) ?? hashName);

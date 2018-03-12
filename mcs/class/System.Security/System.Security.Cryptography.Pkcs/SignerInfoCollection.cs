@@ -37,7 +37,7 @@ namespace System.Security.Cryptography.Pkcs {
 
 		private ArrayList _list;
 
-		// only accessible from SignedPkcs7.SignerInfos or SignerInfo.CounterSignerInfos
+		// only accessible from SignedCms.SignerInfos or SignerInfo.CounterSignerInfos
 		internal SignerInfoCollection () 
 		{
 			_list = new ArrayList ();

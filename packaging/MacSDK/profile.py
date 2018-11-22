@@ -350,6 +350,10 @@ class MonoReleaseProfile(DarwinProfile):
         print count
 
     def verify(self, f):
+        self.verify_correct_mono_version(f)
+        self.verify_correct_macos_minversion(f)
+
+    def verify_correct_mono_version(self, f):
         result = " ".join(backtick("otool -L " + f))
         regex = os.path.join(self.MONO_ROOT, "Versions", r"(\d+\.\d+\.\d+)")
 
@@ -361,13 +365,25 @@ class MonoReleaseProfile(DarwinProfile):
         if self.RELEASE_VERSION not in token:
             raise Exception("%s references Mono %s\n%s" % (f, token, text))
 
+    def verify_correct_macos_minversion(self, f):
+        result = " ".join(backtick("otool -l %s | grep LC_VERSION_MIN_MACOSX -A2" % f))
+        regex = r"version (10\.\d+)"
+
+        match = re.search(regex, result)
+        if match is None:
+            return
+        token = match.group(1)
+        trace(token)
+        if token != str(self.min_version):
+            raise Exception("%s was compiled for macOS minimum version 10.%s instead of 10.%s\n" % (f, token, self.min_version))
+
     def verify_binaries(self):
-        bindir = os.path.join(bockbuild.package_root, "bin")
-        for path, dirs, files in os.walk(bindir):
+        print 'Verifying binaries...'
+        for path, dirs, files in os.walk(bockbuild.package_root):
             for name in files:
                 f = os.path.join(path, name)
                 file_type = backtick('file "%s"' % f)
-                if "Mach-O executable" in "".join(file_type):
+                if "Mach-O" in "".join(file_type):
                     self.verify(f)
 
     def shell(self):

@@ -38,15 +38,11 @@ public abstract class HelixTestBase : HelixBase
     protected HelixTestBase (string helixType) : base ()
     {
         var helixSource = GetEnvironmentVariable ("MONO_HELIX_SOURCE");
+        var isPr = helixSource.StartsWith ("pr/");
 
-        if (helixSource.StartsWith ("pr/"))
-        {
-            // workaround for https://github.com/dotnet/arcade/issues/1392
-            var storage = new Storage ((HelixApi)_api);
-            var anonymousApi = ApiFactory.GetAnonymous ();
-            typeof (HelixApi).GetProperty ("Storage").SetValue (anonymousApi, storage, null);
-            _api = anonymousApi;
-        }
+        // non-PR jobs need to use the authenticated API
+        if (!isPr)
+            _api = ApiFactory.GetAuthenticated (GetEnvironmentVariable ("MONO_HELIX_API_KEY"));
 
         var build = _api.Job.Define ()
             .WithSource (helixSource)
@@ -54,13 +50,16 @@ public abstract class HelixTestBase : HelixBase
             .WithBuild (GetEnvironmentVariable ("MONO_HELIX_BUILD_MONIKER"));
 
         _job = build
-                    .WithTargetQueue (GetEnvironmentVariable ("MONO_HELIX_TARGET_QUEUE"))
-                    .WithCreator (GetEnvironmentVariable ("MONO_HELIX_CREATOR"))
-                    .WithCorrelationPayloadDirectory (GetEnvironmentVariable ("MONO_HELIX_TEST_PAYLOAD_DIRECTORY"))
-                    .WithCorrelationPayloadFiles (GetEnvironmentVariable ("MONO_HELIX_XUNIT_REPORTER_PATH"))
-                    // these are well-known properties used by Mission Control
-                    .WithProperty ("architecture", GetEnvironmentVariable ("MONO_HELIX_ARCHITECTURE"))
-                    .WithProperty ("operatingSystem", GetEnvironmentVariable ("MONO_HELIX_OPERATINGSYSTEM"));
+            .WithTargetQueue (GetEnvironmentVariable ("MONO_HELIX_TARGET_QUEUE"))
+            .WithCorrelationPayloadDirectory (GetEnvironmentVariable ("MONO_HELIX_TEST_PAYLOAD_DIRECTORY"))
+            .WithCorrelationPayloadFiles (GetEnvironmentVariable ("MONO_HELIX_XUNIT_REPORTER_PATH"))
+            // these are well-known properties used by Mission Control
+            .WithProperty ("architecture", GetEnvironmentVariable ("MONO_HELIX_ARCHITECTURE"))
+            .WithProperty ("operatingSystem", GetEnvironmentVariable ("MONO_HELIX_OPERATINGSYSTEM"));
+
+        // PR jobs have to set the Creator, others must not
+        if (isPr)
+            _job = _job.WithCreator (GetEnvironmentVariable ("MONO_HELIX_CREATOR"));
     }
 
     protected void CreateWorkItem (string name, string command, int timeoutInSeconds)

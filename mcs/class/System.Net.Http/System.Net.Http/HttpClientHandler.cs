@@ -479,7 +479,9 @@ namespace System.Net.Http
 				throw new NotImplementedException ();
 			}
 			set {
+#if !BOOTSTRAP_BASIC // the Helix SDK tries to set this
 				throw new NotImplementedException ();
+#endif
 			}
 		}
 	}

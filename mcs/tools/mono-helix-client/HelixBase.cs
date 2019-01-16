@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -39,7 +40,7 @@ public class HelixBase
 
     public HelixBase ()
     {
-        _api = ApiFactory.GetAuthenticated (GetEnvironmentVariable ("MONO_HELIX_API_KEY"));
+        _api = ApiFactory.GetAnonymous ();
     }
 
     protected string GetEnvironmentVariable (string variable)
@@ -90,14 +91,15 @@ public class HelixBase
             {
                 Console.WriteLine ("Job finished, fetching results...");
 
-                var resultsContent = (await _api.Aggregate.JobSummaryMethodAsync (new List<string> { "job.name" }, maxResultSets: 1, filtername: correlationId));
+                var resultsContent = await _api.Aggregate.JobSummaryAsync (groupBy: ImmutableList.Create("job.name"), maxResultSets: 1, filterName: correlationId);
 
                 if (resultsContent.Count != 1)
                     throw new InvalidOperationException ("No results found for job.");
 
-                resultsContent[0].Validate ();
-
                 var resultData = resultsContent[0].Data;
+                if (resultData == null)
+                    throw new InvalidOperationException ("Job contains no valid data, this shouldn't happen.");
+
                 var workItemStatus = resultData.WorkItemStatus;
                 var analyses = resultData.Analysis;
 
@@ -120,20 +122,25 @@ public class HelixBase
                     if (analysis.Status == null)
                         throw new InvalidOperationException ($"Job contains no status for analysis '{analysis.Name}', this shouldn't happen.");
 
-                    analysis.Status.TryGetValue ("pass", out int? pass);
-                    analysis.Status.TryGetValue ("skip", out int? skip);
-                    analysis.Status.TryGetValue ("fail", out int? fail);
-                    int? total = pass + skip + fail;
+                    var pass = analysis.Status.GetValueOrDefault ("pass", 0);
+                    var fail = analysis.Status.GetValueOrDefault ("fail", 0);
+                    var skip = analysis.Status.GetValueOrDefault ("skip", 0);
+                    var total = pass + skip + fail;
 
-                    if (total == null || total == 0)
-                        throw new InvalidOperationException ($"Job contains no test results, this shouldn't happen.");
+                    if (total == 0)
+                    {
+                        success = false;
+                        Console.WriteLine ($"Job contains no test results, this shouldn't happen.");
+                    }
+                    else
+                    {
+                        Console.WriteLine ("");
+                        Console.WriteLine ($"Tests run: {total}, Passed: {pass}, Errors: 0, Failures: {fail}, Inconclusive: 0");
+                        Console.WriteLine ($"  Not run: {skip}, Invalid: 0, Ignored: 0, Skipped: {skip}");
+                        Console.WriteLine ("");
 
-                    Console.WriteLine ("");
-                    Console.WriteLine ($"Tests run: {total}, Passed: {pass ?? 0}, Errors: 0, Failures: {fail ?? 0}, Inconclusive: 0");
-                    Console.WriteLine ($"  Not run: {skip ?? 0}, Invalid: 0, Ignored: 0, Skipped: {skip ?? 0}");
-                    Console.WriteLine ("");
-
-                    success = (fail == 0);
+                        success = (fail == 0);
+                    }
                 }
 
                 if (workItemStatus.ContainsKey ("fail"))

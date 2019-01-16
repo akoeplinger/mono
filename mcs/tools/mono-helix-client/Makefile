@@ -7,7 +7,7 @@ NO_INSTALL = yes
 
 LIB_REFS = System System.Net.Http Facades/netstandard Facades/System.Runtime Facades/System.Threading.Tasks
 helix_binaries = $(topdir)/../external/helix-binaries
-LOCAL_MCS_FLAGS = -r:$(helix_binaries)/Microsoft.DotNet.Helix.Client.dll -r:$(helix_binaries)/Microsoft.DotNet.Helix.JobSender.dll -r:$(helix_binaries)/Microsoft.Rest.ClientRuntime.dll
+LOCAL_MCS_FLAGS = -r:$(helix_binaries)/Microsoft.DotNet.Helix.Client.dll -r:$(helix_binaries)/Microsoft.DotNet.Helix.JobSender.dll -r:$(helix_binaries)/Microsoft.Rest.ClientRuntime.dll -r:$(helix_binaries)/System.Collections.Immutable.dll
 
 with_helix_client = MONO_PATH="$(helix_binaries)$(PLATFORM_PATH_SEPARATOR)$(topdir)/class/lib/$(BUILD_TOOLS_PROFILE)" $(RUNTIME) $(RUNTIME_FLAGS) $(topdir)/class/lib/$(BUILD_TOOLS_PROFILE)/mono-helix-client.exe
 

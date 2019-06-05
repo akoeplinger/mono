@@ -1,7 +1,11 @@
 thisdir = class/Mono.Cecil
 include ../../build/rules.make
 
+ifeq ($(PROFILE),monodroid_tools)
+LIBRARY = Xamarin.Android.Cecil.dll
+else
 LIBRARY = Mono.Cecil.dll
+endif
 KEYFILE = ../mono.snk
 LIBRARY_PACKAGE = none
 

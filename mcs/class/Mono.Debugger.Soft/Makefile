@@ -4,11 +4,19 @@ include ../../build/rules.make
 LIBRARY = Mono.Debugger.Soft.dll
 LIBRARY_SNK = ../mono.snk
 
-LIB_REFS = System Mono.Cecil System.Core
+LIB_REFS = System System.Core
 LIB_MCS_FLAGS = /unsafe -D:MONO_DATACONVERTER_STATIC_METHODS -D:ENABLE_CECIL /publicsign
 KEYFILE = $(LIBRARY_SNK)
 
-TEST_LIB_REFS = Mono.Cecil System System.Core
+TEST_LIB_REFS = System System.Core
+
+ifeq ($(PROFILE),monodroid_tools)
+LIB_REFS += Xamarin.Android.Cecil
+TEST_LIB_REFS += Xamarin.Android.Cecil
+else
+LIB_REFS += Mono.Cecil
+TEST_LIB_REFS += Mono.Cecil
+endif
 
 ifneq ($(filter monodroid monotouch monotouch_tv monotouch_watch wasm net_4_x,$(PROFILE)),)
 test-local: build-dtest

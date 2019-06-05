@@ -19,8 +19,14 @@ MDOC_RESOURCES_COMMAND = $(foreach file,$(MDOC_RESOURCES),/resource:../../../ext
 
 MONODOC_RESOURCES_COMMAND = $(foreach file,$(MONODOC_RESOURCES),/resource:../../../external/api-doc-tools/monodoc/$(file),$(notdir $(file)))
 
-LIB_REFS = monodoc System System.Xml System.Core Mono.Cecil ICSharpCode.SharpZipLib System.Xml.Linq System.Web
-	
+LIB_REFS = monodoc System System.Xml System.Core ICSharpCode.SharpZipLib System.Xml.Linq System.Web
+
+ifeq ($(PROFILE),monodroid_tools)
+LIB_REFS += Xamarin.Android.Cecil
+else
+LIB_REFS += Mono.Cecil
+endif
+
 LOCAL_MCS_FLAGS = $(MDOC_RESOURCES_COMMAND) $(MONODOC_RESOURCES_COMMAND)
 PROGRAM = $(topdir)/class/lib/$(PROFILE)/mdoc.exe
 PROGRAM_DEPS = $(topdir)/class/lib/$(PROFILE)/monodoc.dll

@@ -180,7 +180,7 @@ namespace MonoTests.System.Net.Http
 		[Test]
 		public void Ctor ()
 		{
-			var client = new HttpClient ();
+			var client = HttpClientTestHelpers.CreateHttpClient ();
 			Assert.IsNull (client.BaseAddress, "#1");
 			Assert.IsNotNull (client.DefaultRequestHeaders, "#2");	// TODO: full check
 			Assert.AreEqual (int.MaxValue, client.MaxResponseContentBufferSize, "#3");
@@ -298,7 +298,7 @@ namespace MonoTests.System.Net.Http
 		[Test]
 		public void Properties ()
 		{
-			var client = new HttpClient ();
+			var client = HttpClientTestHelpers.CreateHttpClient ();
 			client.BaseAddress = null;
 			client.MaxResponseContentBufferSize = int.MaxValue;
 			client.Timeout = Timeout.InfiniteTimeSpan;
@@ -311,7 +311,7 @@ namespace MonoTests.System.Net.Http
 		[Test]
 		public void Properties_Invalid ()
 		{
-			var client = new HttpClient ();
+			var client = HttpClientTestHelpers.CreateHttpClient ();
 			try {
 				client.MaxResponseContentBufferSize = 0;
 				Assert.Fail ("#1");

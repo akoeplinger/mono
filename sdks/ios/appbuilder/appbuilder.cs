@@ -202,7 +202,7 @@ public class AppBuilder
 		File.WriteAllLines (Path.Combine (builddir, "Entitlements.plist"), lines);
 
 		// Create config.json file
-		string config = "{ \"exe\" : \"" + exe + "\" }";
+		string config = ""; // $"{{\"exe\": \"{exe}\", \"test_assemblies\": [ {String.Join (",", test_assemblies.Select (s => String.Format ("\"{0}\"", s)))} ] }}";
 		File.WriteAllLines (Path.Combine (builddir, "config.json"), new string [] { config });
 
 		var ninja = File.CreateText (Path.Combine (builddir, "build.ninja"));

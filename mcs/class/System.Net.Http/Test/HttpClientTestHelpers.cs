@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading;
 using System.Reflection;
 using System.Net.Http;
@@ -21,6 +22,16 @@ namespace MonoTests.System.Net.Http
 		}
 
 		internal static bool IsSocketsHandler (HttpClientHandler handler) => UsingSocketsHandler;
+
+		internal static HttpClient CreateHttpClient ()
+		{
+			try {
+				return new HttpClient ();
+			} catch (FileNotFoundException) {
+				// this can happen when running Mono SDKs tests where we don't have access to the platform-specific http handlers from Xamarin.iOS.dll. Fallback to the default handler.
+				return new HttpClient (CreateHttpClientHandler ());
+			}
+		}
 
 		internal static HttpClient CreateHttpClientWithHttpClientHandler ()
 		{

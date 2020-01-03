@@ -197,7 +197,7 @@ public class Harness
 				break;
 			if (line.Contains ("STARTRESULTXML")) {
 				Console.Write ("Getting test result XML data...");
-				xml_results_file = File.CreateText (Path.Combine (Path.GetDirectoryName (bundle_dir), $"TestResult_{bundle_id}.xml"));
+				xml_results_file = File.CreateText (Path.Combine (Path.GetDirectoryName (bundle_dir), $"TestResult_{bundle_id}.xml"));  // TODO: fix xml filename for AllTests
 				continue;
 			} else if (line.Contains ("ENDRESULTXML")) {
 				Console.WriteLine ("done");
